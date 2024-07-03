@@ -80,15 +80,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      status: {
-        type: DataTypes.STRING(1),
-        defaultValue: 0,
-      },
       password: {
         type: DataTypes.STRING,
-        // allowNull: false,
+        allowNull: false,
         validate: {
-          is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i,
+          // is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i,
+          notEmpty: true,
         },
       },
       role_id: {
