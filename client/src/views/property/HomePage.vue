@@ -170,28 +170,49 @@ const addProperty = handleSubmit(async (values) => {
   formData.append("name", name.value.value);
   formData.append("address", address.value.value);
   formData.append("city", city.value.value);
-  formData.append("name", name.value.value);
   formData.append("pincode", pincode.value.value);
 
-  jobsCount.forEach(element => {
-    formData.append("jobname", element.name);
-    formData.append("jobdescription", element.description);
-    element.photos.forEach(el => {
-      formData.append("photo", el.name);
-    })
+  const jobs = jobsCount.map((element) => {
+    return {
+      name: element.name,
+      description: element.description,
+      photos: element.photos.map((photo) => photo.name)
+    };
   });
+
+  formData.append("jobs", JSON.stringify(jobs));
+
+  // jobsCount.forEach((element,index) => {
+  //   formData.append(`jobname-${index}`, element.name);
+  //   formData.append(`jobdescription-${index}`, element.description);
+  //   element.photos.forEach((el,i) => {
+  //     formData.append(`photo-${i}`, el.name);
+  //   })
+  // });
+
+for (const [key, value] of formData.entries()) {
+     console.log(key, value);
+   }
+
+  // jobsCount.forEach(element => {
+  //   formData.append("jobname", element.name);
+  //   formData.append("jobdescription", element.description);
+  //   element.photos.forEach(el => {
+  //     formData.append("photo", el.name);
+  //   })
+  // });
 
   console.log(formData);
 
-  // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
-  //   method: "post",
-  //   credentials: "include",
-  //   mode: "cors",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ values, jobsCount }),
-  // });
-  // res = await res.json();
-  // console.log(res);
+  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
+    method: "post",
+    credentials: "include",
+    mode: "cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+  res = await res.json();
+  console.log(res);
 });
 
 // const addProperty = () => {
