@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.properties, { foreignKey: "powner_id" });
       users.hasMany(models.estimates, { foreignKey: "contracter_id" });
       users.hasMany(models.login_attemps, { foreignKey: "user_id" });
+      users.hasMany(models.user_sessions, { foreignKey: "user_id" });
+      users.hasMany(models.job_photos, { foreignKey: "user_id" });
     }
   }
   users.init(
@@ -79,6 +81,10 @@ module.exports = (sequelize, DataTypes) => {
       city: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
       password: {
         type: DataTypes.STRING,

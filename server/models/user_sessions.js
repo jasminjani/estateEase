@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class jobs extends Model {
+  class user_sessions extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      jobs.belongsTo(models.properties, { foreignKey: "p_id" });
+      user_sessions.belongsTo(models.users, { foreignKey: "user_id" });
     }
   }
-  jobs.init(
+  user_sessions.init(
     {
       id: {
         allowNull: false,
@@ -20,27 +20,32 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      p_id: {
+      user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "properties",
+          model: "users",
           key: "id",
-          as: "p_id",
+          as: "user_id",
         },
         validate: {
-          notEmpty: true,
           isInt: {
-            msg: "jobs table foreign key must be integer",
+            msg: "language table foreign key must be integer",
           },
         },
       },
-      jobname: {
+      jwt_token: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      job_description: {
-        type: DataTypes.TEXT,
+      ip_address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIP: {
+            msg: "ip format is not valid",
+          },
+        },
       },
       createdAt: {
         allowNull: false,
@@ -51,14 +56,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
       },
       deletedAt: {
+        // allowNull: false,
         type: DataTypes.DATE,
       },
     },
     {
       sequelize,
-      modelName: "jobs",
+      modelName: "user_sessions",
       paranoid: true,
     }
   );
-  return jobs;
+  return user_sessions;
 };

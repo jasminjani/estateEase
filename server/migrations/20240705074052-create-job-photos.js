@@ -1,9 +1,12 @@
 "use strict";
+
+const { sequelize } = require("../models");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "jobs",
+      "job_photos",
       {
         id: {
           allowNull: false,
@@ -11,27 +14,37 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        p_id: {
+        user_id: {
           type: Sequelize.INTEGER,
           allowNull: false,
           references: {
-            model: "properties",
+            model: "users",
             key: "id",
-            as: "p_id",
+            as: "user_id",
           },
           validate: {
             notEmpty: true,
             isInt: {
-              msg: "jobs table foreign key must be integer",
+              msg: "job photos table foreign key must be integer",
             },
           },
         },
-        jobname: {
-          type: Sequelize.STRING,
+        is_work: {
+          type: Sequelize.BOOLEAN, //  0 for job photos and 1 for work photos
           allowNull: false,
         },
-        job_description: {
-          type: Sequelize.TEXT,
+        job_work_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          validate: {
+            isInt: {
+              msg: "job work combine id can not be null",
+            },
+          },
+        },
+        photo: {
+          type: Sequelize.BLOB,
+          allowNull: false,
         },
         createdAt: {
           allowNull: false,
@@ -51,6 +64,6 @@ module.exports = {
     );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("jobs");
+    await queryInterface.dropTable("job_photos");
   },
 };

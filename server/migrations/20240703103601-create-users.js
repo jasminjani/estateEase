@@ -68,6 +68,10 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
         },
+        status: {
+          type: Sequelize.BOOLEAN,
+          defaultValue: false,
+        },
         password: {
           type: Sequelize.STRING,
           allowNull: false,

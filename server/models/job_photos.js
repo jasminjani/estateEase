@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class jobs extends Model {
+  class job_photos extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      jobs.belongsTo(models.properties, { foreignKey: "p_id" });
+      job_photos.belongsTo(models.users, { foreignKey: "user_id" });
     }
   }
-  jobs.init(
+  job_photos.init(
     {
       id: {
         allowNull: false,
@@ -20,27 +20,37 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      p_id: {
+      user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "properties",
+          model: "users",
           key: "id",
-          as: "p_id",
+          as: "user_id",
         },
         validate: {
           notEmpty: true,
           isInt: {
-            msg: "jobs table foreign key must be integer",
+            msg: "job photos table foreign key must be integer",
           },
         },
       },
-      jobname: {
-        type: DataTypes.STRING,
+      is_work: {
+        type: DataTypes.BOOLEAN, //  0 for job photos and 1 for work photos
         allowNull: false,
       },
-      job_description: {
-        type: DataTypes.TEXT,
+      job_work_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          isInt: {
+            msg: "job work combine id can not be null",
+          },
+        },
+      },
+      photo: {
+        type: DataTypes.BLOB,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -56,9 +66,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "jobs",
+      modelName: "job_photos",
       paranoid: true,
     }
   );
-  return jobs;
+  return job_photos;
 };

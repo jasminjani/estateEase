@@ -71,6 +71,7 @@ exports.addUser = async (req, res) => {
           role_id,
           activation_code,
           token_created_at: new Date(),
+          status: true,
           password: hashPassword,
         },
         { transaction: t }
@@ -179,7 +180,7 @@ exports.login = async (req, res) => {
 
         try {
           await db.login_attemps.create(
-            { u_id: result[0].id, status: true },
+            { user_id: result[0].id, status: true },
             { transaction: t }
           );
         } catch (error) {
@@ -211,7 +212,7 @@ exports.login = async (req, res) => {
         // if db password and user's password matched then put the entry in user sessiond with jwt token
         try {
           await db.user_sessions.create(
-            { u_id: result[0].id, jwt_token: token, ip_address: req.ip },
+            { user_id: result[0].id, jwt_token: token, ip_address: req.ip },
             { transaction: t }
           );
         } catch (error) {
@@ -235,7 +236,7 @@ exports.login = async (req, res) => {
         //if db password and user's password not matched then put the entry in login_attempts as fail
         try {
           await db.login_attemps.create(
-            { u_id: result[0].id, status: false },
+            { user_id: result[0].id, status: false },
             { transaction: t }
           );
         } catch (error) {
@@ -287,7 +288,7 @@ exports.logoutAllDevices = async (req, res) => {
     }
 
     res.clearCookie("token");
-    await db.user_sessions.destroy({ where: { u_id: req.user.id } });
+    await db.user_sessions.destroy({ where: { user_id: req.user.id } });
 
     res.status(200).json({
       success: true,
@@ -314,7 +315,7 @@ exports.logoutAllOtherDevices = async (req, res) => {
     await db.user_sessions.destroy({
       where: {
         [Op.and]: [
-          { u_id: req.user.id },
+          { user_id: req.user.id },
           { jwt_token: { [Op.ne]: req.token } },
         ],
       },
