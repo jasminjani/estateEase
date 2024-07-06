@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import Sidebar from "../../components/property/sideBar.vue";
+import Sidebar from "../../components/contractor/sideBar.vue";
 // import JobComponent from "../../components/property/JobComponent.vue";
 
 import { useField, useForm } from "vee-validate";

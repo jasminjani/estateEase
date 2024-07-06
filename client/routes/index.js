@@ -19,6 +19,18 @@ const routes = [
     component: import("../src/views/property/HomePage.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/property/history",
+    name: "PropertyHistory",
+    component: import("../src/views/property/historyPage.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contractor/dashboard",
+    name: "contractorDashboard",
+    component: import("../src/views/contractor/homePage.vue"),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

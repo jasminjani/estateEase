@@ -13,6 +13,16 @@
             >property dashboard</router-link
           >
         </div>
+        <div>
+          <router-link :to="{ name: 'PropertyHistory' }"
+            >property History</router-link
+          >
+        </div>
+        <div>
+          <router-link :to="{ name: 'contractorDashboard' }"
+            >Contractor dashboard</router-link
+          >
+        </div>
       </div>
       <div>
         <router-view></router-view>

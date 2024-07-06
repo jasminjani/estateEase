@@ -1,16 +1,21 @@
 const router = require("express").Router();
 const passport = require("passport");
-const { addProperty } = require("../controllers/propertyController");
-const { imgStorage, imageFilter } = require("../utils/multer");
+const {
+  addProperty,
+  getProperty,
+} = require("../controllers/propertyController");
+const { imgStorage } = require("../utils/multer");
 const multer = require("multer");
 // const fileUpload = multer({ storage: fileStorage,fileFilter:fileFilter });
-const imgUpload = multer({ storage: imgStorage, fileFilter: imageFilter });
+const imgUpload = multer({ storage: imgStorage });
 
-router
-  .route("/add-property")
-  .post(
-    passport.authenticate("jwt", { session: false, failureRedirect: "/login" }),
-    addProperty
-  );
+router.use(
+  passport.authenticate("jwt", { session: false, failureMessage: true })
+  // isProperty
+);
+
+router.route("/add-property").post(imgUpload.any(), addProperty);
+
+router.route("/get-property").get(getProperty);
 
 module.exports = router;
