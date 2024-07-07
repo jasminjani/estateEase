@@ -63,7 +63,6 @@
                     >
                       <v-text-field
                         v-model="jobsCount[index].name"
-                        :error-messages="jobsCount[index]"
                         prepend-icon="mdi-text"
                         name="jobname"
                         label="Job name"
@@ -113,7 +112,7 @@
                 <v-btn
                   class="d-flex bg-primary"
                   style="margin: 0 auto"
-                  @click.prevent="addProperty"
+                  @click.prevent="addPropertyAndJobs"
                   >Add property</v-btn
                 >
               </v-card-actions>
@@ -131,7 +130,10 @@ import Sidebar from "../../components/property/sideBar.vue";
 
 import { useField, useForm } from "vee-validate";
 import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import * as yup from "yup";
+
+const router = useRouter();
 
 const myFileObject = ref(null);
 console.log(myFileObject.value);
@@ -148,11 +150,12 @@ const { handleSubmit } = useForm({
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(6, "Must be exactly 6 digits")
       .max(6, "Must be exactly 6 digits"),
-    // jobname1: yup.string().required("job name is required").trim(),
-    // jobimage: yup.mixed().required('Image is requireeed'),
-    // job_description1: yup.string(),
+    //jobname_0: yup.string().required("job name is required").trim(),
+    //photo_0: yup.mixed().required("Image is requireeed"),
+    // jobdescription_0: yup.string(),
   }),
 });
+
 const name = useField("name");
 const address = useField("address");
 const city = useField("city");
@@ -160,70 +163,6 @@ const pincode = useField("pincode");
 // const jobname1 = useField("jobname1");
 // const job_description1 = useField("job_description1");
 // const jobimage = useField("jobimage");
-
-const addProperty = handleSubmit(async (values) => {
-  // console.log(JSON.stringify(values, null, 2));
-  // console.log(jobsCount);
-  alert(JSON.stringify(values, null, 2));
-
-  const formData = new FormData();
-  formData.append("name", name.value.value);
-  formData.append("address", address.value.value);
-  formData.append("city", city.value.value);
-  formData.append("pincode", pincode.value.value);
-
-  jobsCount.map((element, index) => {
-    formData.append(`jobname_${index}`, element.name);
-    formData.append(`jobdescription_${index}`, element.description);
-    // formData.append(`photos-${index}`, element.photos.map((photo) => photo.name));
-    element.photos.map((photo) => {
-      formData.append(`photo_${index}`, photo);
-    });
-
-    // return {
-    //   name: element.name,
-    //   description: element.description,
-    //   photos: element.photos.map((photo) => photo.name)
-    // };
-  });
-
-  // formData.append("jobs", JSON.stringify(jobs));
-
-  // jobsCount.forEach((element,index) => {
-  //   formData.append(`jobname-${index}`, element.name);
-  //   formData.append(`jobdescription-${index}`, element.description);
-  //   element.photos.forEach((el,i) => {
-  //     formData.append(`photo-${i}`, el.name);
-  //   })
-  // });
-
-  for (const [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
-
-  // jobsCount.forEach(element => {
-  //   formData.append("jobname", element.name);
-  //   formData.append("jobdescription", element.description);
-  //   element.photos.forEach(el => {
-  //     formData.append("photo", el.name);
-  //   })
-  // });
-
-  console.log(formData);
-
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
-    method: "post",
-    credentials: "include",
-    mode: "cors",
-    body: formData,
-  });
-  res = await res.json();
-  console.log(res);
-});
-
-// const addProperty = () => {
-//   console.log(myFileObject.value[0].name);
-// };
 
 const jobsCount = reactive([{ name: null, description: null, photos: null }]);
 
@@ -241,4 +180,43 @@ const removeMoreJobs = async () => {
     jobsCount.pop();
   }
 };
+
+const addPropertyAndJobs = handleSubmit(async () => {
+  // console.log(JSON.stringify(values, null, 2));
+  // alert(JSON.stringify(values, null, 2));
+
+  const formData = new FormData();
+  formData.append("name", name.value.value);
+  formData.append("address", address.value.value);
+  formData.append("city", city.value.value);
+  formData.append("pincode", pincode.value.value);
+
+  jobsCount.map((element, index) => {
+    formData.append(`jobname_${index}`, element.name);
+    formData.append(`jobdescription_${index}`, element.description);
+    element.photos.map((photo) => {
+      formData.append(`photo_${index}`, photo);
+    });
+  });
+
+  // for (const [key, value] of formData.entries()) {
+  //   console.log(key, value);
+  // }
+
+  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
+    method: "post",
+    credentials: "include",
+    mode: "cors",
+    body: formData,
+  });
+  res = await res.json();
+
+  if (res.success) {
+    console.log("res is successfully arrived");
+    router.push({ name: "PropertyHistory" });
+  } else {
+    console.log("res na malyo");
+    alert("something went wrong");
+  }
+});
 </script>

@@ -116,7 +116,7 @@ const login = handleSubmit(async (values) => {
       router.push({ name: "propertyHomepage" });
     }
     if (res.user.role_id == 2) {
-      router.push({ name: "" });
+      router.push({ name: "contractorDashboard" });
     }
   } else {
     let p = document.createElement("p");

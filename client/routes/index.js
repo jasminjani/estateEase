@@ -31,6 +31,12 @@ const routes = [
     component: import("../src/views/contractor/homePage.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/contractor/propertyDetails/:id",
+    name: "COntractorPropertyDetails",
+    component: import("../src/views/contractor/PropertyDetails.vue"),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

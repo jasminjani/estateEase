@@ -34,6 +34,7 @@ onBeforeMount(async () => {
                     <th class="text-left">Sr no.</th>
                     <th class="text-left">Property Name</th>
                     <th class="text-left">city</th>
+                    <th class="text-left">Status</th>
                   </tr>
                 </thead>
                 <tbody v-if="userAllProperty.length">
@@ -41,11 +42,13 @@ onBeforeMount(async () => {
                     <td>{{ ++index }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.city }}</td>
+                    <td v-if="item.is_approved == 0">Submited</td>
+                    <td v-else-if="item.is_approved == 1">Submited + in Progress</td>
                   </tr>
                 </tbody>
                 <tbody v-else>
                   <tr>
-                    <td colspan="3" class="text-center">No Data Found !!</td>
+                    <td colspan="4" class="text-center">No Data Found !!</td>
                   </tr>
                 </tbody>
               </v-table>
