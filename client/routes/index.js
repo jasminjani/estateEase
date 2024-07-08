@@ -37,6 +37,12 @@ const routes = [
     component: import("../src/views/contractor/PropertyDetails.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/property/bid-price/:p_id",
+    name: "PropertyBidPrice",
+    component: import("../src/views/property/acceptrejectProperty.vue"),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

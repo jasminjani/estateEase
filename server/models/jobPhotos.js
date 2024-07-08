@@ -1,18 +1,27 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class job_photos extends Model {
+  class JobPhotos extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      // console.log("models :>> ", models);
       // define association here
-      job_photos.belongsTo(models.users, { foreignKey: "user_id" });
+      JobPhotos.belongsTo(models.users, { foreignKey: "user_id" });
+      JobPhotos.belongsTo(models.jobs, {
+        foreignKey: "job_work_id",
+        constraints: false,
+      });
+      JobPhotos.belongsTo(models.work_proofs, {
+        foreignKey: "job_work_id",
+        constraints: false,
+      });
     }
   }
-  job_photos.init(
+  JobPhotos.init(
     {
       id: {
         allowNull: false,
@@ -70,5 +79,5 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true,
     }
   );
-  return job_photos;
+  return JobPhotos;
 };

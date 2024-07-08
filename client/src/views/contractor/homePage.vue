@@ -7,13 +7,16 @@
       <v-content>
         <v-container fluid fill-height>
           <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12 bg-indigo-lighten-5" style="width: 100%; margin: 0 auto">
+            <v-card
+              class="elevation-12 bg-indigo-lighten-5"
+              style="width: 100%; margin: 0 auto"
+            >
               <v-toolbar dark color="primary">
                 <v-toolbar-title class="text-center"
                   >Property Details</v-toolbar-title
                 >
               </v-toolbar>
-              <div class="v-row">
+              <div class="v-row" v-if="propertyAndJobData.length > 0">
                 <div
                   class="v-col-4"
                   v-for="property in propertyAndJobData"
@@ -29,6 +32,11 @@
                   />
                 </div>
               </div>
+              <div v-else>
+                <!-- <div class="v-col-4"> -->
+                  <NoDataFoundComponent />
+                <!-- </div> -->
+              </div>
             </v-card>
           </v-flex>
         </v-container>
@@ -40,6 +48,7 @@
 <script setup>
 import Sidebar from "../../components/contractor/sideBar.vue";
 import PropertyLayoutComponent from "../../components/contractor/propertyLayoutComponent.vue";
+import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref } from "vue";
 
 const propertyAndJobData = ref([]);

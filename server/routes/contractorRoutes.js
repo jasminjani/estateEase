@@ -3,6 +3,7 @@ const passport = require("passport");
 const {
   getSubmitedNotApprovedProperty,
   getPropertyAllDetailsByPropertyId,
+  addEstimatePriceOfProperty,
 } = require("../controllers/contractorController");
 
 // router.use(
@@ -17,5 +18,7 @@ router
 router
   .route("/get-property-all-details-by-id/:id")
   .get(getPropertyAllDetailsByPropertyId);
+
+router.route("/add-estimate-price").post(addEstimatePriceOfProperty);
 
 module.exports = router;

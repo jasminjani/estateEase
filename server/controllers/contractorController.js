@@ -41,18 +41,25 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
       });
     }
 
-    const propertyAllDetails = await db.properties.findAll({
+    const propertyAllDetails = await db.properties.findOne({
       where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },
+      attributes: ["id", "name", "address", "city", "pincode"],
       include: [
         {
           model: db.jobs,
           as: "jobs",
+          attributes: ["id", "jobname", "job_description"],
           include: [
             {
               model: db.job_photos,
-              as: "job_photos",
+              // as: "job_photos",
             },
           ],
+        },
+        {
+          model: db.users,
+          attributes: ["fname", "lname", "email"],
+          // as: "users",
         },
       ],
     });
@@ -60,6 +67,45 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
     res.status(200).json({
       success: true,
       message: propertyAllDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.addEstimatePriceOfProperty = async (req, res) => {
+  try {
+    console.log("jash");
+    const { price, p_id } = req.body;
+    const { id } = req.user;
+
+    if (!price || !p_id) {
+      return res.status(400).json({
+        success: false,
+        message: "estimation price or property id not found",
+      });
+    }
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "contractor id not found",
+      });
+    }
+
+    await db.estimates.create({
+      p_id: p_id,
+      contracter_id: id,
+      price: price,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "tender price added successfully",
     });
   } catch (error) {
     console.error(error);

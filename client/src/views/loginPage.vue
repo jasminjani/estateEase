@@ -7,8 +7,8 @@
           <v-toolbar dark color="primary">
             <v-toolbar-title class="text-center">Login Page</v-toolbar-title>
           </v-toolbar>
-          <v-card-text>
-            <v-form id="form">
+          <v-form id="form">
+            <v-card-text>
               <v-text-field
                 v-model="email.value.value"
                 :error-messages="email.errorMessage.value"
@@ -30,18 +30,18 @@
                 label="Password"
                 clearable
               ></v-text-field>
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <!-- <v-spacer></v-spacer> -->
-            <v-btn
-              class="d-flex"
-              style="margin: 0 auto"
-              color="primary"
-              @click.prevent="login"
-              >Login</v-btn
-            >
-          </v-card-actions>
+            </v-card-text>
+            <v-card-actions>
+              <!-- <v-spacer></v-spacer> -->
+              <v-btn
+                class="d-flex"
+                style="margin: 0 auto"
+                color="primary"
+                @click.prevent="login"
+                >Login</v-btn
+              >
+            </v-card-actions>
+          </v-form>
           <v-card-actions class="d-flex justify-center">
             Create new Account ?
             <router-link :to="{ name: 'registration' }"> Register</router-link>
