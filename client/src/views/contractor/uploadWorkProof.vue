@@ -11,8 +11,38 @@
               class="elevation-12 bg-indigo-lighten-5"
               style="width: 100%; margin: 0 auto"
             >
+              <v-toolbar dark color="primary">
+                <v-toolbar-title class="text-center"
+                  >Property Details</v-toolbar-title
+                >
+              </v-toolbar>
               <div>
-                <PropertyDetailComponent :propertyData="propertyData" />
+                <!-- <v-card-container> -->
+                <!-- <v-card class="elevation-10"> -->
+                <v-card-item>
+                  <v-card-title class="text-h5">{{
+                    propertyData.name
+                  }}</v-card-title>
+                </v-card-item>
+                <v-card-text>
+                  <div>{{ propertyData.address }}</div>
+                  <div>
+                    {{ propertyData.city }} - {{ propertyData.pincode }}
+                  </div>
+                  <div>
+                    Property owner : {{ propertyData.user?.fname }}
+                    {{ propertyData.user?.lname }}
+                  </div>
+                </v-card-text>
+                <!-- </v-card> -->
+                <!-- </v-card-container> -->
+              </div>
+              <div class="text-h6 ma-2">Work details :</div>
+              <div class="ma-2" v-for="job in propertyData.jobs" :key="job.id">
+                <WorkLayoutComponent
+                  :jobname="job.jobname"
+                  :description="job.job_description"
+                />
               </div>
               <v-card class="ma-2">
                 <v-form ref="formRef" :rules="piceValidationRule">
@@ -45,7 +75,7 @@
 
 <script setup>
 import Sidebar from "../../components/contractor/sideBar.vue";
-import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
+import WorkLayoutComponent from "../../components/contractor/workLayoutComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 // import * as yup from "yup";
@@ -69,7 +99,7 @@ const propertyData = ref([]);
 
 onBeforeMount(async () => {
   let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.id}`,
+    `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.p_id}`,
     {
       mode: "cors",
       credentials: "include",
@@ -97,7 +127,7 @@ const applyTender = async () => {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          p_id: route.params.id,
+          p_id: route.params.p_id,
           price: formData.price,
         }),
       }

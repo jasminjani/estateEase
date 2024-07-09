@@ -43,7 +43,7 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
 
     const propertyAllDetails = await db.properties.findOne({
       where: { id: id },
-      // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property 
+      // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property
       attributes: ["id", "name", "address", "city", "pincode"],
       include: [
         {
@@ -110,6 +110,47 @@ exports.addEstimatePriceOfProperty = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getPropertyEstimatesHistory = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "user id not found",
+      });
+    }
+
+    const userPropertyEstimateHistory = await db.estimates.findAll({
+      where: { contracter_id: id },
+      attributes: ["id", "p_id", "price", "status"],
+      include: [
+        {
+          model: db.properties,
+          attributes: [
+            "id",
+            "powner_id",
+            "name",
+            "city",
+            "is_approved",
+            "status",
+          ],
+        },
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      message: userPropertyEstimateHistory,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,

@@ -4,6 +4,7 @@ const {
   getSubmitedNotApprovedProperty,
   getPropertyAllDetailsByPropertyId,
   addEstimatePriceOfProperty,
+  getPropertyEstimatesHistory,
 } = require("../controllers/contractorController");
 
 // router.use(
@@ -20,5 +21,7 @@ router
   .get(getPropertyAllDetailsByPropertyId);
 
 router.route("/add-estimate-price").post(addEstimatePriceOfProperty);
+
+router.route("/get-estimate-history").get(getPropertyEstimatesHistory);
 
 module.exports = router;

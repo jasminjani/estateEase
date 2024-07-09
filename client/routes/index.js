@@ -38,6 +38,18 @@ const routes = [
     meta: { requiresAuth: true, role_id: 2 },
   },
   {
+    path: "/contractor/history",
+    name: "ContarctorHistory",
+    component: import("../src/views/contractor/historyPage.vue"),
+    meta: { requiresAuth: true, role_id: 2 },
+  },
+  {
+    path: "/contractor/upload-work/:p_id",
+    name: "ContractorUploadProof",
+    component: import("../src/views/contractor/uploadWorkProof.vue"),
+    meta: { requiresAuth: true, role_id: 2 },
+  },
+  {
     path: "/property/bid-price/:p_id",
     name: "PropertyBidPrice",
     component: import("../src/views/property/acceptrejectProperty.vue"),
