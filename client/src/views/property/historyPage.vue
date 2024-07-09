@@ -57,8 +57,8 @@ onBeforeMount(async () => {
                     <td>
                       <router-link
                         :to="{
-                          name: 'PropertyBidPrice',
-                          params: { p_id: item.id },
+                          name: 'PropertyDetails',
+                          params: { id: item.id },
                         }"
                       >
                         <v-btn class="bg-primary"

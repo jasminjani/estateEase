@@ -37,12 +37,13 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "propertt id not found",
+        message: "property id not found",
       });
     }
 
     const propertyAllDetails = await db.properties.findOne({
-      where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },
+      where: { id: id },
+      // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property 
       attributes: ["id", "name", "address", "city", "pincode"],
       include: [
         {

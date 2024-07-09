@@ -17,31 +17,37 @@ const routes = [
     path: "/property/dashboard",
     name: "propertyHomepage",
     component: import("../src/views/property/HomePage.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role_id: 1 },
   },
   {
     path: "/property/history",
     name: "PropertyHistory",
     component: import("../src/views/property/historyPage.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role_id: 1 },
   },
   {
     path: "/contractor/dashboard",
     name: "contractorDashboard",
     component: import("../src/views/contractor/homePage.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role_id: 2 },
   },
   {
     path: "/contractor/propertyDetails/:id",
     name: "COntractorPropertyDetails",
     component: import("../src/views/contractor/PropertyDetails.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role_id: 2 },
   },
   {
     path: "/property/bid-price/:p_id",
     name: "PropertyBidPrice",
     component: import("../src/views/property/acceptrejectProperty.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/propertyDetails/:id",
+    name: "PropertyDetails",
+    component: import("../src/views/property/viePropertyDetails.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
   },
 ];
 
