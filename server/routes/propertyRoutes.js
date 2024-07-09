@@ -6,6 +6,7 @@ const {
   getEstimatePriceOfProperty,
   approveBidForProperty,
   rejectBidForProperty,
+  reviewWorkProof,
 } = require("../controllers/propertyController");
 const { imgStorage } = require("../utils/multer");
 const multer = require("multer");
@@ -25,5 +26,7 @@ router.route("/get-estimate-price/:p_id").get(getEstimatePriceOfProperty);
 router.route("/approve-bid").post(approveBidForProperty);
 
 router.route("/reject-bid").post(rejectBidForProperty);
+
+router.route("/review-work-proof").post(reviewWorkProof);
 
 module.exports = router;

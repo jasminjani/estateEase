@@ -5,7 +5,11 @@ const {
   getPropertyAllDetailsByPropertyId,
   addEstimatePriceOfProperty,
   getPropertyEstimatesHistory,
+  addWorkProofAndImage,
 } = require("../controllers/contractorController");
+const { imgStorage } = require("../utils/multer");
+const multer = require("multer");
+const imgUpload = multer({ storage: imgStorage });
 
 // router.use(
 // passport.authenticate("jwt", { session: false, failureMessage: true })
@@ -23,5 +27,9 @@ router
 router.route("/add-estimate-price").post(addEstimatePriceOfProperty);
 
 router.route("/get-estimate-history").get(getPropertyEstimatesHistory);
+
+router
+  .route("/add-work-proof-and-image")
+  .post(imgUpload.any(), addWorkProofAndImage);
 
 module.exports = router;

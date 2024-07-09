@@ -51,6 +51,12 @@ onBeforeMount(async () => {
                       Submited + in Progress
                     </td>
                     <td v-else-if="item.is_approved == 1 && item.status == 2">
+                      Pending Payment
+                    </td>
+                    <td v-else-if="item.is_approved == 1 && item.status == 3">
+                      Work Not accepted
+                    </td>
+                    <td v-else-if="item.is_approved == 1 && item.status == 4">
                       Completed
                     </td>
                     <td v-else>Status not found</td>
@@ -68,15 +74,13 @@ onBeforeMount(async () => {
                     </td>
                     <td>
                       <router-link
-                        :class="{ disabled: item.is_approved == 1 }"
                         :to="{
                           name: 'PropertyBidPrice',
                           params: { p_id: item.id },
                         }"
                       >
                         <v-btn
-                          class="bg-primary"
-                          :disabled="item.is_approved == 1"
+                          class="bg-purple"
                           ><v-icon>mdi-eye</v-icon></v-btn
                         ></router-link
                       >
@@ -98,7 +102,7 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped>
-.disabled {
+/* .disabled {
   pointer-events: none;
-}
+} */
 </style>

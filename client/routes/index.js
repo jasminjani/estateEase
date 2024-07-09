@@ -44,7 +44,7 @@ const routes = [
     meta: { requiresAuth: true, role_id: 2 },
   },
   {
-    path: "/contractor/upload-work/:p_id",
+    path: "/contractor/upload-work/:p_id/:estimate_id",
     name: "ContractorUploadProof",
     component: import("../src/views/contractor/uploadWorkProof.vue"),
     meta: { requiresAuth: true, role_id: 2 },
@@ -59,6 +59,12 @@ const routes = [
     path: "/property/propertyDetails/:id",
     name: "PropertyDetails",
     component: import("../src/views/property/viePropertyDetails.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/review-work/:p_id",
+    name: "PropertyReviewWork",
+    component: import("../src/views/property/reviewWorkPage.vue"),
     meta: { requiresAuth: true, role_id: 1 },
   },
 ];

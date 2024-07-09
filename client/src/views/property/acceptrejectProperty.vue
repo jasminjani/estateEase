@@ -25,6 +25,7 @@
                     <th class="text-center">Sr no.</th>
                     <th class="text-center">Bider Name</th>
                     <th class="text-center">Price</th>
+                    <th class="text-center">Status</th>
                     <th colspan="3" class="text-center">Status</th>
                   </tr>
                 </thead>
@@ -39,14 +40,65 @@
                       {{ item.user.fname }} {{ item.user.lname }}
                     </td>
                     <td class="text-center">{{ item.price }}</td>
+                    <td v-if="item.status == null" class="text-center">
+                      Pending
+                    </td>
+                    <td
+                      v-else-if="
+                        item.status == 1 && estimatePriceData.status == 1
+                      "
+                      class="text-center"
+                    >
+                      In Progress
+                    </td>
+                    <td
+                      v-else-if="
+                        item.status == 1 && estimatePriceData.status == 2
+                      "
+                      class="text-center"
+                    >
+                      Pending Payment
+                    </td>
+                    <td
+                      v-else-if="
+                        item.status == 1 && estimatePriceData.status == 3
+                      "
+                      class="text-center"
+                    >
+                      Work Not accepted
+                    </td>
+                    <td
+                      v-else-if="
+                        item.status == 1 && estimatePriceData.status == 4
+                      "
+                      class="text-center"
+                    >
+                      Completed
+                    </td>
+                    <td v-else>Status not found</td>
                     <td class="text-center">
-                      <v-btn class="bg-green ml-2" @click="approveBid(item.id)"
+                      <v-btn
+                        v-if="item.status == null"
+                        class="bg-green ml-2"
+                        @click="approveBid(item.id)"
                         ><v-icon>mdi-check</v-icon></v-btn
                       >
                       <v-btn
+                        v-if="item.status == null"
                         class="bg-red ml-2"
                         @click="rejectBid(item.id, index)"
                         ><v-icon>mdi-cancel</v-icon></v-btn
+                      >
+                      <router-link
+                        v-if="item.status == 1 && estimatePriceData.status == 2"
+                        :to="{
+                          name: 'PropertyReviewWork',
+                          params: { p_id: route.params.p_id },
+                        }"
+                      >
+                        <v-btn class="bg-green ml-2"
+                          >review & pay</v-btn
+                        ></router-link
                       >
                       <v-btn class="bg-primary ml-2"
                         ><v-icon>mdi-message-text</v-icon></v-btn

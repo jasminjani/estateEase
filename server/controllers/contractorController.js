@@ -157,3 +157,81 @@ exports.getPropertyEstimatesHistory = async (req, res) => {
     });
   }
 };
+
+exports.addWorkProofAndImage = async (req, res) => {
+  try {
+    // console.log("req.body :>> ", req.body);
+    // console.log("req.files :>> ", req.files);
+
+    const { estimate_id, p_id } = req.body;
+    const { id } = req.user;
+
+    if (!estimate_id || !p_id || !id) {
+      return res.status(400).json({
+        success: false,
+        message: "property or contracter or estimate id not found",
+      });
+    }
+
+    await db.sequelize.transaction(async (t) => {
+      let index = 0;
+      while (req.body[`job_id_${index}`]) {
+        if (!req.body[`job_id_${index}`]) {
+          return res.status(400).json({
+            success: false,
+            message: "jobs id not found",
+          });
+        }
+
+        const newWorkProof = await db.work_proofs.create(
+          {
+            job_id: req.body[`job_id_${index}`],
+            estimate_id: estimate_id,
+            status: 2,
+          }
+          // { transaction: t }
+        );
+
+        req.files
+          .filter((file) => file.fieldname.startsWith(`photos_${index}`))
+          .forEach(async (element) => {
+            if (!element.filename) {
+              return res.status(400).json({
+                success: false,
+                message: "photo's filename not found",
+              });
+            }
+
+            await db.job_photos.create(
+              {
+                user_id: id,
+                is_work: true,
+                job_work_id: newWorkProof.id,
+                photo: element.filename,
+              }
+              // { transaction: t }
+            );
+          });
+
+        index++;
+      }
+
+      await db.properties.update(
+        { status: 2 },
+        { where: { id: p_id } }
+        // { transaction: t }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "work and image addede successfully",
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

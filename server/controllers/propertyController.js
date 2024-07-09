@@ -139,13 +139,13 @@ exports.getEstimatePriceOfProperty = async (req, res) => {
 
     const propertyEstimatePriceData = await db.properties.findOne({
       where: { id: p_id },
-      attributes: ["name", "city", "pincode"],
+      attributes: ["name", "city", "pincode", "is_approved", "status"],
       include: [
         {
           model: db.estimates,
           attributes: ["id", "p_id", "price", "status"],
-          where: { status: null },
-          required:false,
+          where: { [Op.or]: [{ status: null }, { status: 1 }] },
+          required: false,
           include: [
             {
               model: db.users,
@@ -246,6 +246,21 @@ exports.rejectBidForProperty = async (req, res) => {
       message: "Bid rejected successfully",
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.reviewWorkProof = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "Comment added successfully",
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
       message: error.message,

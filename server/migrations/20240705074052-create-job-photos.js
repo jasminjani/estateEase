@@ -43,7 +43,7 @@ module.exports = {
           },
         },
         photo: {
-          type: Sequelize.BLOB,
+          type: Sequelize.STRING,
           allowNull: false,
         },
         createdAt: {

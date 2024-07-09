@@ -13,12 +13,10 @@
             >
               <v-toolbar dark color="primary">
                 <v-toolbar-title class="text-center"
-                  >Property Details</v-toolbar-title
+                  >Add work proof</v-toolbar-title
                 >
               </v-toolbar>
               <div>
-                <!-- <v-card-container> -->
-                <!-- <v-card class="elevation-10"> -->
                 <v-card-item>
                   <v-card-title class="text-h5">{{
                     propertyData.name
@@ -34,37 +32,52 @@
                     {{ propertyData.user?.lname }}
                   </div>
                 </v-card-text>
-                <!-- </v-card> -->
-                <!-- </v-card-container> -->
               </div>
               <div class="text-h6 ma-2">Work details :</div>
-              <div class="ma-2" v-for="job in propertyData.jobs" :key="job.id">
-                <WorkLayoutComponent
+              <v-form ref="formRef" :rules="piceValidationRule">
+                <div
+                  class="ma-2"
+                  v-for="(job, index) in propertyData.jobs"
+                  :key="job.id"
+                >
+                  <!-- <UploadWorkImageComponent
                   :jobname="job.jobname"
                   :description="job.job_description"
-                />
-              </div>
-              <v-card class="ma-2">
-                <v-form ref="formRef" :rules="piceValidationRule">
-                  <v-text-field
-                    v-model="formData.price"
-                    :rules="piceValidationRule.price"
-                    class="ma-2"
-                    prepend-inner-icon="mdi-currency-inr"
-                    label="Repairing price"
-                    name="price"
-                    clearable
-                    type="text"
-                  >
-                  </v-text-field>
+                /> -->
+
+                  <v-card-container>
+                    <v-card class="elevation-10 pa-2">
+                      <div class="font-weight-medium text-h6">
+                        work : {{ job.jobname }}
+                      </div>
+                      <div v-if="job.job_description != 'null'">
+                        description : {{ job.job_description }}
+                      </div>
+                      <div v-else>description : -</div>
+                      <div>photos :</div>
+                      <v-file-input
+                        v-model="image[index].photos"
+                        name="workimage"
+                        label="upload work image"
+                        accept="image/*"
+                        clearable
+                        multiple
+                        counter
+                        show-size
+                        chips
+                      ></v-file-input>
+                    </v-card>
+                  </v-card-container>
+                </div>
+                <v-card class="ma-2">
                   <v-card-actions class="d-flex">
-                    <v-btn class="bg-primary w-50" @click="applyTender"
-                      >Apply tender</v-btn
+                    <v-btn class="bg-primary w-50" @click="addWorkAndimage"
+                      >Mark task as complete</v-btn
                     >
                     <v-btn class="bg-purple w-50">Chat with owner</v-btn>
                   </v-card-actions>
-                </v-form>
-              </v-card>
+                </v-card>
+              </v-form>
             </v-card>
           </v-flex>
         </v-container>
@@ -75,27 +88,15 @@
 
 <script setup>
 import Sidebar from "../../components/contractor/sideBar.vue";
-import WorkLayoutComponent from "../../components/contractor/workLayoutComponent.vue";
+// import UploadWorkImageComponent from "../../components/contractor/uploadWorkImageComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import * as yup from "yup";
-
-const formRef = ref(null);
-const formData = reactive({ price: "" });
-const piceValidationRule = {
-  price: [
-    (value) => {
-      if (value?.length > 0 && /[0-9-]+/.test(value)) return true;
-
-      return "Price should be number.";
-    },
-  ],
-};
 
 const route = useRoute();
 const router = useRouter();
 
 const propertyData = ref([]);
+const image = reactive([]);
 
 onBeforeMount(async () => {
   let res = await fetch(
@@ -107,41 +108,48 @@ onBeforeMount(async () => {
   );
   res = await res.json();
   propertyData.value = await res.message;
-  // console.log(propertyData.value);
-  console.log(propertyData.value.jobs[0].job_photos[0].photo);
+  console.log("on before mount", propertyData.value.jobs);
+
+  propertyData.value.jobs.map((element) => {
+    image.push({ job_id: element.id, photos: null });
+  });
 });
 
-const applyTender = async () => {
-  console.log("click on apply tender");
+const addWorkAndimage = async () => {
+  console.log("click on add work image");
 
-  const result = await formRef.value.validate();
+  let formData = new FormData();
+  console.log("image ", image);
 
-  if (result.valid == true) {
-    console.log(result);
+  formData.append("estimate_id", route.params.estimate_id);
+  formData.append("p_id", route.params.p_id);
 
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/add-estimate-price`,
-      {
-        method: "post",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          p_id: route.params.p_id,
-          price: formData.price,
-        }),
-      }
-    );
-    res = await res.json();
-    console.log(res);
+  image.map((element, index) => {
+    console.log("image map", element);
+    formData.append(`job_id_${index}`, element.job_id);
+    element.photos.map((photo) => {
+      formData.append(`photos_${index}`, photo);
+    });
+  });
 
-    if (res.success) {
-      router.push({ name: "ContarctorHistory" });
-    } else {
-      alert("something went wrong : can not able to apply tender");
+  console.log("formData ", formData);
+  let res = await fetch(
+    `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
+    {
+      method: "post",
+      mode: "cors",
+      // headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: formData,
     }
+  );
+  res = await res.json();
+  console.log("res", res);
+
+  if (res.success) {
+    router.push({ name: "ContarctorHistory" });
   } else {
-    console.log("something went wrong");
+    alert("something went wrong : can not able to add work proof");
   }
 };
 </script>

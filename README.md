@@ -111,9 +111,10 @@ then conifgure front-end side, with downloading vue-cli, vuetify, vuex and other
 
 then in server, create all required models and their migration files.
 
-blob image to string ma convert kari img display karavana chhe.
+<!-- blob image to string ma convert kari img display karavana chhe. -->
 vuex apply karvanu chhe
 route protect karvana chhe.
+property and estimate na status na according contractor or property side status and button manage karavana chhe.
 
 # CONTRACTOR SIDE :-
 

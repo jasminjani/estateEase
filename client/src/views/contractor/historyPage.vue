@@ -50,13 +50,32 @@ onBeforeMount(async () => {
                     <td>{{ item.price }}</td>
                     <td v-if="item.status == null">Submited</td>
                     <td v-else-if="item.status == 0">Rejected</td>
-                    <td v-else-if="item.status == 1">In progress</td>
+                    <td
+                      v-else-if="item.status == 1 && item.property.status == 1"
+                    >
+                      In progress
+                    </td>
+                    <td
+                      v-else-if="item.status == 1 && item.property.status == 2"
+                    >
+                      Payment Pending
+                    </td>
+                    <td
+                      v-else-if="item.status == 1 && item.property.status == 3"
+                    >
+                      Work not accepted
+                    </td>
+                    <td
+                      v-else-if="item.status == 1 && item.property.status == 4"
+                    >
+                      Completed
+                    </td>
                     <td v-else>Status not found</td>
-                    <td v-if="item.status == 1">
+                    <td v-if="item.status == 1 && item.property.status == 1">
                       <router-link
                         :to="{
                           name: 'ContractorUploadProof',
-                          params: { p_id: item.p_id },
+                          params: { p_id: item.p_id, estimate_id: item.id },
                         }"
                       >
                         <v-btn class="bg-primary" prepend-icon="mdi-upload"

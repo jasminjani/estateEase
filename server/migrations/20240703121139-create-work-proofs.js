@@ -11,6 +11,21 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
+        job_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: "jobs",
+            key: "id",
+            as: "job_id",
+          },
+          validate: {
+            notEmpty: true,
+            isInt: {
+              msg: "estimate table foreign key must be integer",
+            },
+          },
+        },
         estimate_id: {
           type: Sequelize.INTEGER,
           allowNull: false,
@@ -28,8 +43,6 @@ module.exports = {
         },
         status: {
           type: Sequelize.STRING(1),
-          allowNull: false,
-          defaultValue: 0,
         },
         comments: {
           type: Sequelize.TEXT,
