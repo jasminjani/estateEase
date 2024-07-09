@@ -35,6 +35,7 @@ onBeforeMount(async () => {
                     <th class="text-left">Property Name</th>
                     <th class="text-left">city</th>
                     <th class="text-left">Status</th>
+                    <th class="text-left">view property</th>
                     <th class="text-left">view tender</th>
                   </tr>
                 </thead>
@@ -43,10 +44,16 @@ onBeforeMount(async () => {
                     <td>{{ ++index }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.city }}</td>
-                    <td v-if="item.is_approved == 0">Submited</td>
-                    <td v-else-if="item.is_approved == 1">
+                    <td v-if="item.is_approved == 0 && item.status == 0">
+                      Submited
+                    </td>
+                    <td v-else-if="item.is_approved == 1 && item.status == 1">
                       Submited + in Progress
                     </td>
+                    <td v-else-if="item.is_approved == 1 && item.status == 2">
+                      Completed
+                    </td>
+                    <td v-else>Status not found</td>
                     <td>
                       <router-link
                         :to="{
@@ -54,8 +61,25 @@ onBeforeMount(async () => {
                           params: { p_id: item.id },
                         }"
                       >
-                        <v-btn class="bg-primary" prepend-icon="mdi-eye"></v-btn
-                      ></router-link>
+                        <v-btn class="bg-primary"
+                          ><v-icon>mdi-eye</v-icon></v-btn
+                        ></router-link
+                      >
+                    </td>
+                    <td>
+                      <router-link
+                        :class="{ disabled: item.is_approved == 1 }"
+                        :to="{
+                          name: 'PropertyBidPrice',
+                          params: { p_id: item.id },
+                        }"
+                      >
+                        <v-btn
+                          class="bg-primary"
+                          :disabled="item.is_approved == 1"
+                          ><v-icon>mdi-eye</v-icon></v-btn
+                        ></router-link
+                      >
                     </td>
                   </tr>
                 </tbody>
@@ -72,3 +96,9 @@ onBeforeMount(async () => {
     </v-main>
   </v-app>
 </template>
+
+<style scoped>
+.disabled {
+  pointer-events: none;
+}
+</style>

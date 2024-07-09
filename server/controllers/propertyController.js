@@ -145,6 +145,7 @@ exports.getEstimatePriceOfProperty = async (req, res) => {
           model: db.estimates,
           attributes: ["id", "p_id", "price", "status"],
           where: { status: null },
+          required:false,
           include: [
             {
               model: db.users,

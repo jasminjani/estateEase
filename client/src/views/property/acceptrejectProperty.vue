@@ -40,15 +40,17 @@
                     </td>
                     <td class="text-center">{{ item.price }}</td>
                     <td class="text-center">
-                      <v-btn class="bg-green ml-2" @click="approveBid"
+                      <v-btn class="bg-green ml-2" @click="approveBid(item.id)"
                         ><v-icon>mdi-check</v-icon></v-btn
                       >
                       <v-btn
-                        class="bg-red ml-2" @click="rejectBid"
-                      ><v-icon>mdi-cancel</v-icon></v-btn>
-                      <v-btn
-                        class="bg-primary ml-2"
-                      ><v-icon>mdi-message-text</v-icon></v-btn>
+                        class="bg-red ml-2"
+                        @click="rejectBid(item.id, index)"
+                        ><v-icon>mdi-cancel</v-icon></v-btn
+                      >
+                      <v-btn class="bg-primary ml-2"
+                        ><v-icon>mdi-message-text</v-icon></v-btn
+                      >
                     </td>
                     <!-- <td v-if="item.is_approved == 0">Submited</td>
                     <td v-else-if="item.is_approved == 1">
@@ -73,11 +75,12 @@
 <script setup>
 import Sidebar from "../../components/property/sideBar.vue";
 import { onBeforeMount, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const estimatePriceData = ref([]);
 
 const route = useRoute();
+const router = useRouter();
 
 onBeforeMount(async () => {
   let res = await fetch(
@@ -91,4 +94,40 @@ onBeforeMount(async () => {
   estimatePriceData.value = res.message;
   console.log(estimatePriceData.value);
 });
+
+const approveBid = async (estimate_id) => {
+  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
+    method: "post",
+    mode: "cors",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: estimate_id, p_id: route.params.p_id }),
+  });
+  res = await res.json();
+
+  if (res.success) {
+    router.push({ name: "PropertyHistory" });
+    alert("Bid approved successfully");
+  } else {
+    alert("Problem occured on approving bid");
+  }
+};
+
+const rejectBid = async (estimate_id, index) => {
+  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
+    method: "post",
+    mode: "cors",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: estimate_id }),
+  });
+  res = await res.json();
+
+  if (res.success) {
+    estimatePriceData.value.estimates.splice(index - 1, 1);
+    alert("Bid rejected successfully");
+  } else {
+    alert("Problem occured on rejecting bid");
+  }
+};
 </script>
