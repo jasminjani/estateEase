@@ -62,7 +62,7 @@ const routes = [
     meta: { requiresAuth: true, role_id: 1 },
   },
   {
-    path: "/property/review-work/:p_id",
+    path: "/property/review-work/:id",
     name: "PropertyReviewWork",
     component: import("../src/views/property/reviewWorkPage.vue"),
     meta: { requiresAuth: true, role_id: 1 },

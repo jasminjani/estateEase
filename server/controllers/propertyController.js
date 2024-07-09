@@ -253,11 +253,59 @@ exports.rejectBidForProperty = async (req, res) => {
   }
 };
 
-exports.reviewWorkProof = async (req, res) => {
+// exports.reviewWorkProof = async (req, res) => {
+//   try {
+//     res.status(200).json({
+//       success: true,
+//       message: "Comment added successfully",
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
   try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "property id not found",
+      });
+    }
+
+    const propertyAllDetails = await db.properties.findOne({
+      where: { id: id },
+      // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property
+      attributes: ["id", "name", "address", "city", "pincode"],
+      include: [
+        {
+          model: db.jobs,
+          as: "jobs",
+          attributes: ["id", "jobname", "job_description"],
+          include: [
+            {
+              model: db.job_photos,
+              // as: "job_photos",
+            },
+          ],
+        },
+        {
+          model: db.users,
+          attributes: ["fname", "lname", "email"],
+          // as: "users",
+        },
+      ],
+    });
+
     res.status(200).json({
       success: true,
-      message: "Comment added successfully",
+      message: propertyAllDetails,
     });
   } catch (error) {
     console.error(error);

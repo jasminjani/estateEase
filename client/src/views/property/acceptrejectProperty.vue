@@ -93,7 +93,7 @@
                         v-if="item.status == 1 && estimatePriceData.status == 2"
                         :to="{
                           name: 'PropertyReviewWork',
-                          params: { p_id: route.params.p_id },
+                          params: { id: route.params.p_id },
                         }"
                       >
                         <v-btn class="bg-green ml-2"

@@ -30,6 +30,16 @@
             </v-img>
           </v-col>
         </v-row>
+        <v-card-text v-if="isReviewWorkPath == 'review-work'">
+          <v-textarea
+            prepend-inner-icon="mdi-comment"
+            name="comment"
+            label="Add Comments"
+            type="textarea"
+            clearable
+            counter
+          ></v-textarea>
+        </v-card-text>
       </v-card>
     </v-card-container>
 
@@ -38,7 +48,14 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
+import { useRoute } from "vue-router";
 
 defineProps(["jobname", "description"]);
+
+const route = useRoute();
+const routhFullPath = ref(route.fullPath.split("/"));
+routhFullPath.value.pop();
+const isReviewWorkPath = routhFullPath.value.pop().toLowerCase();
+// console.log("route.fullPath.split('/') :>> ", isReviewWorkPath);
 </script>
