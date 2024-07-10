@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <div class="d-flex justify-space-around">
+      <!-- <div class="d-flex justify-space-around">
         <div>
           <router-link :to="{ name: 'login' }">Login</router-link>
         </div>
@@ -23,7 +23,7 @@
             >Contractor dashboard</router-link
           >
         </div>
-      </div>
+      </div> -->
       <div>
         <router-view></router-view>
       </div>

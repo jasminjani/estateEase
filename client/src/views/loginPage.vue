@@ -58,8 +58,10 @@ import { useField, useForm } from "vee-validate";
 import { ref } from "vue";
 import * as yup from "yup";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 const router = useRouter();
+const store = useStore();
 
 const passVisible = ref(false);
 
@@ -100,30 +102,17 @@ const password = useField("password");
 const email = useField("email");
 
 const login = handleSubmit(async (values) => {
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/login`, {
-    method: "post",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(values, null, 2),
-  });
-  res = await res.json();
-  console.log(res);
-
-  if (res.success) {
-    localStorage.setItem("userinfo", JSON.stringify(res.user));
-    if (res.user.role_id == 1) {
+  await store.dispatch("userLogin", values);
+  // console.log("role_id : ", store.state.isAuthModule.currentUser[0].role_id);
+  if (store.state.isAuthModule.currentUser.length > 0) {
+    if (store.state.isAuthModule.currentUser[0].role_id == 1) {
       router.push({ name: "propertyHomepage" });
+      console.log("object");
     }
-    if (res.user.role_id == 2) {
+    if (store.state.isAuthModule.currentUser[0].role_id == 2) {
       router.push({ name: "contractorDashboard" });
+      console.log("object else");
     }
-  } else {
-    let p = document.createElement("p");
-    document.getElementById("form").insertAdjacentElement("afterend", p);
-    p.style.color = "red";
-    p.style.textAlign = "center";
-    p.innerHTML = `${res.message}`;
   }
 });
 </script>

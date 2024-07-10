@@ -51,16 +51,19 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
+const store = useStore();
 const router = useRouter();
 
 async function logout() {
   localStorage.removeItem("userinfo");
+  store.state.isAuthModule.currentUser = [];
   console.log("localstorage remove");
   let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout`, {
     method: "post",
     mode: "cors",
-    credentials:"include",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
   });
   res = await res.json();
@@ -78,7 +81,7 @@ async function logoutAll() {
   let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all`, {
     method: "post",
     mode: "cors",
-    credentials:"include",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
   });
   res = await res.json();
@@ -93,7 +96,7 @@ async function logoutAllOther() {
   let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all-other`, {
     method: "post",
     mode: "cors",
-    credentials:"include",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
   });
   res = await res.json();
