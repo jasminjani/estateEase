@@ -1,6 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
 exports.getSubmitedNotApprovedProperty = async (req, res) => {
   try {
@@ -200,12 +201,15 @@ exports.addWorkProofAndImage = async (req, res) => {
                 message: "photo's filename not found",
               });
             }
-            
-            // uploading csv file to cloudinary
+
+            // uploading image file to cloudinary
             const result = await cloudinary.uploader.upload(element.path, {
               resource_type: "auto",
             });
             console.log("result.url :>> ", result);
+
+            // after uploading image to cloudinary deleting it from server/uploads/cloudinaryImg
+            fs.unlinkSync(element.path);
 
             await db.job_photos.create(
               {

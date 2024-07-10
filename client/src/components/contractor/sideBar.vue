@@ -11,18 +11,24 @@
     <v-divider></v-divider>
 
     <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-home" title="Dashboard" link></v-list-item>
-      <v-list-item prepend-icon="mdi-city" link title="View Bid"></v-list-item>
+      <v-list-item
+        prepend-icon="mdi-home"
+        title="Dashboard"
+        link
+        @click="router.push({ name: 'contractorDashboard' })"
+      ></v-list-item>
+      <!-- <v-list-item prepend-icon="mdi-city" link title="View Bid"></v-list-item> -->
       <v-list-item
         prepend-icon="mdi-history"
         link
         title="History"
+        @click="router.push({name:'ContarctorHistory'})"
       ></v-list-item>
-      <v-list-item
+      <!-- <v-list-item
         prepend-icon="mdi-account"
         link
         title="Profile"
-      ></v-list-item>
+      ></v-list-item> -->
       <v-list-item
         prepend-icon="mdi-logout"
         link

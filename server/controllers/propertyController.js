@@ -1,6 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
 exports.addPropertyAndJobs = async (req, res) => {
   try {
@@ -65,11 +66,14 @@ exports.addPropertyAndJobs = async (req, res) => {
               });
             }
 
-            // uploading csv file to cloudinary
+            // uploading image file to cloudinary
             const result = await cloudinary.uploader.upload(element.path, {
               resource_type: "auto",
             });
             console.log("result.url :>> ", result);
+
+            // after uploading image to cloudinary deleting it from server/uploads/cloudinaryImg
+            fs.unlinkSync(element.path);
 
             // const imageRes = await createdJob.createJob_photos({
             //   user_id: id,

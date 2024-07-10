@@ -9,8 +9,8 @@
           <router-link :to="{ name: 'registration' }">registration</router-link>
         </div>
         <div>
-          <router-link :to="{ name: 'propertyHomepage' }"
-            >property dashboard</router-link
+          <router-link :to="{ name: 'PropertyAddProperty' }"
+            >add property</router-link
           >
         </div>
         <div>

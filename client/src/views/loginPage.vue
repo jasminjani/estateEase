@@ -55,7 +55,7 @@
 
 <script setup>
 import { useField, useForm } from "vee-validate";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import * as yup from "yup";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -103,13 +103,18 @@ const email = useField("email");
 
 const login = handleSubmit(async (values) => {
   await store.dispatch("userLogin", values);
-  // console.log("role_id : ", store.state.isAuthModule.currentUser[0].role_id);
-  if (store.state.isAuthModule.currentUser.length > 0) {
-    if (store.state.isAuthModule.currentUser[0].role_id == 1) {
-      router.push({ name: "propertyHomepage" });
+
+  const roleId = computed(() => store.getters.getRoleId);
+  // const roleId = store.getters.getRoleId;
+  console.log("jash");
+  
+  if (roleId.value) {
+    console.log("role id ", store.getters.getRoleId);
+    if (roleId.value == 1) {
+      router.push({ name: "PropertyDashboard" });
       console.log("object");
     }
-    if (store.state.isAuthModule.currentUser[0].role_id == 2) {
+    if (roleId.value == 2) {
       router.push({ name: "contractorDashboard" });
       console.log("object else");
     }

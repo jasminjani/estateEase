@@ -9,6 +9,6 @@ loadFonts()
 
 createApp(App)
   .use(vuetify)
-  .use(store)
   .use(router)
+  .use(store)
   .mount('#app')

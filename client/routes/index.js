@@ -15,14 +15,38 @@ const routes = [
   },
   {
     path: "/property/dashboard",
-    name: "propertyHomepage",
+    name: "PropertyDashboard",
     component: import("../src/views/property/HomePage.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/add-property",
+    name: "PropertyAddProperty",
+    component: import("../src/views/property/addPropertyPage.vue"),
     meta: { requiresAuth: true, role_id: 1 },
   },
   {
     path: "/property/history",
     name: "PropertyHistory",
     component: import("../src/views/property/historyPage.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/bid-price/:p_id",
+    name: "PropertyBidPrice",
+    component: import("../src/views/property/acceptrejectProperty.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/propertyDetails/:id",
+    name: "PropertyDetails",
+    component: import("../src/views/property/viePropertyDetails.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/review-work/:id",
+    name: "PropertyReviewWork",
+    component: import("../src/views/property/reviewWorkPage.vue"),
     meta: { requiresAuth: true, role_id: 1 },
   },
   {
@@ -49,24 +73,6 @@ const routes = [
     component: import("../src/views/contractor/uploadWorkProof.vue"),
     meta: { requiresAuth: true, role_id: 2 },
   },
-  {
-    path: "/property/bid-price/:p_id",
-    name: "PropertyBidPrice",
-    component: import("../src/views/property/acceptrejectProperty.vue"),
-    meta: { requiresAuth: true, role_id: 1 },
-  },
-  {
-    path: "/property/propertyDetails/:id",
-    name: "PropertyDetails",
-    component: import("../src/views/property/viePropertyDetails.vue"),
-    meta: { requiresAuth: true, role_id: 1 },
-  },
-  {
-    path: "/property/review-work/:id",
-    name: "PropertyReviewWork",
-    component: import("../src/views/property/reviewWorkPage.vue"),
-    meta: { requiresAuth: true, role_id: 1 },
-  },
 ];
 
 const router = createRouter({
@@ -74,9 +80,11 @@ const router = createRouter({
   routes,
 });
 
+
 // router.beforeEach((to, from) => {
 //   console.log(from);
-//   console.log(document);
+
+
 //   if (to.meta.requiresAuth && !localStorage.getItem("userinfo")) {
 //     console.log(to.meta.requiresAuth);
 //     return { name: "login" };
