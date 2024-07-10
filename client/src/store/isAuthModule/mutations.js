@@ -1,9 +1,9 @@
 export const mutations = {
-  userLogin: (state, res) => {
-    state.currentUser.push(res.user);
+  setUser: (state, user) => {
+    state.currentUser = user;
   },
 
-  userLogout: (state) => {
-    state.currentUser = [];
-  },
+  // userLogout: (state, user) => {
+  //   state.currentUser = user
+  // },
 };

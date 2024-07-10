@@ -1,3 +1,4 @@
+import { store } from "@/store";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -80,15 +81,33 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  // console.log(from);
 
-// router.beforeEach((to, from) => {
-//   console.log(from);
+  const currentUser = store.state.isAuthModule.currentUser;
+  // console.log(currentUser);
 
-
-//   if (to.meta.requiresAuth && !localStorage.getItem("userinfo")) {
-//     console.log(to.meta.requiresAuth);
-//     return { name: "login" };
-//   }
-// });
+  if (to.meta.requiresAuth && !currentUser) {
+    console.log("i am login");
+    next({ name: "login" });
+  } else if (to.meta.requiresAuth && currentUser) {
+    if (to.meta.role_id && currentUser.role_id !== to.meta.role_id) {
+      console.log("i am else if");
+      if (currentUser.role_id == 1) {
+        console.log("i am second if");
+        next({ name: "PropertyDashboard" });
+      } else {
+        console.log("i am second else");
+        next({ name: "contractorDashboard" });
+      }
+    } else {
+      console.log("in else part");
+      next();
+    }
+  } else {
+    console.log("in outer else part");
+    next();
+  }
+});
 
 export default router;

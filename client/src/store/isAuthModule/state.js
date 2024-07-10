@@ -1,3 +1,3 @@
 export const state = {
-  currentUser: [],
+  currentUser: JSON.parse(localStorage.getItem("userinfo")) || null,
 };

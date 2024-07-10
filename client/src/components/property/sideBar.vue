@@ -65,7 +65,7 @@ const router = useRouter();
 
 async function logout() {
   await store.dispatch("userLogout");
-  if (store.state.isAuthModule.currentUser.length < 1) {
+  if (!store.state.isAuthModule.currentUser) {
     router.push({ name: "login" });
   } else {
     alert("logout failed");

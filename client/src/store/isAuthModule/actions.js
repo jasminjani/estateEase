@@ -13,7 +13,7 @@ export const actions = {
 
       if (res.success) {
         localStorage.setItem("userinfo", JSON.stringify(res.user));
-        commit("userLogin", res);
+        commit("setUser", res.user);
       } else {
         alert(res.message);
       }
@@ -36,7 +36,7 @@ export const actions = {
       if (res.success) {
         localStorage.removeItem("userinfo");
         console.log("localstorage remove");
-        commit("userLogout", res);
+        commit("setUser", null);
       } else {
         alert(res.message);
       }
