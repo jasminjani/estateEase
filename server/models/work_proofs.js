@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
           is_work: 1,
         },
       });
+      WorkProofs.belongsTo(models.jobs, { foreignKey: "job_id" });
     }
   }
   WorkProofs.init(

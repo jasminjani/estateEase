@@ -290,8 +290,17 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
           attributes: ["id", "jobname", "job_description"],
           include: [
             {
-              model: db.job_photos,
+              // model: db.job_photos,
               // as: "job_photos",
+              model: db.work_proofs,
+              attributes: ["id", "job_id", "status"],
+              where: { comments: null },
+              include: [
+                {
+                  model: db.job_photos,
+                  attributes: ["id", "is_work", "job_work_id", "photo"],
+                },
+              ],
             },
           ],
         },

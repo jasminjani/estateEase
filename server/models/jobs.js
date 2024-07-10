@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
           is_work: 0,
         },
       });
+      Jobs.hasMany(models.work_proofs, { foreignKey: "job_id" });
     }
   }
   Jobs.init(

@@ -27,6 +27,6 @@ router.route("/approve-bid").post(approveBidForProperty);
 
 router.route("/reject-bid").post(rejectBidForProperty);
 
-router.route("/review-work-proof").post(getreviewWorkProofDataByPropertyId);
+router.route("/review-work-proof/:id").get(getreviewWorkProofDataByPropertyId);
 
 module.exports = router;

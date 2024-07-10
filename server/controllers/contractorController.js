@@ -1,5 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const cloudinary = require("../utils/cloudinary");
 
 exports.getSubmitedNotApprovedProperty = async (req, res) => {
   try {
@@ -202,12 +203,20 @@ exports.addWorkProofAndImage = async (req, res) => {
               });
             }
 
+            // const csvPath = `../uploads/cloudinaryImg/${element.filename}`;
+            // // uploading csv file to cloudinary
+            // const result = await cloudinary.uploader.upload(csvPath, {
+            //   resource_type: "raw",
+            // });
+            // console.log('result.url :>> ', result.url);
+
             await db.job_photos.create(
               {
                 user_id: id,
                 is_work: true,
                 job_work_id: newWorkProof.id,
                 photo: element.filename,
+                // photo: result.url,
               }
               // { transaction: t }
             );
@@ -228,7 +237,7 @@ exports.addWorkProofAndImage = async (req, res) => {
       });
     });
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.status(500).json({
       success: false,
       message: error.message,

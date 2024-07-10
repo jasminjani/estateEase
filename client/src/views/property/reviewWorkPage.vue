@@ -18,7 +18,7 @@
                 <v-card class="ma-2">
                   <v-form ref="formRef" :rules="piceValidationRule">
                     <v-card-actions class="d-flex">
-                      <v-btn class="bg-primary w-50" @click="applyTender"
+                      <v-btn class="bg-primary w-50" 
                         >Make Payment</v-btn
                       >
                       <v-btn class="bg-purple w-50"
@@ -49,7 +49,7 @@ const propertyData = ref([]);
 
 onBeforeMount(async () => {
   let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.id}`,
+    `${process.env.VUE_APP_BASE_URL}/review-work-proof/${route.params.id}`,
     {
       mode: "cors",
       credentials: "include",
@@ -57,7 +57,7 @@ onBeforeMount(async () => {
   );
   res = await res.json();
   propertyData.value = await res.message;
-  // console.log(propertyData.value);
-  console.log(propertyData.value.jobs[0].job_photos[0].photo);
+  console.log(propertyData.value);
+  // console.log(propertyData.value.jobs[0].job_photos[0].photo);
 });
 </script>
