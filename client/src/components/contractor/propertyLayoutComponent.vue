@@ -17,7 +17,7 @@
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn block class="bg-purple" :id="id"><router-link class="text-decoration-none" style="color: white;" :to="{name : 'COntractorPropertyDetails', params : {id : id}}">Apply</router-link></v-btn>
+        <router-link class="text-decoration-none w-100" style="color: white;" :to="{name : 'COntractorPropertyDetails', params : {id : id}}"><v-btn block class="bg-purple" :id="id">Apply</v-btn></router-link>
       </v-card-actions>
     </v-card>
   </v-card-container>

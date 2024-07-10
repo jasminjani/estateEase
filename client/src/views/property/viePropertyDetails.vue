@@ -43,7 +43,7 @@ onBeforeMount(async () => {
   );
   res = await res.json();
   propertyData.value = await res.message;
-  // console.log(propertyData.value);
-  console.log(propertyData.value.jobs[0].job_photos[0].photo);
+  console.log(propertyData.value);
+  // console.log(propertyData.value.jobs[0].job_photos[0].photo);
 });
 </script>
