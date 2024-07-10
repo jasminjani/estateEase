@@ -123,3 +123,4 @@ contractor property mate ak j var bid lagavi sake (atyare multiple var lagave ch
 # PROPERTY SIDE :-
 
 property side tender approve thai jai pachhi contractor jode chat kai rite karavsu?
+Add comment nu post controller baki chhe and onclick fetch marvanu bi baki chhe.
