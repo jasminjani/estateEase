@@ -1,6 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const cloudinary = require("../utils/cloudinary");
+const cloudinary = require("cloudinary").v2;
 
 exports.getSubmitedNotApprovedProperty = async (req, res) => {
   try {
@@ -81,7 +81,6 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
 
 exports.addEstimatePriceOfProperty = async (req, res) => {
   try {
-    console.log("jash");
     const { price, p_id } = req.body;
     const { id } = req.user;
 
@@ -192,35 +191,35 @@ exports.addWorkProofAndImage = async (req, res) => {
           }
           // { transaction: t }
         );
-
-        req.files
+        const uploadPromises = req.files
           .filter((file) => file.fieldname.startsWith(`photos_${index}`))
-          .forEach(async (element) => {
+          .map(async (element) => {
             if (!element.filename) {
               return res.status(400).json({
                 success: false,
                 message: "photo's filename not found",
               });
             }
-
-            // const csvPath = `../uploads/cloudinaryImg/${element.filename}`;
-            // // uploading csv file to cloudinary
-            // const result = await cloudinary.uploader.upload(csvPath, {
-            //   resource_type: "raw",
-            // });
-            // console.log('result.url :>> ', result.url);
+            
+            // uploading csv file to cloudinary
+            const result = await cloudinary.uploader.upload(element.path, {
+              resource_type: "auto",
+            });
+            console.log("result.url :>> ", result);
 
             await db.job_photos.create(
               {
                 user_id: id,
                 is_work: true,
                 job_work_id: newWorkProof.id,
-                photo: element.filename,
-                // photo: result.url,
+                // photo: element.filename,
+                photo: result.url,
               }
               // { transaction: t }
             );
           });
+
+        await Promise.all(uploadPromises);
 
         index++;
       }

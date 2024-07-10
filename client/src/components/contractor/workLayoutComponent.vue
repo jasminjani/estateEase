@@ -11,16 +11,17 @@
         <div>photos :</div>
         <!-- <div> -->
         <v-row>
-          <v-col
+          <!-- <v-col
             v-for="photo in photos"
             :key="photo.id"
             class="d-flex child-flex"
             cols="3"
-          >
-            {{ photo.photo }}
+          > -->
+          <v-col v-for="n in 5" :key="n" class="d-flex child-flex" cols="3">
+            <!-- {{ photo.photo }} -->
             <v-img
               :lazy-src="`https://picsum.photos/10/6?image=${n * 5 + 10}`"
-              :src="`http://localhost:9703/uploads/${photo.photo}`"
+              :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
               aspect-ratio="16/9"
               class="bg-grey-lighten-2"
               cover

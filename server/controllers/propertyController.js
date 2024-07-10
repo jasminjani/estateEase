@@ -1,5 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const cloudinary = require("cloudinary").v2;
 
 exports.addPropertyAndJobs = async (req, res) => {
   try {
@@ -54,15 +55,21 @@ exports.addPropertyAndJobs = async (req, res) => {
         // console.log("newJob :>> ", newJob);
         // const createdJob = await db.jobs.findByPk(newJob.id);
         // console.log("createdJob :>> ", createdJob);
-        req.files
+        const uploadPromises = req.files
           .filter((file) => file.fieldname.startsWith(`photo_${index}`))
-          .forEach(async (element) => {
+          .map(async (element) => {
             if (!element.filename) {
               return res.status(400).json({
                 success: false,
                 message: "photo's filename not found",
               });
             }
+
+            // uploading csv file to cloudinary
+            const result = await cloudinary.uploader.upload(element.path, {
+              resource_type: "auto",
+            });
+            console.log("result.url :>> ", result);
 
             // const imageRes = await createdJob.createJob_photos({
             //   user_id: id,
@@ -74,11 +81,14 @@ exports.addPropertyAndJobs = async (req, res) => {
                 user_id: id,
                 is_work: false,
                 job_work_id: newJob.id,
-                photo: element.filename,
+                photo: result.url,
+                // photo: element.filename,
               }
               // { transaction: t }
             );
           });
+
+        await Promise.all(uploadPromises);
 
         index++;
       }

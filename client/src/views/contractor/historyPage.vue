@@ -71,7 +71,12 @@ onBeforeMount(async () => {
                       Completed
                     </td>
                     <td v-else>Status not found</td>
-                    <td v-if="item.status == 1 && item.property.status == 1">
+                    <td
+                      v-if="
+                        (item.status == 1 && item.property.status == 1) ||
+                        (item.status == 1 && item.property.status == 3)
+                      "
+                    >
                       <router-link
                         :to="{
                           name: 'ContractorUploadProof',

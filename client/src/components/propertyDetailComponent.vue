@@ -20,9 +20,9 @@
     <!-- </v-card-container> -->
   </div>
   <div class="text-h6 ma-2">Work details :</div>
-  <div class="ma-2" v-for="job in propertyData.jobs" :key="job.id">
+  <div class="ma-2" v-for="(job) in propertyData.jobs" :key="job.id">
     <!-- {{ job.work_proofs[0].job_photos }} -->
-    <WorkLayoutComponent 
+    <WorkLayoutComponent
       :jobname="job.jobname"
       :description="job.job_description"
       :photos="job.work_proofs[0].job_photos"

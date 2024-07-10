@@ -9,6 +9,7 @@ const router = require("./routes/route");
 
 const passport = require("passport");
 const { passportConfig } = require("./middlewares/authMiddleware");
+const { cloudinaryConnect } = require("./utils/cloudinary");
 passportConfig(passport);
 
 app.use(cookieParser());
@@ -32,3 +33,5 @@ app.listen(port, (err) => {
     console.log(`server connection failed`);
   }
 });
+
+cloudinaryConnect();

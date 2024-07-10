@@ -18,10 +18,8 @@
                 <v-card class="ma-2">
                   <v-form ref="formRef" :rules="piceValidationRule">
                     <v-card-actions class="d-flex">
-                      <v-btn class="bg-primary w-50" 
-                        >Make Payment</v-btn
-                      >
-                      <v-btn class="bg-purple w-50"
+                      <v-btn class="bg-primary w-50">Make Payment</v-btn>
+                      <v-btn class="bg-purple w-50" @click="addComments"
                         >Add Comments For Work</v-btn
                       >
                     </v-card-actions>
@@ -39,13 +37,14 @@
 <script setup>
 import Sidebar from "../../components/property/sideBar.vue";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 // import * as yup from "yup";
 
 const route = useRoute();
 
 const propertyData = ref([]);
+const comments = reactive([]);
 
 onBeforeMount(async () => {
   let res = await fetch(
@@ -57,7 +56,18 @@ onBeforeMount(async () => {
   );
   res = await res.json();
   propertyData.value = await res.message;
-  console.log(propertyData.value);
+  console.log(propertyData.value.jobs);
+  propertyData.value.jobs.map((element) => {
+    comments.push({ job_id: element.id, comment: null });
+  });
   // console.log(propertyData.value.jobs[0].job_photos[0].photo);
 });
+
+const addComments = async () => {
+  try {
+    console.log("comments :>> ", comments);
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
