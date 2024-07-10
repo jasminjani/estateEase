@@ -12,4 +12,14 @@ export const mutations = {
       // p.innerHTML = `${res.message}`;
     }
   },
+
+  userLogout: (state, res) => {
+    if (res.success) {
+      localStorage.removeItem("userinfo");
+      state.currentUser = [];
+      console.log("localstorage remove");
+    } else {
+      alert(res.message);
+    }
+  },
 };

@@ -53,55 +53,48 @@ const store = useStore();
 const router = useRouter();
 
 async function logout() {
-  localStorage.removeItem("userinfo");
-  store.state.isAuthModule.currentUser = [];
-  console.log("localstorage remove");
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout`, {
-    method: "post",
-    mode: "cors",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-  });
-  res = await res.json();
-  console.log("res");
-  console.log(res);
-
-  if (res.success) {
+  await store.dispatch("userLogout");
+  if (store.state.isAuthModule.currentUser.length < 1) {
     router.push({ name: "login" });
+  } else {
+    alert("logout failed");
   }
 }
 
 async function logoutAll() {
-  localStorage.removeItem("userinfo");
+  alert("This is upcoming functionality");
+  //   localStorage.removeItem("userinfo");
 
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all`, {
-    method: "post",
-    mode: "cors",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-  });
-  res = await res.json();
-  console.log(res);
+  //   let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all`, {
+  //     method: "post",
+  //     mode: "cors",
+  //     credentials: "include",
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  //   res = await res.json();
+  //   console.log(res);
 
-  if (res.success) {
-    router.push({ name: "login" });
-  }
+  //   if (res.success) {
+  //     router.push({ name: "login" });
+  //   }
 }
 
 async function logoutAllOther() {
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all-other`, {
-    method: "post",
-    mode: "cors",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-  });
-  res = await res.json();
-  console.log(res);
+  alert("This is upcoming functionality");
 
-  if (res.success) {
-    alert("successfuly logout from all other devices");
-  } else {
-    alert("error occured while logout from all other devices");
-  }
+  //   let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all-other`, {
+  //     method: "post",
+  //     mode: "cors",
+  //     credentials: "include",
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  //   res = await res.json();
+  //   console.log(res);
+
+  //   if (res.success) {
+  //     alert("successfuly logout from all other devices");
+  //   } else {
+  //     alert("error occured while logout from all other devices");
+  //   }
 }
 </script>
