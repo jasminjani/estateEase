@@ -35,13 +35,15 @@
 </template>
 
 <script setup>
+import { useStore } from "vuex";
 import Sidebar from "../../components/property/sideBar.vue";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
-import { onBeforeMount, reactive, ref } from "vue";
+import { computed, onBeforeMount, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 // import * as yup from "yup";
 
 const route = useRoute();
+const store = useStore();
 
 const propertyData = ref([]);
 const comments = reactive([]);
@@ -57,15 +59,43 @@ onBeforeMount(async () => {
   res = await res.json();
   propertyData.value = await res.message;
   console.log(propertyData.value.jobs);
-  propertyData.value.jobs.map((element) => {
-    comments.push({ job_id: element.id, comment: null });
+
+  await propertyData.value.jobs.map((element) => {
+    comments.push({ work_proof_id: null, job_id: element.id, comment: null });
   });
+
+  // console.log("comments :>> ", comments);
+
+  await store.commit("addCommentOnJobLength", comments);
   // console.log(propertyData.value.jobs[0].job_photos[0].photo);
 });
+console.log("comments :>> ", comments);
 
 const addComments = async () => {
   try {
-    console.log("comments :>> ", comments);
+    const getAllReviewCommentData = computed(
+      () => store.getters.getAllReviewCommentData
+    );
+    console.log("add comments :>> ", getAllReviewCommentData);
+    console.log("add comments :>> ", comments);
+
+    // let res = await fetch(
+    //   `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
+    //   {
+    //     method: "post",
+    //     mode: "cors",
+    //     credentials: "include",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({p_id : route.params.id ,reviewComments : getAllReviewCommentData}),
+    //   }
+    // );
+    // res = res.json();
+
+    // if (res.success) {
+    //   console.log("success");
+    // } else {
+    //   console.log("failed");
+    // }
   } catch (error) {
     console.error(error);
   }

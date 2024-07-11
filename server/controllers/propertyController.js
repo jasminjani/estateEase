@@ -324,7 +324,7 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
   }
 };
 
-// exports.addReviewWorkComments = async (req, res) => {
+exports.addReviewWorkComments = async (req, res) => {
 //   try {
 //     // [
 //     //   { work_proof_id: null, job_id: element.id, comment: null },
@@ -384,4 +384,4 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
 //       message: error.message,
 //     });
 //   }
-// };
+};

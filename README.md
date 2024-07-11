@@ -112,10 +112,12 @@ then conifgure front-end side, with downloading vue-cli, vuetify, vuex and other
 then in server, create all required models and their migration files.
 
 <!-- blob image to string ma convert kari img display karavana chhe. -->
+
 vuex apply karvanu chhe
 route protect karvana chhe.
 property and estimate na status na according contractor or property side status and button manage karavana chhe.
 validation baki chhe.
+contractor ne khali j job ma comment avi hoi a j job batavi. and property owner side bi je navu proof upload kare a j batavu.
 
 # CONTRACTOR SIDE :-
 
@@ -126,6 +128,6 @@ contractor property mate ak j var bid lagavi sake (atyare multiple var lagave ch
 property side tender approve thai jai pachhi contractor jode chat kai rite karavsu?
 Add comment nu post controller baki chhe and onclick fetch marvanu bi baki chhe.
 
-
 # EXTRA :-
-routes/index.js ma store.state.isAuthModule.currentUser mate ak getters banavi and index.js ma tene computed ma kari sakai. 
+
+routes/index.js ma store.state.isAuthModule.currentUser mate ak getters banavi and index.js ma tene computed ma kari sakai.

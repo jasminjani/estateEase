@@ -12,7 +12,7 @@
         <!-- <div> -->
         <v-row>
           <v-col
-            v-for="(photo,item) in photos"
+            v-for="(photo, item) in photos"
             :key="photo.id"
             class="d-flex child-flex"
             cols="3"
@@ -20,6 +20,7 @@
             <!-- <v-col v-for="n in 5" :key="n" class="d-flex child-flex" cols="3"> -->
             <!-- {{ photo.photo }} -->
             <v-img
+              v-if="photo.photo"
               :lazy-src="`https://picsum.photos/10/6?image=${item * 5 + 10}`"
               :src="photo.photo"
               aspect-ratio="16/9"
@@ -39,6 +40,7 @@
         </v-row>
         <v-card-text v-if="isReviewWorkPath == 'review-work'">
           <v-textarea
+            v-model="reviewComments.comment"
             prepend-inner-icon="mdi-comment"
             name="comment"
             label="Add Comments"
@@ -55,12 +57,41 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from "vue";
+import { computed, defineProps, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 
-defineProps(["jobname", "description", "photos"]);
+const props = defineProps([
+  "jobname",
+  "description",
+  "photos",
+  "index",
+  "work_proof_id",
+]);
+console.log("props", props.index);
 
 const route = useRoute();
+const store = useStore();
+
+const reviewComments = computed(() =>
+  store.getters.getReviewCommentState(props?.index)
+);
+
+console.log(
+  "props.work_proof_id && props.index :>> ",
+  props.work_proof_id,
+  props.index
+);
+
+if (props.work_proof_id && props.index) {
+  await store.commit("addWorkProofIdInComment", {
+    work_proof_id: props.work_proof_id,
+    index: props.index,
+  });
+}
+
+// console.log("reviewComments :>> ", reviewComments);
+
 const routhFullPath = ref(route.fullPath.split("/"));
 routhFullPath.value.pop();
 const isReviewWorkPath = routhFullPath.value.pop().toLowerCase();
