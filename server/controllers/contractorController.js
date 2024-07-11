@@ -57,6 +57,12 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
               model: db.job_photos,
               // as: "job_photos",
             },
+            {
+              model: db.work_proofs,
+              where: { status: 0 },
+              attributes: ["comments"],
+              required: false,
+            },
           ],
         },
         {
@@ -188,7 +194,7 @@ exports.addWorkProofAndImage = async (req, res) => {
           {
             job_id: req.body[`job_id_${index}`],
             estimate_id: estimate_id,
-            status: 2,
+            status: 0,
           }
           // { transaction: t }
         );

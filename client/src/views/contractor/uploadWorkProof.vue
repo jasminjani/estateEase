@@ -54,6 +54,7 @@
                         description : {{ job.job_description }}
                       </div>
                       <div v-else>description : -</div>
+                      <div v-if="job.work_proofs.length > 0">Comments : {{ job.work_proofs[0].comments }}</div>
                       <div>photos :</div>
                       <v-file-input
                         v-model="image[index].photos"
@@ -108,7 +109,7 @@ onBeforeMount(async () => {
   );
   res = await res.json();
   propertyData.value = await res.message;
-  console.log("on before mount", propertyData.value.jobs);
+  console.log("on before mount", propertyData.value);
 
   propertyData.value.jobs.map((element) => {
     image.push({ job_id: element.id, photos: null });

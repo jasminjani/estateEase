@@ -74,6 +74,12 @@ const routes = [
     component: import("../src/views/contractor/uploadWorkProof.vue"),
     meta: { requiresAuth: true, role_id: 2 },
   },
+  {
+    path: "/property/chat",
+    name: "PropertyChat",
+    component: import("../src/views/property/chatPage.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
 ];
 
 const router = createRouter({
@@ -88,24 +94,24 @@ router.beforeEach((to, from, next) => {
   // console.log(currentUser);
 
   if (to.meta.requiresAuth && !currentUser) {
-    console.log("i am login");
+    // console.log("i am login");
     next({ name: "login" });
   } else if (to.meta.requiresAuth && currentUser) {
     if (to.meta.role_id && currentUser.role_id !== to.meta.role_id) {
-      console.log("i am else if");
+      // console.log("i am else if");
       if (currentUser.role_id == 1) {
-        console.log("i am second if");
+        // console.log("i am second if");
         next({ name: "PropertyDashboard" });
       } else {
-        console.log("i am second else");
+        // console.log("i am second else");
         next({ name: "contractorDashboard" });
       }
     } else {
-      console.log("in else part");
+      // console.log("in else part");
       next();
     }
   } else {
-    console.log("in outer else part");
+    // console.log("in outer else part");
     next();
   }
 });

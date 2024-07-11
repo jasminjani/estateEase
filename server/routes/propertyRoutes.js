@@ -7,6 +7,7 @@ const {
   approveBidForProperty,
   rejectBidForProperty,
   getreviewWorkProofDataByPropertyId,
+  addReviewWorkComments,
 } = require("../controllers/propertyController");
 const { imgStorage } = require("../utils/multer");
 const multer = require("multer");
@@ -28,5 +29,7 @@ router.route("/approve-bid").post(approveBidForProperty);
 router.route("/reject-bid").post(rejectBidForProperty);
 
 router.route("/review-work-proof/:id").get(getreviewWorkProofDataByPropertyId);
+
+router.route("/add-review-comment").post(addReviewWorkComments);
 
 module.exports = router;

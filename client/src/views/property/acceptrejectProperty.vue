@@ -100,8 +100,10 @@
                           >review & pay</v-btn
                         ></router-link
                       >
-                      <v-btn class="bg-primary ml-2"
-                        ><v-icon>mdi-message-text</v-icon></v-btn
+                      <router-link :to="{ name: 'PropertyChat' }">
+                        <v-btn class="bg-primary ml-2"
+                          ><v-icon>mdi-message-text</v-icon></v-btn
+                        ></router-link
                       >
                     </td>
                     <!-- <td v-if="item.is_approved == 0">Submited</td>

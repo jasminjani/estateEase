@@ -267,21 +267,6 @@ exports.rejectBidForProperty = async (req, res) => {
   }
 };
 
-// exports.reviewWorkProof = async (req, res) => {
-//   try {
-//     res.status(200).json({
-//       success: true,
-//       message: "Comment added successfully",
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
 exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
   try {
     const { id } = req.params;
@@ -308,7 +293,7 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
               // as: "job_photos",
               model: db.work_proofs,
               attributes: ["id", "job_id", "status"],
-              where: { comments: null },
+              where: { [Op.and]: [{ comments: null }, { status: 0 }] },
               include: [
                 {
                   model: db.job_photos,
@@ -338,3 +323,65 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
     });
   }
 };
+
+// exports.addReviewWorkComments = async (req, res) => {
+//   try {
+//     // [
+//     //   { work_proof_id: null, job_id: element.id, comment: null },
+//     //   { work_proof_id: null, job_id: element.id, comment: null },
+//     // ];
+
+//     const { p_id } = req.body;
+
+//     if (!p_id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "property id not found",
+//       });
+//     }
+
+//     console.log("req.body", req.body);
+
+//     await db.sequelize.transaction(async (t) => {
+//       req.body.reviewComments.map(async (element) => {
+//         if (!element.work_proof_id || !element.job_id) {
+//           return res.status(400).json({
+//             success: false,
+//             message: "work proof id or job id not found",
+//           });
+//         }
+
+//         await db.work_proofs.update(
+//           { status: 1 },
+//           { where: { job_id: element.job_id } }
+//           // { transaction: t }
+//         );
+
+//         console.log("element.comment :>> ", element.comment);
+
+//         await db.work_proofs.update(
+//           { comments: element.comment, status: 0 },
+//           { where: { id: element.work_proof_id } }
+//           // { transaction: t }
+//         );
+//       });
+
+//       await db.properties.update(
+//         { status: 3 },
+//         { where: { id: p_id } },
+//         { transaction: t }
+//       );
+
+//       res.status(200).json({
+//         success: true,
+//         message: "comments added successfully",
+//       });
+//     });
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
