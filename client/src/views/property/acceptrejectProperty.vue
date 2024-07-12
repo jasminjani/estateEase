@@ -114,7 +114,9 @@
                 </tbody>
                 <tbody v-else>
                   <tr>
-                    <td colspan="5" class="text-center">No Data Found !!</td>
+                    <td colspan="5" class="text-center">
+                      <NoDataFoundComponent />
+                    </td>
                   </tr>
                 </tbody>
               </v-table>
@@ -128,6 +130,7 @@
 
 <script setup>
 import Sidebar from "../../components/property/sideBar.vue";
+import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 

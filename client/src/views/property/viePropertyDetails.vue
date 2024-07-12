@@ -35,7 +35,7 @@ const propertyData = ref([]);
 
 onBeforeMount(async () => {
   let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.id}`,
+    `${process.env.VUE_APP_BASE_URL}/get-property-all-details/${route.params.id}`,
     {
       mode: "cors",
       credentials: "include",

@@ -23,7 +23,7 @@
   <div class="ma-2" v-for="(job, index) in propertyData.jobs" :key="job.id">
     <!-- {{ job.job_photos[0].photo }} -->
     <WorkLayoutComponent
-      v-if="job.work_proofs"
+      v-if="job.work_proofs?.length > 0"
       :jobname="job.jobname"
       :description="job.job_description"
       :photos="job.work_proofs[0].job_photos"
@@ -36,11 +36,11 @@
       :description="job.job_description"
       :photos="job.job_photos"
     />
-    <WorkLayoutComponent
+    <!-- <WorkLayoutComponent
       v-else
       :jobname="job.jobname"
       :description="job.job_description"
-    />
+    /> -->
   </div>
 </template>
 

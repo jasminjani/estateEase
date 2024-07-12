@@ -31,7 +31,7 @@
                     <v-btn class="bg-primary w-50" @click="applyTender"
                       >Apply tender</v-btn
                     >
-                    <v-btn class="bg-purple w-50">Chat with owner</v-btn>
+                    <v-btn class="bg-purple w-50" @click="router.push({name : 'ContractorChat'})">Chat with owner</v-btn>
                   </v-card-actions>
                 </v-form>
               </v-card>

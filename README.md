@@ -128,6 +128,8 @@ contractor property mate ak j var bid lagavi sake (atyare multiple var lagave ch
 property side tender approve thai jai pachhi contractor jode chat kai rite karavsu?
 Add comment nu post controller baki chhe and onclick fetch marvanu bi baki chhe.
 
+getAllReviewCommentData getter reviewCommentModule ma kam nai kartu atle comment karelu chhe ano data reviewWork page ma direct comments reactive thi moklelo chhe.
+
 # EXTRA :-
 
 routes/index.js ma store.state.isAuthModule.currentUser mate ak getters banavi and index.js ma tene computed ma kari sakai.

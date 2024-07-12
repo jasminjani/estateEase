@@ -1,5 +1,6 @@
 <script setup>
 import Sidebar from "../../components/property/sideBar.vue";
+import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref } from "vue";
 
 const userAllProperty = ref([]);
@@ -79,8 +80,7 @@ onBeforeMount(async () => {
                           params: { p_id: item.id },
                         }"
                       >
-                        <v-btn
-                          class="bg-purple"
+                        <v-btn class="bg-purple"
                           ><v-icon>mdi-eye</v-icon></v-btn
                         ></router-link
                       >
@@ -89,7 +89,9 @@ onBeforeMount(async () => {
                 </tbody>
                 <tbody v-else>
                   <tr>
-                    <td colspan="4" class="text-center">No Data Found !!</td>
+                    <td colspan="6" class="text-center">
+                      <NoDataFoundComponent />
+                    </td>
                   </tr>
                 </tbody>
               </v-table>

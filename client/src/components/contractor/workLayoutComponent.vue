@@ -57,38 +57,39 @@
 </template>
 
 <script setup>
-import { computed, defineProps, ref } from "vue";
+import { defineProps, ref } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 
-const props = defineProps([
+defineProps([
   "jobname",
   "description",
   "photos",
   "index",
   "work_proof_id",
 ]);
-console.log("props", props.index);
 
 const route = useRoute();
-const store = useStore();
+// const store = useStore();
 
-const reviewComments = computed(() =>
-  store.getters.getReviewCommentState(props?.index)
-);
+// const reviewComments = computed(() =>
+//   store.getters.getReviewCommentState(props?.index)
+// );
 
-console.log(
-  "props.work_proof_id && props.index :>> ",
-  props.work_proof_id,
-  props.index
-);
+// console.log('reviewComments :>> ', reviewComments);
 
-if (props.work_proof_id && props.index) {
-  await store.commit("addWorkProofIdInComment", {
-    work_proof_id: props.work_proof_id,
-    index: props.index,
-  });
-}
+// console.log(
+//   "props.work_proof_id && props.index :>> ",
+//   props.work_proof_id,
+//   props.index
+// );
+
+// if (props.work_proof_id && props.index) {
+//   await store.dispatch("addWorkProofIdInComment", {
+//     work_proof_id: props.work_proof_id,
+//     index: props.index,
+//   });
+// }
 
 // console.log("reviewComments :>> ", reviewComments);
 

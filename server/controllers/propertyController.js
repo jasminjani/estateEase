@@ -28,8 +28,8 @@ exports.addPropertyAndJobs = async (req, res) => {
       }
 
       const newProperty = await db.properties.create(
-        { powner_id: id, name, address, city, pincode }
-        // { transaction: t }
+        { powner_id: id, name, address, city, pincode },
+        { transaction: t }
       );
       console.log("newProperty.id ", newProperty.id);
 
@@ -50,8 +50,8 @@ exports.addPropertyAndJobs = async (req, res) => {
             p_id: newProperty.id,
             jobname: req.body[`jobname_${index}`],
             job_description: req.body[`jobdescription_${index}`],
-          }
-          // { transaction: t }
+          },
+          { transaction: t }
         );
         // console.log("newJob :>> ", newJob);
         // const createdJob = await db.jobs.findByPk(newJob.id);
@@ -87,8 +87,8 @@ exports.addPropertyAndJobs = async (req, res) => {
                 job_work_id: newJob.id,
                 photo: result.url,
                 // photo: element.filename,
-              }
-              // { transaction: t }
+              },
+              { transaction: t }
             );
           });
 
@@ -293,7 +293,8 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
               // as: "job_photos",
               model: db.work_proofs,
               attributes: ["id", "job_id", "status"],
-              where: { [Op.and]: [{ comments: null }, { status: 0 }] },
+              where: { status: 0 },
+              // where: { [Op.and]: [{ comments: null }, { status: 0 }] },
               include: [
                 {
                   model: db.job_photos,
@@ -325,63 +326,124 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
 };
 
 exports.addReviewWorkComments = async (req, res) => {
-//   try {
-//     // [
-//     //   { work_proof_id: null, job_id: element.id, comment: null },
-//     //   { work_proof_id: null, job_id: element.id, comment: null },
-//     // ];
+  try {
+    console.log("ajksjkdka");
+    const { p_id } = req.body;
 
-//     const { p_id } = req.body;
+    if (!p_id) {
+      return res.status(400).json({
+        success: false,
+        message: "property id not found",
+      });
+    }
 
-//     if (!p_id) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "property id not found",
-//       });
-//     }
+    console.log("req.body", req.body);
 
-//     console.log("req.body", req.body);
+    await db.sequelize.transaction(async (t) => {
+      const addedReviewComments = req.body.reviewComments.map(
+        async (element) => {
+          if (!element.work_proof_id || !element.job_id) {
+            return res.status(400).json({
+              success: false,
+              message: "work proof id or job id not found",
+            });
+          }
 
-//     await db.sequelize.transaction(async (t) => {
-//       req.body.reviewComments.map(async (element) => {
-//         if (!element.work_proof_id || !element.job_id) {
-//           return res.status(400).json({
-//             success: false,
-//             message: "work proof id or job id not found",
-//           });
-//         }
+          // if (element.comment?.trim()) {
+          console.log("element.comment.trim() :>> ", element.work_proof_id);
+          console.log("element.comment.trim() :>> ", element.comment.trim());
 
-//         await db.work_proofs.update(
-//           { status: 1 },
-//           { where: { job_id: element.job_id } }
-//           // { transaction: t }
-//         );
+          // await db.work_proofs.update(
+          //   { status: 1 },
+          //   { where: { job_id: element.job_id } },
+          //   { transaction: t }
+          // );
 
-//         console.log("element.comment :>> ", element.comment);
+          console.log("element.comment :>> ", element.comment);
 
-//         await db.work_proofs.update(
-//           { comments: element.comment, status: 0 },
-//           { where: { id: element.work_proof_id } }
-//           // { transaction: t }
-//         );
-//       });
+          if (element.comment?.trim()) {
+            await db.work_proofs.update(
+              { comments: element.comment, status: 0 },
+              { where: { id: element.work_proof_id } },
+              { transaction: t }
+            );
+          } else {
+            await db.work_proofs.update(
+              { status: 0 },
+              { where: { id: element.work_proof_id } },
+              { transaction: t }
+            );
+          }
+          // }
+        }
+      );
 
-//       await db.properties.update(
-//         { status: 3 },
-//         { where: { id: p_id } },
-//         { transaction: t }
-//       );
+      await Promise.all(addedReviewComments);
 
-//       res.status(200).json({
-//         success: true,
-//         message: "comments added successfully",
-//       });
-//     });
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
+      await db.properties.update(
+        { status: 3 },
+        { where: { id: p_id } },
+        { transaction: t }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "comments added successfully",
+      });
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getPropertyAllDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "property id not found",
+      });
+    }
+
+    const propertyAllDetails = await db.properties.findOne({
+      where: { id: id },
+      // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property
+      attributes: ["id", "name", "address", "city", "pincode"],
+      include: [
+        {
+          model: db.jobs,
+          as: "jobs",
+          attributes: ["id", "jobname", "job_description"],
+          include: [
+            {
+              model: db.job_photos,
+              // as: "job_photos",
+            },
+          ],
+        },
+        {
+          model: db.users,
+          attributes: ["fname", "lname", "email"],
+          // as: "users",
+        },
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      message: propertyAllDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

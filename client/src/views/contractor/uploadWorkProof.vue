@@ -54,7 +54,14 @@
                         description : {{ job.job_description }}
                       </div>
                       <div v-else>description : -</div>
-                      <div v-if="job.work_proofs.length > 0">Comments : {{ job.work_proofs[0].comments }}</div>
+                      <div v-if="job.work_proofs.length > 0">
+                        Comments :
+                        {{
+                          job.work_proofs[0].comments == null
+                            ? "This Work is Approved"
+                            : job.work_proofs[0].comments
+                        }}
+                      </div>
                       <div>photos :</div>
                       <v-file-input
                         v-model="image[index].photos"
@@ -72,10 +79,14 @@
                 </div>
                 <v-card class="ma-2">
                   <v-card-actions class="d-flex">
-                    <v-btn class="bg-primary w-50" @click="addWorkAndimage"
+                    <v-btn
+                      class="bg-primary w-50"
+                      :disabled="loading"
+                      :loading="loading"
+                      @click="addWorkAndimage"
                       >Mark task as complete</v-btn
                     >
-                    <v-btn class="bg-purple w-50">Chat with owner</v-btn>
+                    <v-btn class="bg-purple w-50" @click="router.push({name : 'ContractorChat'})">Chat with owner</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-form>
@@ -98,6 +109,7 @@ const router = useRouter();
 
 const propertyData = ref([]);
 const image = reactive([]);
+const loading = ref(false);
 
 onBeforeMount(async () => {
   let res = await fetch(
@@ -119,6 +131,7 @@ onBeforeMount(async () => {
 const addWorkAndimage = async () => {
   console.log("click on add work image");
 
+  loading.value = true;
   let formData = new FormData();
   console.log("image ", image);
 
@@ -151,6 +164,7 @@ const addWorkAndimage = async () => {
     router.push({ name: "ContarctorHistory" });
   } else {
     alert("something went wrong : can not able to add work proof");
+    loading.value = false;
   }
 };
 </script>

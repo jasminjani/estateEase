@@ -110,6 +110,8 @@
               </v-card-text>
               <v-card-actions>
                 <v-btn
+                  :disabled="loading"
+                  :loading="loading"
                   class="d-flex bg-primary"
                   style="margin: 0 auto"
                   @click.prevent="addPropertyAndJobs"
@@ -134,6 +136,14 @@ import { useRouter } from "vue-router";
 import * as yup from "yup";
 
 const router = useRouter();
+
+const loading = ref(false);
+
+// watch(loading, (val) => {
+//   if (!val) return;
+
+//   setTimeout(() => (loading.value = false), 2000);
+// });
 
 const myFileObject = ref(null);
 console.log(myFileObject.value);
@@ -184,7 +194,7 @@ const removeMoreJobs = async () => {
 const addPropertyAndJobs = handleSubmit(async () => {
   // console.log(JSON.stringify(values, null, 2));
   // alert(JSON.stringify(values, null, 2));
-
+  loading.value = true;
   const formData = new FormData();
   formData.append("name", name.value.value);
   formData.append("address", address.value.value);
@@ -215,7 +225,7 @@ const addPropertyAndJobs = handleSubmit(async () => {
     console.log("res is successfully arrived");
     router.push({ name: "PropertyHistory" });
   } else {
-    console.log("res na malyo");
+    loading.value = false;
     alert("something went wrong");
   }
 });

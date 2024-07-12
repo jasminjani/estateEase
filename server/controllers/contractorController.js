@@ -59,7 +59,10 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
             },
             {
               model: db.work_proofs,
-              where: { status: 0 },
+              where: {
+                // [Op.and]: [{ status: 0 }, { comments: { [Op.ne]: null } }],
+                status: 0,
+              },
               attributes: ["comments"],
               required: false,
             },
@@ -189,6 +192,12 @@ exports.addWorkProofAndImage = async (req, res) => {
             message: "jobs id not found",
           });
         }
+
+        await db.work_proofs.update(
+          { status: 1 },
+          { where: { job_id: req.body[`job_id_${index}`] } },
+          { transaction: t }
+        );
 
         const newWorkProof = await db.work_proofs.create(
           {

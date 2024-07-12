@@ -51,6 +51,12 @@ const routes = [
     meta: { requiresAuth: true, role_id: 1 },
   },
   {
+    path: "/property/chat",
+    name: "PropertyChat",
+    component: import("../src/views/property/chatPage.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
     path: "/contractor/dashboard",
     name: "contractorDashboard",
     component: import("../src/views/contractor/homePage.vue"),
@@ -75,10 +81,10 @@ const routes = [
     meta: { requiresAuth: true, role_id: 2 },
   },
   {
-    path: "/property/chat",
-    name: "PropertyChat",
+    path: "/contractor/chat",
+    name: "ContractorChat",
     component: import("../src/views/property/chatPage.vue"),
-    meta: { requiresAuth: true, role_id: 1 },
+    meta: { requiresAuth: true, role_id: 2 },
   },
 ];
 

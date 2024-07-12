@@ -1,5 +1,6 @@
 <script setup>
 import Sidebar from "../../components/contractor/sideBar.vue";
+import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref } from "vue";
 
 const userAllPropertyHistory = ref([]);
@@ -53,7 +54,7 @@ onBeforeMount(async () => {
                     <td
                       v-else-if="item.status == 1 && item.property.status == 1"
                     >
-                      In progress
+                      Approve + In progress
                     </td>
                     <td
                       v-else-if="item.status == 1 && item.property.status == 2"
@@ -108,7 +109,9 @@ onBeforeMount(async () => {
                 </tbody>
                 <tbody v-else>
                   <tr>
-                    <td colspan="6" class="text-center">No Data Found !!</td>
+                    <td colspan="6" class="text-center">
+                      <NoDataFoundComponent />
+                    </td>
                   </tr>
                 </tbody>
               </v-table>
