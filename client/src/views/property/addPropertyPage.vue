@@ -220,6 +220,7 @@ const addPropertyAndJobs = handleSubmit(async () => {
     body: formData,
   });
   res = await res.json();
+  console.log(res);
 
   if (res.success) {
     console.log("res is successfully arrived");

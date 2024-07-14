@@ -223,7 +223,7 @@ const addComments = async () => {
         }),
       }
     );
-    res = res.json();
+    res = await res.json();
     console.log("res: ", res);
     if (res) {
       // if (res.success) {

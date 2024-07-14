@@ -4,16 +4,25 @@ require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
+const http = require("http");
 const { Server } = require("socket.io");
 const port = process.env.port || 3000;
 const router = require("./routes/route");
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:8080",
+  },
+});
 
 const passport = require("passport");
 const { passportConfig } = require("./middlewares/authMiddleware");
 const { cloudinaryConnect } = require("./utils/cloudinary");
 passportConfig(passport);
 
-const server = app.listen(port, (err) => {
+server.listen(port, (err) => {
   if (!err) {
     console.log(`server is running on http://localhost:${port}`);
   } else {
@@ -21,10 +30,24 @@ const server = app.listen(port, (err) => {
   }
 });
 
-const io = new Server(server);
+// const io = new Server(server);
 
 io.on("connection", (socket) => {
-  console.log("socket connection has been established, new user connected.");
+  console.log(
+    "socket connection has been established, new user connected.",
+    socket.id
+  );
+
+  // Join a room
+  // socket.on("joinRoom", (room) => {
+  //   socket.join(room);
+  //   console.log(`User joined room: ${room}`);
+  // });
+
+  // // Send message to a room
+  // socket.on("sendMessage", ({ room, message }) => {
+  //   io.to(room).emit("receiveMessage", message);
+  // });
 
   socket.on("message", (message) => {
     console.log("user sended message received : ", message);

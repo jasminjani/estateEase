@@ -26,6 +26,22 @@
                   <v-btn icon="mdi-dots-vertical"></v-btn>
                 </v-toolbar>
                 <v-card-text style="height: 68dvh">
+                  <!-- <div id="app">
+                    <h1>Private Chat Application</h1>
+                    <input
+                      v-model="room"
+                      @keyup.enter="joinRoom"
+                      placeholder="Enter room name"
+                    />
+                    <div v-for="message in messages" :key="message">
+                      {{ message }}
+                    </div>
+                    <input
+                      v-model="newMessage"
+                      @keyup.enter="sendMessage"
+                      placeholder="Type a message"
+                    />
+                  </div> -->
                   {{ userWrittenMsg }}
                 </v-card-text>
                 <v-card-text>
@@ -61,10 +77,37 @@
 <!-- <script src="/socket.io/socket.io.js"></script> -->
 
 <script setup>
+import { io } from "socket.io-client";
 import { ref } from "vue";
+// import { onMounted, ref } from "vue";
 import Sidebar from "../../components/property/sideBar.vue";
 
+const socket = io(`${process.env.VUE_APP_BASE_URL}`);
+// const room = ref("");
+// const messages = ref([]);
+// const newMessage = ref('');
 
+// const joinRoom = () => {
+//   socket.emit("joinRoom", room.value);
+// };
+
+// const sendMessage = () => {
+//   if (newMessage.value.trim() !== "") {
+//     socket.emit("sendMessage", { room: room.value, message: newMessage.value });
+//     newMessage.value = "";
+//   }
+// };
+
+// onMounted(() => {
+//   socket.on("receiveMessage", (message) => {
+//     messages.value.push(message);
+//   });
+// });
+
+socket.emit("message", "hi");
+socket.on("server-message", (message) => {
+  console.log("server message", message);
+});
 
 const userWrittenMsg = ref("");
 

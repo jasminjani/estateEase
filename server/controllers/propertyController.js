@@ -350,8 +350,8 @@ exports.addReviewWorkComments = async (req, res) => {
           }
 
           // if (element.comment?.trim()) {
-          console.log("element.comment.trim() :>> ", element.work_proof_id);
-          console.log("element.comment.trim() :>> ", element.comment.trim());
+          // console.log("element.comment.trim() :>> ", element.work_proof_id);
+          // console.log("element.comment.trim() :>> ", element.comment?.trim());
 
           // await db.work_proofs.update(
           //   { status: 1 },
