@@ -38,6 +38,14 @@ io.on("connection", (socket) => {
     socket.id
   );
 
+  socket.on("sender-message", (message) => {
+    console.log("received sender messaege ", message);
+    socket.join(message.receiver);
+    io.sockets.in(message.receiver).emit("receive-message", message);
+    // io.emit("receiver-message", message);
+    io.emit("receive-message", message);
+  });
+
   // Join a room
   // socket.on("joinRoom", (room) => {
   //   socket.join(room);
@@ -51,6 +59,7 @@ io.on("connection", (socket) => {
 
   socket.on("message", (message) => {
     console.log("user sended message received : ", message);
+
     io.emit("server-message", "response from server");
   });
 

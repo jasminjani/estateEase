@@ -31,7 +31,16 @@
                     <v-btn class="bg-primary w-50" @click="applyTender"
                       >Apply tender</v-btn
                     >
-                    <v-btn class="bg-purple w-50" @click="router.push({name : 'ContractorChat'})">Chat with owner</v-btn>
+                    <v-btn
+                      class="bg-purple w-50"
+                      @click="
+                        router.push({
+                          name: 'ContractorChat',
+                          params: { id: propertyData.user?.id, p_id : route.params.id  },
+                        })
+                      "
+                      >Chat with owner
+                    </v-btn>
                   </v-card-actions>
                 </v-form>
               </v-card>
@@ -77,8 +86,8 @@ onBeforeMount(async () => {
   );
   res = await res.json();
   propertyData.value = await res.message;
-  // console.log(propertyData.value);
-  console.log(propertyData.value.jobs[0].job_photos[0].photo);
+  console.log(propertyData.value);
+  // console.log(propertyData.value.jobs[0].job_photos[0].photo);
 });
 
 const applyTender = async () => {

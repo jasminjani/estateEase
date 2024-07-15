@@ -9,6 +9,8 @@ const {
   getreviewWorkProofDataByPropertyId,
   addReviewWorkComments,
   getPropertyAllDetails,
+  addChatMessages,
+  getPreviousChatMsgAndReceiverData
 } = require("../controllers/propertyController");
 const { imgStorage } = require("../utils/multer");
 const multer = require("multer");
@@ -34,5 +36,9 @@ router.route("/review-work-proof/:id").get(getreviewWorkProofDataByPropertyId);
 router.route("/add-review-comment").post(addReviewWorkComments);
 
 router.route("/get-property-all-details/:id").get(getPropertyAllDetails);
+
+router.route("/get-chat-msg-and-receiver-data").post(getPreviousChatMsgAndReceiverData);
+
+router.route("/add-chat-msg").post(addChatMessages);
 
 module.exports = router;

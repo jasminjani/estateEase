@@ -100,7 +100,12 @@
                           >review & pay</v-btn
                         ></router-link
                       >
-                      <router-link :to="{ name: 'PropertyChat' }">
+                      <router-link
+                        :to="{
+                          name: 'PropertyChat',
+                          params: { id: item.user.id, p_id: route.params.p_id },
+                        }"
+                      >
                         <v-btn class="bg-primary ml-2"
                           ><v-icon>mdi-message-text</v-icon></v-btn
                         ></router-link

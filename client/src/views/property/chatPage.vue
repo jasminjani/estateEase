@@ -1,7 +1,8 @@
 <template>
   <v-app>
     <v-navigation>
-      <Sidebar />
+      <PropertySidebar v-if="roleId == 1" />
+      <ContractorSidebar v-else-if="roleId == 2" />
     </v-navigation>
     <v-main>
       <v-content>
@@ -18,7 +19,10 @@
                   <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
                   <v-btn icon="mdi-account-circle"></v-btn>
 
-                  <v-toolbar-title>Jash Jani</v-toolbar-title>
+                  <v-toolbar-title
+                    >{{ receiverData.fname }}
+                    {{ receiverData.lname }}</v-toolbar-title
+                  >
 
                   <v-btn icon="mdi-magnify"></v-btn>
                   <v-btn icon="mdi-phone  "></v-btn>
@@ -42,7 +46,12 @@
                       placeholder="Type a message"
                     />
                   </div> -->
-                  {{ userWrittenMsg }}
+                  <!-- {{ userWrittenMsg }} -->
+                  <div v-for="message in messages" :key="message">
+                    <div :class="{ right: userId === message.sender_id }">
+                      {{ message.message }}
+                    </div>
+                  </div>
                 </v-card-text>
                 <v-card-text>
                   <v-form class="d-flex">
@@ -78,11 +87,48 @@
 
 <script setup>
 import { io } from "socket.io-client";
-import { ref } from "vue";
+import { computed, onBeforeMount, reactive, ref } from "vue";
 // import { onMounted, ref } from "vue";
-import Sidebar from "../../components/property/sideBar.vue";
-
+import PropertySidebar from "../../components/property/sideBar.vue";
+import ContractorSidebar from "../../components/contractor/sideBar.vue";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 const socket = io(`${process.env.VUE_APP_BASE_URL}`);
+
+const route = useRoute();
+const store = useStore();
+const receiverData = ref([]);
+let previousChatMsg = reactive([]);
+const messages = ref([]);
+// const receviedMessages = ref([]);
+const roleId = computed(() => store.getters.getRoleId);
+const userId = computed(() => store.getters.getUserId);
+
+onBeforeMount(async () => {
+  let res = await fetch(
+    `${process.env.VUE_APP_BASE_URL}/get-chat-msg-and-receiver-data`,
+    {
+      method: "post",
+      mode: "cors",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        receiver_id: route.params.id,
+        p_id: route.params.p_id,
+      }),
+    }
+  );
+  res = await res.json();
+  console.log("res :>> ", res);
+  receiverData.value = await res.message.receiverData;
+  previousChatMsg = await res.message.previousChatMsg;
+  console.log("receiverData.value.user_chats[0].message :>> ", previousChatMsg);
+
+  previousChatMsg.forEach((chat) => {
+    messages.value.push({ sender_id: chat.sender_id, message: chat.message });
+  });
+});
+
 // const room = ref("");
 // const messages = ref([]);
 // const newMessage = ref('');
@@ -104,18 +150,67 @@ const socket = io(`${process.env.VUE_APP_BASE_URL}`);
 //   });
 // });
 
-socket.emit("message", "hi");
-socket.on("server-message", (message) => {
-  console.log("server message", message);
+// socket.emit("message", "hi");
+// socket.on("server-message", (message) => {
+//   console.log("server message", message);
+// });
+
+socket.on("receiver-message", (message) => {
+  console.log("received receiver message", message);
+  // receviedMessages.value.push(message);
 });
 
 const userWrittenMsg = ref("");
 
-const sendMsg = () => {
+const sendMsg = async () => {
   try {
     console.log("userWrittenMsg", userWrittenMsg.value);
+    if (userWrittenMsg.value.trim() !== "") {
+      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-chat-msg`, {
+        method: "post",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          receiver_id: route.params.id,
+          message: userWrittenMsg.value,
+          p_id: route.params.p_id,
+        }),
+      });
+      res = await res.json();
+      console.log("res :>> ", res);
+
+      if (res.success) {
+        console.log("success");
+        socket.emit("sender-message", {
+          sender: userId.value,
+          receiver : route.params.id ,
+          message: userWrittenMsg.value,
+        });
+        // messages.value.push(userWrittenMsg.value);
+        userWrittenMsg.value = "";
+      } else {
+        console.log("failed");
+      }
+    }
   } catch (error) {
     console.error(error);
   }
 };
+
+socket.on("receive-message", (msg) => {
+  console.log("message receied at client 2");
+  messages.value.push({sender_id: msg.sender, message: msg.message });
+});
 </script>
+
+<style scoped>
+.right {
+  /* border: 2px solid black; */
+  /* background-color: #98c1d8;
+  display: inline;
+  padding: 7px;
+  border-radius: 5px; */
+  text-align: end;
+}
+</style>

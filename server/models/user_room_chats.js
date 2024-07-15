@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class properties extends Model {
+  class user_room_chats extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,13 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      properties.belongsTo(models.users, { foreignKey: "powner_id" });
-      properties.hasMany(models.user_room_chats, { foreignKey: "p_id" });
-      properties.hasMany(models.jobs, { foreignKey: "p_id" });
-      properties.hasMany(models.estimates, { foreignKey: "p_id" });
+      user_room_chats.belongsTo(models.properties, { foreignKey: "p_id" });
+      user_room_chats.belongsTo(models.users, { foreignKey: "sender_id" });
+      user_room_chats.belongsTo(models.users, { foreignKey: "receiver_id" });
     }
   }
-  properties.init(
+  user_room_chats.init(
     {
       id: {
         allowNull: false,
@@ -23,66 +22,59 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      powner_id: {
+      p_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "properties",
+          key: "id",
+          as: "p_id",
+        },
+        validate: {
+          notEmpty: true,
+          isInt: {
+            msg: "properties table foreign key must be integer",
+          },
+        },
+      },
+      sender_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: "users",
           key: "id",
-          as: "powner_id",
+          as: "sender_id",
         },
         validate: {
           notEmpty: true,
           isInt: {
-            msg: "property table foreign key must be integer",
+            msg: "chat room table foreign key must be integer",
           },
         },
       },
-      name: {
-        type: DataTypes.STRING,
+      receiver_id: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+          as: "receiver_id",
+        },
         validate: {
-          notEmpty: {
-            msg: "fill property name",
+          notEmpty: true,
+          isInt: {
+            msg: "chat room table foreign key must be integer",
           },
         },
       },
-      address: {
+      message: {
         type: DataTypes.TEXT,
         allowNull: false,
         validate: {
           notEmpty: {
-            msg: "fill property address",
+            msg: "message is required",
           },
         },
-      },
-      city: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            msg: "fill property's city name",
-          },
-        },
-      },
-      pincode: {
-        type: DataTypes.STRING(6),
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            msg: "fill pincode",
-          },
-        },
-      },
-      is_approved: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: 0,
-      },
-      status: {
-        type: DataTypes.STRING(1),
-        allowNull: false,
-        defaultValue: 0,
       },
       createdAt: {
         allowNull: false,
@@ -98,8 +90,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "properties",
+      modelName: "user_room_chats",
+      paranoid: true,
     }
   );
-  return properties;
+  return user_room_chats;
 };

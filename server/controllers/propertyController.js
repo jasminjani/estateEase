@@ -163,7 +163,7 @@ exports.getEstimatePriceOfProperty = async (req, res) => {
           include: [
             {
               model: db.users,
-              attributes: ["fname", "lname", "email"],
+              attributes: ["id", "fname", "lname", "email"],
             },
           ],
         },
@@ -438,6 +438,104 @@ exports.getPropertyAllDetails = async (req, res) => {
     res.status(200).json({
       success: true,
       message: propertyAllDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getPreviousChatMsgAndReceiverData = async (req, res) => {
+  try {
+    const { receiver_id, p_id } = req.body;
+    const { id } = req.user;
+
+    if (!receiver_id || !p_id || !id) {
+      return res.status(400).json({
+        success: false,
+        message: "all data is required",
+      });
+    }
+
+    const receiverData = await db.users.findOne({
+      where: { id: receiver_id },
+      attributes: ["id", "fname", "lname"],
+      // include: [
+      //   {
+      //     model: db.user_room_chats,
+      //     attributes: ["id", "p_id", "sender_id", "receiver_id", "message"],
+      //     where: {
+      //       p_id,
+      //       sender_id: { [Op.in]: [id, receiver_id] },
+      //       receiver_id: { [Op.in]: [receiver_id, id] },
+      //     },
+      //     // where: {
+      //     //   [Op.and]: [
+      //     //     { p_id: p_id },
+      //     //     {
+      //     //       [Op.or]: [
+      //     //         {
+      //     //           [Op.and]: [{ sender_id: receiver_id }, { receiver_id: id }],
+      //     //         },
+      //     //         {
+      //     //           [Op.and]: [{ sender_id: id }, { receiver_id: receiver_id }],
+      //     //         },
+      //     //       ],
+      //     //     },
+      //     //   ],
+      //     // },
+      //     required: false,
+      //   },
+      // ],
+    });
+
+    const previousChatMsg = await db.user_room_chats.findAll({
+      attributes: ["id", "p_id", "sender_id", "receiver_id", "message"],
+      where: {
+        p_id,
+        sender_id: { [Op.in]: [id, receiver_id] },
+        receiver_id: { [Op.in]: [receiver_id, id] },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: { receiverData, previousChatMsg },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.addChatMessages = async (req, res) => {
+  try {
+    const { receiver_id, message, p_id } = req.body;
+    const { id } = req.user;
+
+    if (!id || !receiver_id || !message || !p_id) {
+      return res.status(400).json({
+        success: false,
+        message: "all data are reuired",
+      });
+    }
+
+    await db.user_room_chats.create({
+      p_id,
+      sender_id: id,
+      receiver_id,
+      message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "user message added successfully",
     });
   } catch (error) {
     console.error(error);

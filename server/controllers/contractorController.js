@@ -70,7 +70,7 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
         },
         {
           model: db.users,
-          attributes: ["fname", "lname", "email"],
+          attributes: ["id", "fname", "lname", "email"],
           // as: "users",
         },
       ],
