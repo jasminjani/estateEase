@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       properties.hasMany(models.user_room_chats, { foreignKey: "p_id" });
       properties.hasMany(models.jobs, { foreignKey: "p_id" });
       properties.hasMany(models.estimates, { foreignKey: "p_id" });
+      properties.hasMany(models.payments, { foreignKey: "p_id" });
     }
   }
   properties.init(

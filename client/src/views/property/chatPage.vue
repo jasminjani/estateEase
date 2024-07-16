@@ -173,7 +173,7 @@ const sendMsg = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           receiver_id: route.params.id,
-          message: userWrittenMsg.value,
+          message: userWrittenMsg.value,  
           p_id: route.params.p_id,
         }),
       });

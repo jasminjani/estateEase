@@ -57,6 +57,24 @@ const routes = [
     meta: { requiresAuth: true, role_id: 1 },
   },
   {
+    path: "/property/payment/success/:p_id/:payment_id",
+    name: "PaymentSuccess",
+    component: import("../src/views/property/paymentSuccess.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/payment/failure",
+    name: "PaymentFailure",
+    component: import("../src/views/property/paymentFailed.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
+    path: "/property/payment/:p_id",
+    name: "PropertyPayment",
+    component: import("../src/views/property/paymentPage.vue"),
+    meta: { requiresAuth: true, role_id: 1 },
+  },
+  {
     path: "/contractor/dashboard",
     name: "contractorDashboard",
     component: import("../src/views/contractor/homePage.vue"),

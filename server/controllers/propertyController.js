@@ -1,3 +1,4 @@
+const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
 const db = require("../models");
 const { Op } = require("sequelize");
 const cloudinary = require("cloudinary").v2;
@@ -536,6 +537,159 @@ exports.addChatMessages = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "user message added successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getPaymentDetails = async (req, res) => {
+  try {
+    const { p_id } = req.body;
+
+    if (!p_id) {
+      return res.status(400).json({
+        success: false,
+        message: "property id is required",
+      });
+    }
+
+    let paymentDetails = await db.properties.findOne({
+      where: { id: p_id },
+      attributes: ["id", "name", "city", "pincode"],
+      include: [
+        {
+          model: db.estimates,
+          attributes: ["contracter_id", "price"],
+          where: { p_id, status: true },
+          include: [
+            {
+              model: db.users,
+              attributes: ["fname", "lname"],
+            },
+          ],
+        },
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      message: paymentDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.createStripeSessions = async (req, res) => {
+  try {
+    // stripe.products
+    //   .create({
+    //     name: "Starter Subscription",
+    //     description: "$12/Month subscription",
+    //   })
+    //   .then((product) => {
+    //     stripe.prices
+    //       .create({
+    //         unit_amount: 1200,
+    //         currency: "usd",
+    //         recurring: {
+    //           interval: "month",
+    //         },
+    //         product: product.id,
+    //       })
+    //       .then((price) => {
+    //         console.log(
+    //           "Success! Here is your starter subscription product id: " +
+    //             product.id
+    //         );
+    //         console.log(
+    //           "Success! Here is your starter subscription price id: " + price.id
+    //         );
+    //       });
+    //   });
+
+    const { p_id, name, price } = req.body;
+
+    if (!p_id || !name || !price) {
+      return res.status(400).json({
+        success: false,
+        message: "all fields are required",
+      });
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: name,
+            },
+            unit_amount: price * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.CLIENT_URL}/property/payment/success/${p_id}`,
+      cancel_url: `${process.env.CLIENT_URL}/property/payment/failure`,
+    });
+
+   const newPayment =  await db.payments.create({
+      p_id,
+      session_id: session.id,
+      payment_mode: "card",
+    });
+
+    res.json({ id: session.id });
+    // res.json({ product_id: product.id, price_id: price.id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.markPaymentAsDone = async (req, res) => {
+  try {
+    const { p_id, payment_id } = req.body;
+
+    if (!p_id || !payment_id) {
+      return res.status(400).json({
+        success: false,
+        message: "all fields are required",
+      });
+    }
+
+    await db.sequelize.transaction(async (t) => {
+      await db.properties.update(
+        { status: 4 },
+        { where: { id: p_id } },
+        { transaction: t }
+      );
+
+      await db.payments.update(
+        { status: 1 },
+        { where: { id: payment_id } },
+        { transaction: t }
+      );
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "payment is successfull",
     });
   } catch (error) {
     console.error(error);

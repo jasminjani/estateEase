@@ -10,7 +10,10 @@ const {
   addReviewWorkComments,
   getPropertyAllDetails,
   addChatMessages,
-  getPreviousChatMsgAndReceiverData
+  getPreviousChatMsgAndReceiverData,
+  createStripeSessions,
+  getPaymentDetails,
+  markPaymentAsDone,
 } = require("../controllers/propertyController");
 const { imgStorage } = require("../utils/multer");
 const multer = require("multer");
@@ -37,8 +40,16 @@ router.route("/add-review-comment").post(addReviewWorkComments);
 
 router.route("/get-property-all-details/:id").get(getPropertyAllDetails);
 
-router.route("/get-chat-msg-and-receiver-data").post(getPreviousChatMsgAndReceiverData);
+router
+  .route("/get-chat-msg-and-receiver-data")
+  .post(getPreviousChatMsgAndReceiverData);
 
 router.route("/add-chat-msg").post(addChatMessages);
+
+router.route("/create-stripe-session").post(createStripeSessions);
+
+router.route("/get-payment-details").post(getPaymentDetails);
+
+router.route("/mark-payment-done").post(markPaymentAsDone);
 
 module.exports = router;
