@@ -79,7 +79,7 @@ exports.addUser = async (req, res) => {
 
       console.log("new added user : ", newUser);
 
-      // const emailHtml = `<h2>congratulations, you have succesefully registered on remindMe platform.</h2><p> click belowe link for creating password and activate your account</p>. <h3><a href='http://localhost:${process.env.port}/password/${activation_code}'>http://localhost:${process.env.port}/password/${activation_code}</a></h3> <p>HAVE A GOOD DAY :)</p>`;
+      // const emailHtml = `<h2>congratulations, you have succesefully registered on remindMe platform.</h2><p> click belowe link for creating password and activate your account</p>. <h3><a href='http://localhost:${process.env.PORT}/password/${activation_code}'>http://localhost:${process.env.PORT}/password/${activation_code}</a></h3> <p>HAVE A GOOD DAY :)</p>`;
 
       // await sentEmail(email, "sending link for creating password", emailHtml);
       console.log("user added successfully!!");

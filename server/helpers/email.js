@@ -5,7 +5,7 @@ exports.sentEmail = async (receiverEmail, emailSubject, emailHtml) => {
   try {
 
     const mailOptions = {
-      from: process.env.your_email,
+      from: process.env.ETHEREAL_YOUR_EMAIL,
       to: receiverEmail,
       subject: emailSubject,
       html: emailHtml,

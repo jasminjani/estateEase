@@ -118,6 +118,7 @@ route protect karvana chhe.
 property and estimate na status na according contractor or property side status and button manage karavana chhe.
 validation baki chhe.
 contractor ne khali j job ma comment avi hoi a j job batavi. and property owner side bi je navu proof upload kare a j batavu.
+error handeling.
 
 # CONTRACTOR SIDE :-
 

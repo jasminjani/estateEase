@@ -29,7 +29,7 @@
 
                   <v-btn icon="mdi-dots-vertical"></v-btn>
                 </v-toolbar>
-                <v-card-text style="height: 68dvh">
+                <v-card-text style="height: 68dvh; overflow-y: scroll">
                   <!-- <div id="app">
                     <h1>Private Chat Application</h1>
                     <input
@@ -87,7 +87,7 @@
 
 <script setup>
 import { io } from "socket.io-client";
-import { computed, onBeforeMount, reactive, ref } from "vue";
+import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from "vue";
 // import { onMounted, ref } from "vue";
 import PropertySidebar from "../../components/property/sideBar.vue";
 import ContractorSidebar from "../../components/contractor/sideBar.vue";
@@ -184,10 +184,16 @@ const sendMsg = async () => {
         console.log("success");
         socket.emit("sender-message", {
           sender: userId.value,
-          receiver : route.params.id ,
+          property: route.params.p_id,
+          receiver: route.params.id,
           message: userWrittenMsg.value,
         });
         // messages.value.push(userWrittenMsg.value);
+        messages.value.push({
+          sender_id: userId.value,
+          message: userWrittenMsg.value,
+        });
+
         userWrittenMsg.value = "";
       } else {
         console.log("failed");
@@ -198,9 +204,15 @@ const sendMsg = async () => {
   }
 };
 
-socket.on("receive-message", (msg) => {
+socket.on(`receive-message-${route.params.p_id}-${userId.value}`, (msg) => {
   console.log("message receied at client 2");
-  messages.value.push({sender_id: msg.sender, message: msg.message });
+  messages.value.push({ sender_id: msg.sender, message: msg.message });
+  console.log("print after message received", msg);
+  // socket.emit("leave-room", msg.receiver);
+});
+
+onBeforeUnmount(() => {
+  socket.emit("manually-disconnecting");
 });
 </script>
 

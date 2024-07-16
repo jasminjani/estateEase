@@ -6,7 +6,7 @@ const cors = require("cors");
 const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 const router = require("./routes/route");
 
 const server = http.createServer(app);
@@ -40,11 +40,16 @@ io.on("connection", (socket) => {
 
   socket.on("sender-message", (message) => {
     console.log("received sender messaege ", message);
-    socket.join(message.receiver);
-    io.sockets.in(message.receiver).emit("receive-message", message);
+    // socket.join(message.receiver);
+    // socket.join(message.sender);
+    // io.sockets.in(message.receiver).emit("receive-message", message);
     // io.emit("receiver-message", message);
-    io.emit("receive-message", message);
+    io.emit(`receive-message-${message.property}-${message.receiver}`, message);
   });
+
+  // socket.on("leave-room", (receiver) => {
+  //   socket.leave(receiver);
+  // });
 
   // Join a room
   // socket.on("joinRoom", (room) => {
@@ -61,6 +66,11 @@ io.on("connection", (socket) => {
     console.log("user sended message received : ", message);
 
     io.emit("server-message", "response from server");
+  });
+
+  socket.on("manually-disconnecting", () => {
+    socket.disconnect();
+    console.log("Client disconnected manually");
   });
 
   socket.on("disconnect", () => {
