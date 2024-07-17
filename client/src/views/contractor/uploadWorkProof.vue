@@ -86,7 +86,11 @@
                       @click="addWorkAndimage"
                       >Mark task as complete</v-btn
                     >
-                    <v-btn class="bg-purple w-50" @click="router.push({name : 'ContractorChat'})">Chat with owner</v-btn>
+                    <v-btn
+                      class="bg-purple w-50"
+                      @click="router.push({ name: 'ContractorChat' })"
+                      >Chat with owner</v-btn
+                    >
                   </v-card-actions>
                 </v-card>
               </v-form>
@@ -112,59 +116,67 @@ const image = reactive([]);
 const loading = ref(false);
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.p_id}`,
-    {
-      mode: "cors",
-      credentials: "include",
-    }
-  );
-  res = await res.json();
-  propertyData.value = await res.message;
-  console.log("on before mount", propertyData.value);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.p_id}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    res = await res.json();
+    propertyData.value = await res.message;
+    console.log("on before mount", propertyData.value);
 
-  propertyData.value.jobs.map((element) => {
-    image.push({ job_id: element.id, photos: null });
-  });
+    propertyData.value.jobs.map((element) => {
+      image.push({ job_id: element.id, photos: null });
+    });
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 const addWorkAndimage = async () => {
-  console.log("click on add work image");
+  try {
+    console.log("click on add work image");
 
-  loading.value = true;
-  let formData = new FormData();
-  console.log("image ", image);
+    loading.value = true;
+    let formData = new FormData();
+    console.log("image ", image);
 
-  formData.append("estimate_id", route.params.estimate_id);
-  formData.append("p_id", route.params.p_id);
+    formData.append("estimate_id", route.params.estimate_id);
+    formData.append("p_id", route.params.p_id);
 
-  image.map((element, index) => {
-    console.log("image map", element);
-    formData.append(`job_id_${index}`, element.job_id);
-    element.photos.map((photo) => {
-      formData.append(`photos_${index}`, photo);
+    image.map((element, index) => {
+      console.log("image map", element);
+      formData.append(`job_id_${index}`, element.job_id);
+      element.photos.map((photo) => {
+        formData.append(`photos_${index}`, photo);
+      });
     });
-  });
 
-  console.log("formData ", formData);
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
-    {
-      method: "post",
-      mode: "cors",
-      // headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: formData,
+    console.log("formData ", formData);
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
+      {
+        method: "post",
+        mode: "cors",
+        // headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: formData,
+      }
+    );
+    res = await res.json();
+    console.log("res", res);
+
+    if (res.success) {
+      router.push({ name: "ContarctorHistory" });
+    } else {
+      alert("something went wrong : can not able to add work proof");
+      loading.value = false;
     }
-  );
-  res = await res.json();
-  console.log("res", res);
-
-  if (res.success) {
-    router.push({ name: "ContarctorHistory" });
-  } else {
-    alert("something went wrong : can not able to add work proof");
-    loading.value = false;
+  } catch (error) {
+    console.error(error);
   }
 };
 </script>

@@ -168,28 +168,32 @@ const propertyData = ref([]);
 const comments = reactive([]);
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/review-work-proof/${route.params.id}`,
-    {
-      mode: "cors",
-      credentials: "include",
-    }
-  );
-  res = await res.json();
-  propertyData.value = await res.message;
-  console.log(propertyData.value.jobs);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/review-work-proof/${route.params.id}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    res = await res.json();
+    propertyData.value = await res.message;
+    console.log(propertyData.value.jobs);
 
-  await propertyData.value.jobs.map((element) => {
-    comments.push({
-      work_proof_id: element.work_proofs[0].id,
-      job_id: element.id,
-      comment: null,
+    await propertyData.value.jobs.map((element) => {
+      comments.push({
+        work_proof_id: element.work_proofs[0].id,
+        job_id: element.id,
+        comment: null,
+      });
     });
-  });
 
-  // console.log("comments :>> ", comments);
+    // console.log("comments :>> ", comments);
 
-  // console.log(propertyData.value.jobs[0].job_photos[0].photo);
+    // console.log(propertyData.value.jobs[0].job_photos[0].photo);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 // function emitFunction(commentValue, index) {

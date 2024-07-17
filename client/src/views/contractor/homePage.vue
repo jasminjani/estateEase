@@ -34,7 +34,7 @@
               </div>
               <div v-else>
                 <!-- <div class="v-col-4"> -->
-                  <NoDataFoundComponent />
+                <NoDataFoundComponent />
                 <!-- </div> -->
               </div>
             </v-card>
@@ -54,21 +54,25 @@ import { onBeforeMount, ref } from "vue";
 const propertyAndJobData = ref([]);
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-submitted-notApproved-property`,
-    {
-      mode: "cors",
-      credentials: "include",
-    }
-  );
-  res = await res.json();
-  propertyAndJobData.value = await res.message;
-  console.log(propertyAndJobData.value);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-submitted-notApproved-property`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    res = await res.json();
+    propertyAndJobData.value = await res.message;
+    console.log(propertyAndJobData.value);
 
-  if (res.success) {
-    console.log("successfully fetched property data on contractor dashboard");
-  } else {
-    console.log("contractor dashboard data not");
+    if (res.success) {
+      console.log("successfully fetched property data on contractor dashboard");
+    } else {
+      console.log("contractor dashboard data not");
+    }
+  } catch (error) {
+    console.error(error);
   }
 });
 </script>

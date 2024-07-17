@@ -6,16 +6,20 @@ import { onBeforeMount, ref } from "vue";
 const userAllPropertyHistory = ref([]);
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-estimate-history`,
-    {
-      credentials: "include",
-      mode: "cors",
-    }
-  );
-  res = await res.json();
-  userAllPropertyHistory.value = await res.message;
-  console.log(userAllPropertyHistory.value);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-estimate-history`,
+      {
+        credentials: "include",
+        mode: "cors",
+      }
+    );
+    res = await res.json();
+    userAllPropertyHistory.value = await res.message;
+    console.log(userAllPropertyHistory.value);
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
 

@@ -26,8 +26,8 @@
       v-if="job.work_proofs?.length > 0"
       :jobname="job.jobname"
       :description="job.job_description"
-      :photos="job.work_proofs[0].job_photos"
-      :work_proof_id="job.work_proofs[0].id"
+      :photos="job.work_proofs[0]?.job_photos"
+      :work_proof_id="job.work_proofs[0]?.id"
       :index="index"
     />
     <WorkLayoutComponent

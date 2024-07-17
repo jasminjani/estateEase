@@ -145,51 +145,63 @@ const route = useRoute();
 const router = useRouter();
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-estimate-price/${route.params.p_id}`,
-    {
-      mode: "cors",
-      credentials: "include",
-    }
-  );
-  res = await res.json();
-  estimatePriceData.value = res.message;
-  console.log(estimatePriceData.value);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-estimate-price/${route.params.p_id}`,
+      {
+        mode: "cors",
+        credentials: "include",
+      }
+    );
+    res = await res.json();
+    estimatePriceData.value = res.message;
+    console.log(estimatePriceData.value);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 const approveBid = async (estimate_id) => {
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
-    method: "post",
-    mode: "cors",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: estimate_id, p_id: route.params.p_id }),
-  });
-  res = await res.json();
+  try {
+    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
+      method: "post",
+      mode: "cors",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: estimate_id, p_id: route.params.p_id }),
+    });
+    res = await res.json();
 
-  if (res.success) {
-    router.push({ name: "PropertyHistory" });
-    alert("Bid approved successfully");
-  } else {
-    alert("Problem occured on approving bid");
+    if (res.success) {
+      router.push({ name: "PropertyHistory" });
+      alert("Bid approved successfully");
+    } else {
+      alert("Problem occured on approving bid");
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
 
 const rejectBid = async (estimate_id, index) => {
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
-    method: "post",
-    mode: "cors",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: estimate_id }),
-  });
-  res = await res.json();
+  try {
+    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
+      method: "post",
+      mode: "cors",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: estimate_id }),
+    });
+    res = await res.json();
 
-  if (res.success) {
-    estimatePriceData.value.estimates.splice(index - 1, 1);
-    alert("Bid rejected successfully");
-  } else {
-    alert("Problem occured on rejecting bid");
+    if (res.success) {
+      estimatePriceData.value.estimates.splice(index - 1, 1);
+      alert("Bid rejected successfully");
+    } else {
+      alert("Problem occured on rejecting bid");
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
 </script>

@@ -250,47 +250,51 @@ const items = ref([
 ]);
 
 const register = async () => {
-  console.log("formRef.value :>> ", await formRef.value.validate());
-  // const formVerify = formRef.value;
+  try {
+    console.log("formRef.value :>> ", await formRef.value.validate());
+    // const formVerify = formRef.value;
 
-  const result = await formRef.value.validate();
-  console.log("res ", result.valid);
+    const result = await formRef.value.validate();
+    console.log("res ", result.valid);
 
-  if (result.valid == true) {
-    let formSubmitedData = {
-      role_id: formData.value.select,
-      fname: formData.value.fname,
-      lname: formData.value.lname,
-      email: formData.value.email,
-      phone_no: formData.value.phone_no,
-      dob: formData.value.dob,
-      city: formData.value.city,
-      password: formData.value.password,
-    };
-    console.log(formSubmitedData);
+    if (result.valid == true) {
+      let formSubmitedData = {
+        role_id: formData.value.select,
+        fname: formData.value.fname,
+        lname: formData.value.lname,
+        email: formData.value.email,
+        phone_no: formData.value.phone_no,
+        dob: formData.value.dob,
+        city: formData.value.city,
+        password: formData.value.password,
+      };
+      console.log(formSubmitedData);
 
-    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-user`, {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formSubmitedData),
-    });
-    res = await res.json();
-    console.log(res);
+      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-user`, {
+        method: "post",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formSubmitedData),
+      });
+      res = await res.json();
+      console.log(res);
 
-    if (res.success) {
-      console.log(router);
-      router.push({ name: "login" });
+      if (res.success) {
+        console.log(router);
+        router.push({ name: "login" });
+      } else {
+        let p = document.createElement("p");
+        document.getElementById("form").insertAdjacentElement("afterend", p);
+        p.style.color = "red";
+        p.style.textAlign = "center";
+        p.innerHTML = `${res.message}`;
+      }
     } else {
-      let p = document.createElement("p");
-      document.getElementById("form").insertAdjacentElement("afterend", p);
-      p.style.color = "red";
-      p.style.textAlign = "center";
-      p.innerHTML = `${res.message}`;
+      console.log("object");
     }
-  } else {
-    console.log("object");
+  } catch (error) {
+    console.error(error);
   }
 };
 </script>

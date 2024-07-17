@@ -105,28 +105,35 @@ const roleId = computed(() => store.getters.getRoleId);
 const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-chat-msg-and-receiver-data`,
-    {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        receiver_id: route.params.id,
-        p_id: route.params.p_id,
-      }),
-    }
-  );
-  res = await res.json();
-  console.log("res :>> ", res);
-  receiverData.value = await res.message.receiverData;
-  previousChatMsg = await res.message.previousChatMsg;
-  console.log("receiverData.value.user_chats[0].message :>> ", previousChatMsg);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-chat-msg-and-receiver-data`,
+      {
+        method: "post",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          receiver_id: route.params.id,
+          p_id: route.params.p_id,
+        }),
+      }
+    );
+    res = await res.json();
+    console.log("res :>> ", res);
+    receiverData.value = await res.message.receiverData;
+    previousChatMsg = await res.message.previousChatMsg;
+    console.log(
+      "receiverData.value.user_chats[0].message :>> ",
+      previousChatMsg
+    );
 
-  previousChatMsg.forEach((chat) => {
-    messages.value.push({ sender_id: chat.sender_id, message: chat.message });
-  });
+    previousChatMsg.forEach((chat) => {
+      messages.value.push({ sender_id: chat.sender_id, message: chat.message });
+    });
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 // const room = ref("");
@@ -155,10 +162,22 @@ onBeforeMount(async () => {
 //   console.log("server message", message);
 // });
 
-socket.on("receiver-message", (message) => {
-  console.log("received receiver message", message);
-  // receviedMessages.value.push(message);
+
+socket.on(`receive-message-${route.params.p_id}-${userId.value}`, (msg) => {
+  console.log("message receied at client 2");
+  messages.value.push({ sender_id: msg.sender, message: msg.message });
+  console.log("print after message received", msg);
+  // socket.emit("leave-room", msg.receiver);
 });
+
+onBeforeUnmount(() => {
+  socket.emit("manually-disconnecting");
+});
+
+// socket.on("receiver-message", (message) => {
+//   console.log("received receiver message", message);
+//   // receviedMessages.value.push(message);
+// });
 
 const userWrittenMsg = ref("");
 
@@ -173,7 +192,7 @@ const sendMsg = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           receiver_id: route.params.id,
-          message: userWrittenMsg.value,  
+          message: userWrittenMsg.value,
           p_id: route.params.p_id,
         }),
       });
@@ -204,16 +223,6 @@ const sendMsg = async () => {
   }
 };
 
-socket.on(`receive-message-${route.params.p_id}-${userId.value}`, (msg) => {
-  console.log("message receied at client 2");
-  messages.value.push({ sender_id: msg.sender, message: msg.message });
-  console.log("print after message received", msg);
-  // socket.emit("leave-room", msg.receiver);
-});
-
-onBeforeUnmount(() => {
-  socket.emit("manually-disconnecting");
-});
 </script>
 
 <style scoped>

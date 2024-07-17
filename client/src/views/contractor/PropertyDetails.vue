@@ -36,7 +36,10 @@
                       @click="
                         router.push({
                           name: 'ContractorChat',
-                          params: { id: propertyData.user?.id, p_id : route.params.id  },
+                          params: {
+                            id: propertyData.user?.id,
+                            p_id: route.params.id,
+                          },
                         })
                       "
                       >Chat with owner
@@ -77,50 +80,58 @@ const router = useRouter();
 const propertyData = ref([]);
 
 onBeforeMount(async () => {
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.id}`,
-    {
-      mode: "cors",
-      credentials: "include",
-    }
-  );
-  res = await res.json();
-  propertyData.value = await res.message;
-  console.log(propertyData.value);
-  // console.log(propertyData.value.jobs[0].job_photos[0].photo);
-});
-
-const applyTender = async () => {
-  console.log("click on apply tender");
-
-  const result = await formRef.value.validate();
-
-  if (result.valid == true) {
-    console.log(result);
-
+  try {
     let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/add-estimate-price`,
+      `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.id}`,
       {
-        method: "post",
         mode: "cors",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          p_id: route.params.id,
-          price: formData.price,
-        }),
       }
     );
     res = await res.json();
-    console.log(res);
+    propertyData.value = await res.message;
+    console.log(propertyData.value);
+    // console.log(propertyData.value.jobs[0].job_photos[0].photo);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-    if (res.success) {
-      router.push({ name: "ContarctorHistory" });
+const applyTender = async () => {
+  try {
+    console.log("click on apply tender");
+
+    const result = await formRef.value.validate();
+
+    if (result.valid == true) {
+      console.log(result);
+
+      let res = await fetch(
+        `${process.env.VUE_APP_BASE_URL}/add-estimate-price`,
+        {
+          method: "post",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            p_id: route.params.id,
+            price: formData.price,
+          }),
+        }
+      );
+      res = await res.json();
+      console.log(res);
+
+      if (res.success) {
+        router.push({ name: "ContarctorHistory" });
+      } else {
+        alert("something went wrong : can not able to apply tender");
+      }
     } else {
-      alert("something went wrong : can not able to apply tender");
+      console.log("something went wrong");
     }
-  } else {
-    console.log("something went wrong");
+  } catch (error) {
+    console.error(error);
   }
 };
 </script>

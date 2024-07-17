@@ -6,16 +6,20 @@ import { onBeforeMount, ref } from "vue";
 const userAllProperty = ref([]);
 
 onBeforeMount(async () => {
-  let userAllPropertys = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/get-property`,
-    {
-      credentials: "include",
-      mode: "cors",
-    }
-  );
-  userAllPropertys = await userAllPropertys.json();
-  userAllProperty.value = await userAllPropertys.message;
-  console.log(userAllProperty.value);
+  try {
+    let userAllPropertys = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-property`,
+      {
+        credentials: "include",
+        mode: "cors",
+      }
+    );
+    userAllPropertys = await userAllPropertys.json();
+    userAllProperty.value = await userAllPropertys.message;
+    console.log(userAllProperty.value);
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
 

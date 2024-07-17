@@ -102,22 +102,26 @@ const password = useField("password");
 const email = useField("email");
 
 const login = handleSubmit(async (values) => {
-  await store.dispatch("userLogin", values);
+  try {
+    await store.dispatch("userLogin", values);
 
-  const roleId = computed(() => store.getters.getRoleId);
-  // const roleId = store.getters.getRoleId;
-  console.log("jash");
-  
-  if (roleId.value) {
-    console.log("role id ", store.getters.getRoleId);
-    if (roleId.value == 1) {
-      router.push({ name: "PropertyDashboard" });
-      console.log("object");
+    const roleId = computed(() => store.getters.getRoleId);
+    // const roleId = store.getters.getRoleId;
+    console.log("jash");
+
+    if (roleId.value) {
+      console.log("role id ", store.getters.getRoleId);
+      if (roleId.value == 1) {
+        router.push({ name: "PropertyDashboard" });
+        console.log("object");
+      }
+      if (roleId.value == 2) {
+        router.push({ name: "contractorDashboard" });
+        console.log("object else");
+      }
     }
-    if (roleId.value == 2) {
-      router.push({ name: "contractorDashboard" });
-      console.log("object else");
-    }
+  } catch (error) {
+    console.error(error);
   }
 });
 </script>

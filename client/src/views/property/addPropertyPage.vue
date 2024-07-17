@@ -192,42 +192,46 @@ const removeMoreJobs = async () => {
 };
 
 const addPropertyAndJobs = handleSubmit(async () => {
-  // console.log(JSON.stringify(values, null, 2));
-  // alert(JSON.stringify(values, null, 2));
-  loading.value = true;
-  const formData = new FormData();
-  formData.append("name", name.value.value);
-  formData.append("address", address.value.value);
-  formData.append("city", city.value.value);
-  formData.append("pincode", pincode.value.value);
+  try {
+    // console.log(JSON.stringify(values, null, 2));
+    // alert(JSON.stringify(values, null, 2));
+    loading.value = true;
+    const formData = new FormData();
+    formData.append("name", name.value.value);
+    formData.append("address", address.value.value);
+    formData.append("city", city.value.value);
+    formData.append("pincode", pincode.value.value);
 
-  jobsCount.map((element, index) => {
-    formData.append(`jobname_${index}`, element.name);
-    formData.append(`jobdescription_${index}`, element.description);
-    element.photos.map((photo) => {
-      formData.append(`photo_${index}`, photo);
+    jobsCount.map((element, index) => {
+      formData.append(`jobname_${index}`, element.name);
+      formData.append(`jobdescription_${index}`, element.description);
+      element.photos.map((photo) => {
+        formData.append(`photo_${index}`, photo);
+      });
     });
-  });
 
-  // for (const [key, value] of formData.entries()) {
-  //   console.log(key, value);
-  // }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(key, value);
+    // }
 
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
-    method: "post",
-    credentials: "include",
-    mode: "cors",
-    body: formData,
-  });
-  res = await res.json();
-  console.log(res);
+    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
+      method: "post",
+      credentials: "include",
+      mode: "cors",
+      body: formData,
+    });
+    res = await res.json();
+    console.log(res);
 
-  if (res.success) {
-    console.log("res is successfully arrived");
-    router.push({ name: "PropertyHistory" });
-  } else {
-    loading.value = false;
-    alert("something went wrong");
+    if (res.success) {
+      console.log("res is successfully arrived");
+      router.push({ name: "PropertyHistory" });
+    } else {
+      loading.value = false;
+      alert("something went wrong");
+    }
+  } catch (error) {
+    console.error(error);
   }
 });
 </script>

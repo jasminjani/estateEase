@@ -80,62 +80,77 @@ const paymentDetails = ref([]);
 const loading = ref(false);
 
 onBeforeMount(async () => {
-  let res = await fetch(`${process.env.VUE_APP_BASE_URL}/get-payment-details`, {
-    method: "post",
-    mode: "cors",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ p_id: route.params.p_id }),
-  });
-  res = await res.json();
-  paymentDetails.value = res.message;
-  console.log("paymentDetails.value :>> ", paymentDetails.value);
+  try {
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/get-payment-details`,
+      {
+        method: "post",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ p_id: route.params.p_id }),
+      }
+    );
+    res = await res.json();
+    paymentDetails.value = res.message;
+    console.log("paymentDetails.value :>> ", paymentDetails.value);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 onMounted(async () => {
-  stripe.value = await loadStripe(
-    `pk_test_51Pd3092M3wwlQ4nQU9oFBFimh5YPQq13d6EQP3tj04SmGwz1MLGSwzvde0pIBcqahW7ib2fxgu93H8UBOkrJFFI800fon3bbPJ`
-  );
+  try {
+    stripe.value = await loadStripe(
+      `pk_test_51Pd3092M3wwlQ4nQU9oFBFimh5YPQq13d6EQP3tj04SmGwz1MLGSwzvde0pIBcqahW7ib2fxgu93H8UBOkrJFFI800fon3bbPJ`
+    );
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 const payPayment = async () => {
-  loading.value = true;
-  let res = await fetch(
-    `${process.env.VUE_APP_BASE_URL}/create-stripe-session`,
-    {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        p_id: route.params.p_id,
-        name: paymentDetails.value?.name,
-        price: paymentDetails.value?.estimates[0]?.price,
-      }),
+  try {
+    loading.value = true;
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/create-stripe-session`,
+      {
+        method: "post",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          p_id: route.params.p_id,
+          name: paymentDetails.value?.name,
+          price: paymentDetails.value?.estimates[0]?.price,
+        }),
+      }
+    );
+    const session = await res.json();
+    console.log("session ", session);
+    console.log("session.id :>> ", session.id);
+    console.log("stripe.value :>> ", stripe.value);
+    const { error } = await stripe.value.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (error) {
+      loading.value = false;
+      message.value = error.message;
     }
-  );
-  const session = await res.json();
-  console.log("session ", session);
-  console.log("session.id :>> ", session.id);
-  console.log("stripe.value :>> ", stripe.value);
-  const { error } = await stripe.value.redirectToCheckout({
-    sessionId: session.id,
-  });
 
-  if (error) {
-    loading.value = false;
-    message.value = error.message;
+    // if (res.success) {
+    //   console.log(router);
+    //   router.push({ name: "login" });
+    // } else {
+    // console.log("failed");
+    // }
+    // } else {
+    //   console.log("object");
+    // }
+  } catch (error) {
+    console.error(error);
   }
-
-  // if (res.success) {
-  //   console.log(router);
-  //   router.push({ name: "login" });
-  // } else {
-  // console.log("failed");
-  // }
-  // } else {
-  //   console.log("object");
-  // }
 };
 </script>
 
