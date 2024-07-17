@@ -47,6 +47,7 @@
 
 <script setup>
 import { onMounted } from "vue";
+// import { useRouter } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -54,13 +55,20 @@ const route = useRoute();
 
 onMounted(async () => {
   try {
-    await fetch(`${process.env.VUE_APP_BASE_URL}/mark-payment-done`, {
+    console.log("route.query.session_id :>> ", route.query.session_id);
+
+    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/mark-payment-done`, {
       method: "post",
       mode: "cors",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: { p_id: route.params.p_id, payment_id: route.params.payment_id },
+      body: JSON.stringify({
+        p_id: route.params.p_id,
+        session_id: route.query.session_id,
+      }),
     });
+    res = await res.json();
+    console.log("res : ", res);
   } catch (error) {
     console.error(error);
   }

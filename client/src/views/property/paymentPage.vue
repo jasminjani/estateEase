@@ -50,6 +50,8 @@
                 <v-card-actions>
                   <!-- <v-spacer></v-spacer> -->
                   <v-btn
+                    :disabled="loading"
+                    :loading="loading"
                     class="d-flex bg-purple"
                     style="margin: 0 auto"
                     @click.prevent="payPayment"
@@ -75,6 +77,7 @@ const route = useRoute();
 const message = ref("");
 const stripe = ref(null);
 const paymentDetails = ref([]);
+const loading = ref(false);
 
 onBeforeMount(async () => {
   let res = await fetch(`${process.env.VUE_APP_BASE_URL}/get-payment-details`, {
@@ -86,10 +89,7 @@ onBeforeMount(async () => {
   });
   res = await res.json();
   paymentDetails.value = res.message;
-  console.log(
-    "paymentDetails.value :>> ",
-    paymentDetails.value.estimates[0].user.fname
-  );
+  console.log("paymentDetails.value :>> ", paymentDetails.value);
 });
 
 onMounted(async () => {
@@ -99,6 +99,7 @@ onMounted(async () => {
 });
 
 const payPayment = async () => {
+  loading.value = true;
   let res = await fetch(
     `${process.env.VUE_APP_BASE_URL}/create-stripe-session`,
     {
@@ -108,7 +109,7 @@ const payPayment = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         p_id: route.params.p_id,
-        name: paymentDetails.value.name,
+        name: paymentDetails.value?.name,
         price: paymentDetails.value?.estimates[0]?.price,
       }),
     }
@@ -122,6 +123,7 @@ const payPayment = async () => {
   });
 
   if (error) {
+    loading.value = false;
     message.value = error.message;
   }
 
@@ -129,11 +131,7 @@ const payPayment = async () => {
   //   console.log(router);
   //   router.push({ name: "login" });
   // } else {
-  //   let p = document.createElement("p");
-  //   document.getElementById("form").insertAdjacentElement("afterend", p);
-  //   p.style.color = "red";
-  //   p.style.textAlign = "center";
-  //   p.innerHTML = `${res.message}`;
+  // console.log("failed");
   // }
   // } else {
   //   console.log("object");

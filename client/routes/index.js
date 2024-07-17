@@ -57,7 +57,7 @@ const routes = [
     meta: { requiresAuth: true, role_id: 1 },
   },
   {
-    path: "/property/payment/success/:p_id/:payment_id",
+    path: "/property/payment/success/:p_id",
     name: "PaymentSuccess",
     component: import("../src/views/property/paymentSuccess.vue"),
     meta: { requiresAuth: true, role_id: 1 },

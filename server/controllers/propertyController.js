@@ -626,33 +626,38 @@ exports.createStripeSessions = async (req, res) => {
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: {
-              name: name,
+    await db.sequelize.transaction(async (t) => {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "inr",
+              product_data: {
+                name: name,
+              },
+              unit_amount: price * 100,
             },
-            unit_amount: price * 100,
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        mode: "payment",
+        success_url: `${process.env.CLIENT_URL}/property/payment/success/${p_id}?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.CLIENT_URL}/property/payment/failure`,
+      });
+
+      const newPayment = await db.payments.create(
+        {
+          p_id,
+          session_id: session.id,
+          payment_mode: "card",
         },
-      ],
-      mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/property/payment/success/${p_id}`,
-      cancel_url: `${process.env.CLIENT_URL}/property/payment/failure`,
-    });
+        { transaction: t }
+      );
 
-   const newPayment =  await db.payments.create({
-      p_id,
-      session_id: session.id,
-      payment_mode: "card",
+      res.json({ id: session.id });
+      // res.json({ product_id: product.id, price_id: price.id });
     });
-
-    res.json({ id: session.id });
-    // res.json({ product_id: product.id, price_id: price.id });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -664,9 +669,9 @@ exports.createStripeSessions = async (req, res) => {
 
 exports.markPaymentAsDone = async (req, res) => {
   try {
-    const { p_id, payment_id } = req.body;
+    const { p_id, session_id } = req.body;
 
-    if (!p_id || !payment_id) {
+    if (!p_id || !session_id) {
       return res.status(400).json({
         success: false,
         message: "all fields are required",
@@ -682,7 +687,7 @@ exports.markPaymentAsDone = async (req, res) => {
 
       await db.payments.update(
         { status: 1 },
-        { where: { id: payment_id } },
+        { where: { session_id, p_id } },
         { transaction: t }
       );
     });
