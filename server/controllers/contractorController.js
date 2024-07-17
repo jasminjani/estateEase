@@ -3,12 +3,70 @@ const { Op } = require("sequelize");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 
+// exports.getSubmitedNotApprovedProperty = async (req, res) => {
+//   try {
+//     const notApprovedAllProperties = await db.properties.findAll({
+//       where: { is_approved: 0 },
+//       attributes: ["id", "name", "address", "city", "pincode", "is_approved"],
+//       // raw: true,
+//       include: [
+//         {
+//           model: db.jobs,
+//           as: "jobs",
+//           attributes: ["jobname"],
+//         },
+//         {
+//           model: db.estimates,
+//           attributes: ["id", "p_id", "contracter_id", "status"],
+//           required: false,
+//         },
+//       ],
+//       // group : ['jobs.jobname']
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       message: notApprovedAllProperties,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 exports.getSubmitedNotApprovedProperty = async (req, res) => {
   try {
+    const { id } = req.user;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "user not found",
+      });
+    }
+
+    const estimateData = await db.estimates.findAll(
+      {
+        where: { contracter_id: id },
+        attributes: ["p_id"],
+      },
+      { raw: true }
+    );
+
+    console.log("estimateData :>> ", estimateData);
+
+    const propertyIdArray = [];
+
+    estimateData.forEach((element) => {
+      propertyIdArray.push(element.p_id);
+    });
+
     const notApprovedAllProperties = await db.properties.findAll({
-      where: { is_approved: 0 },
+      where: { id: { [Op.notIn]: propertyIdArray } },
       attributes: ["id", "name", "address", "city", "pincode", "is_approved"],
-      // raw: true,
       include: [
         {
           model: db.jobs,
@@ -16,7 +74,6 @@ exports.getSubmitedNotApprovedProperty = async (req, res) => {
           attributes: ["jobname"],
         },
       ],
-      // group : ['jobs.jobname']
     });
 
     res.status(200).json({

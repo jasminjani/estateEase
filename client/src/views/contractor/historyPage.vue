@@ -76,13 +76,12 @@ onBeforeMount(async () => {
                       Completed
                     </td>
                     <td v-else>Status not found</td>
-                    <td
-                      v-if="
-                        (item.status == 1 && item.property.status == 1) ||
-                        (item.status == 1 && item.property.status == 3)
-                      "
-                    >
+                    <td>
                       <router-link
+                        v-if="
+                          (item.status == 1 && item.property.status == 1) ||
+                          (item.status == 1 && item.property.status == 3)
+                        "
                         :to="{
                           name: 'ContractorUploadProof',
                           params: { p_id: item.p_id, estimate_id: item.id },
@@ -92,23 +91,18 @@ onBeforeMount(async () => {
                           >Upload work</v-btn
                         >
                       </router-link>
-                    </td>
-                    <td v-else></td>
-                    <!-- <td>
+                      <!-- 
                       <router-link
-                        :class="{ disabled: item.is_approved == 1 }"
                         :to="{
-                          name: 'PropertyBidPrice',
-                          params: { p_id: item.id },
+                          name: 'ContractorChat',
+                          params: { id: item?.user?.id, p_id: item.p_id },
                         }"
                       >
-                        <v-btn
-                          class="bg-primary"
-                          :disabled="item.is_approved == 1"
-                          ><v-icon>mdi-eye</v-icon></v-btn
+                        <v-btn class="bg-primary ml-2"
+                          ><v-icon>mdi-message-text</v-icon></v-btn
                         ></router-link
-                      >
-                    </td> -->
+                      > -->
+                    </td>
                   </tr>
                 </tbody>
                 <tbody v-else>

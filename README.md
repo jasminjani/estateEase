@@ -114,15 +114,15 @@ then in server, create all required models and their migration files.
 <!-- blob image to string ma convert kari img display karavana chhe. -->
 
 vuex apply karvanu chhe
-route protect karvana chhe.
-property and estimate na status na according contractor or property side status and button manage karavana chhe.
+<!-- route protect karvana chhe. -->
+<!-- property and estimate na status na according contractor or property side status and button manage karavana chhe. -->
 validation baki chhe.
 contractor ne khali j job ma comment avi hoi a j job batavi. and property owner side bi je navu proof upload kare a j batavu.
-error handeling.
+<!-- error handeling. -->
 
 # CONTRACTOR SIDE :-
 
-contractor property mate ak j var bid lagavi sake (atyare multiple var lagave chhe)
+<!-- contractor property mate ak j var bid lagavi sake (atyare multiple var lagave chhe) -->
 
 # PROPERTY SIDE :-
 
