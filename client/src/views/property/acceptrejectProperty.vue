@@ -26,7 +26,7 @@
                     <th class="text-center">Bider Name</th>
                     <th class="text-center">Price</th>
                     <th class="text-center">Status</th>
-                    <th colspan="3" class="text-center">Status</th>
+                    <th colspan="3" class="text-center">Other</th>
                   </tr>
                 </thead>
                 <tbody v-if="estimatePriceData.estimates?.length">

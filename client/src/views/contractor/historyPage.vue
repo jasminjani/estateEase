@@ -41,7 +41,7 @@ onBeforeMount(async () => {
                     <th class="text-left">city</th>
                     <th class="text-left">Bidded price</th>
                     <th class="text-left">Status</th>
-                    <th class="text-left">view property</th>
+                    <th class="text-left">Other</th>
                   </tr>
                 </thead>
                 <tbody v-if="userAllPropertyHistory.length">
@@ -91,17 +91,21 @@ onBeforeMount(async () => {
                           >Upload work</v-btn
                         >
                       </router-link>
-                      <!-- 
+
                       <router-link
+                        v-if="item.status !== false"
                         :to="{
                           name: 'ContractorChat',
-                          params: { id: item?.user?.id, p_id: item.p_id },
+                          params: {
+                            id: item.property.powner_id,
+                            p_id: item.p_id,
+                          },
                         }"
                       >
                         <v-btn class="bg-primary ml-2"
                           ><v-icon>mdi-message-text</v-icon></v-btn
                         ></router-link
-                      > -->
+                      >
                     </td>
                   </tr>
                 </tbody>
