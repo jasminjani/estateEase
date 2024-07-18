@@ -1,7 +1,14 @@
 <script setup>
+import { computed, onBeforeMount, ref } from "vue";
 import Sidebar from "../../components/contractor/sideBar.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
-import { onBeforeMount, ref } from "vue";
+import socket from "../../socket";
+// import socket from "@/socket";
+import { useStore } from "vuex";
+
+const store = useStore();
+
+const userId = computed(() => store.getters.getUserId);
 
 const userAllPropertyHistory = ref([]);
 
@@ -20,6 +27,26 @@ onBeforeMount(async () => {
   } catch (error) {
     console.error(error);
   }
+});
+
+socket.on(`send-status-changed-${userId.value}`, (message) => {
+  console.log(message);
+  userAllPropertyHistory.value.forEach((element) => {
+    if (element.p_id == message.property) {
+      console.log(
+        "before element.property.status :>> ",
+        element.property.status
+      );
+      if (element.status == null && message.newStatus == 0) {
+        element.status = message.newStatus;
+      } else if (element.status == null && message.newStatus == 1) {
+        element.status = message.newStatus;
+        element.property.status = message.newStatus;
+      } else {
+        element.property.status = message.newStatus;
+      }
+    }
+  });
 });
 </script>
 

@@ -86,14 +86,13 @@
 <!-- <script src="/socket.io/socket.io.js"></script> -->
 
 <script setup>
-import { io } from "socket.io-client";
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from "vue";
 // import { onMounted, ref } from "vue";
 import PropertySidebar from "../../components/property/sideBar.vue";
 import ContractorSidebar from "../../components/contractor/sideBar.vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-const socket = io(`${process.env.VUE_APP_BASE_URL}`);
+import socket from "../../socket";
 
 const route = useRoute();
 const store = useStore();

@@ -127,6 +127,7 @@
 </template>
 
 <script setup>
+import socket from "../../socket";
 import Sidebar from "../../components/property/sideBar.vue";
 // import JobComponent from "../../components/property/JobComponent.vue";
 
@@ -221,9 +222,11 @@ const addPropertyAndJobs = handleSubmit(async () => {
       body: formData,
     });
     res = await res.json();
-    console.log(res);
+    console.log("res ", res);
 
     if (res.success) {
+      console.log("res.message :>> ", res.message);
+      socket.emit("new-property-added", res.message);
       console.log("res is successfully arrived");
       router.push({ name: "PropertyHistory" });
     } else {

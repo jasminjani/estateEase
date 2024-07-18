@@ -165,15 +165,29 @@ exports.addEstimatePriceOfProperty = async (req, res) => {
       });
     }
 
-    await db.estimates.create({
+    const insertedEstimate = await db.estimates.create({
       p_id: p_id,
       contracter_id: id,
       price: price,
     });
 
+    console.log("insertedEstimate.id :>> ", insertedEstimate.id);
+
+    const newEstimateData = await db.estimates.findOne({
+      where: { id: insertedEstimate.id },
+      attributes: ["id", "p_id", "price", "status"],
+      // required: false,
+      include: [
+        {
+          model: db.users,
+          attributes: ["id", "fname", "lname", "email"],
+        },
+      ],
+    });
+
     res.status(200).json({
       success: true,
-      message: "tender price added successfully",
+      message: newEstimateData,
     });
   } catch (error) {
     console.error(error);

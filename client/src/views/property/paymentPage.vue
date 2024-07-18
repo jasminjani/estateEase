@@ -123,6 +123,7 @@ const payPayment = async () => {
           p_id: route.params.p_id,
           name: paymentDetails.value?.name,
           price: paymentDetails.value?.estimates[0]?.price,
+          contracter_id: paymentDetails.value?.estimates[0]?.user?.id,
         }),
       }
     );
@@ -149,6 +150,7 @@ const payPayment = async () => {
     //   console.log("object");
     // }
   } catch (error) {
+    loading.value = false;
     console.error(error);
   }
 };

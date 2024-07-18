@@ -68,6 +68,23 @@ io.on("connection", (socket) => {
     io.emit("server-message", "response from server");
   });
 
+  // ===== STATUS CHANGED =====
+
+  socket.on("status-changed", (message) => {
+    console.log("status-changed-message", message);
+    io.emit(`send-status-changed-${message.receiver}`, message);
+  });
+
+  socket.on("new-bid-data", (message) => {
+    console.log("new-bid-data", message);
+    io.emit(`send-new-bid-data-${message.receiver}`, message.data);
+  });
+
+  socket.on("new-property-added", (message) => {
+    console.log("new-property-added", message);
+    io.emit("send-new-property-added", message);
+  });
+
   socket.on("manually-disconnecting", () => {
     socket.disconnect();
     console.log("Client disconnected manually");

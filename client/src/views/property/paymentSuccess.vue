@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+import socket from "../../socket";
 import { onMounted } from "vue";
 // import { useRouter } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
@@ -69,6 +70,14 @@ onMounted(async () => {
     });
     res = await res.json();
     console.log("res : ", res);
+
+    if (res.success) {
+      socket.emit("status-changed", {
+        receiver: route.params.contracter_id,
+        property: route.params.p_id,
+        newStatus: 4,
+      });
+    }
   } catch (error) {
     console.error(error);
   }

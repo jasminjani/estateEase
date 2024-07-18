@@ -119,6 +119,7 @@ vuex apply karvanu chhe
 validation baki chhe.
 contractor ne khali j job ma comment avi hoi a j job batavi. and property owner side bi je navu proof upload kare a j batavu.
 <!-- error handeling. -->
+sidebar nu scroll remove kari n fix kaevanu chhe.
 
 # CONTRACTOR SIDE :-
 

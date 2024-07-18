@@ -31,9 +31,16 @@
                     <div>
                       {{ propertyData.city }} - {{ propertyData.pincode }}
                     </div>
-                    <div>
-                      Property owner : {{ propertyData.user?.fname }}
-                      {{ propertyData.user?.lname }}
+                    <div v-if="propertyData?.jobs?.length > 0">
+                      Contracter name :
+                      {{
+                        propertyData?.jobs[0]?.work_proofs[0]?.job_photos[0]
+                          ?.user?.fname
+                      }}
+                      {{
+                        propertyData?.jobs[0]?.work_proofs[0]?.job_photos[0]
+                          ?.user?.lname
+                      }}
                     </div>
                   </v-card-text>
                 </div>
@@ -153,6 +160,7 @@
 
 <script setup>
 // import { useStore } from "vuex";
+import socket from "../../socket";
 import Sidebar from "../../components/property/sideBar.vue";
 // import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 // import WorkLayoutComponent from "../../components/contractor/workLayoutComponent.vue";
@@ -178,7 +186,7 @@ onBeforeMount(async () => {
     );
     res = await res.json();
     propertyData.value = await res.message;
-    console.log(propertyData.value.jobs);
+    console.log(propertyData.value);
 
     await propertyData.value.jobs.map((element) => {
       comments.push({
@@ -240,7 +248,13 @@ const addComments = async () => {
     console.log("res: ", res);
     if (res) {
       // if (res.success) {
-      // console.log("success");
+
+      socket.emit("status-changed", {
+        receiver:
+          propertyData.value?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user?.id,
+        property: route.params.id,
+        newStatus: 3,
+      });
       router.push({ name: "PropertyHistory" });
       // }
     } else {

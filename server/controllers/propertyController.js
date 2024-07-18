@@ -9,7 +9,6 @@ exports.addPropertyAndJobs = async (req, res) => {
     // console.log("body : ", req.body);
     // console.log("files : ", req.files);
     const { name, address, city, pincode } = req.body;
-    console.log("object fom server");
 
     const { id } = req.user;
 
@@ -32,7 +31,6 @@ exports.addPropertyAndJobs = async (req, res) => {
         { powner_id: id, name, address, city, pincode },
         { transaction: t }
       );
-      console.log("newProperty.id ", newProperty.id);
 
       let index = 0;
       while (
@@ -71,7 +69,6 @@ exports.addPropertyAndJobs = async (req, res) => {
             const result = await cloudinary.uploader.upload(element.path, {
               resource_type: "auto",
             });
-            console.log("result.url :>> ", result);
 
             // after uploading image to cloudinary deleting it from server/uploads/cloudinaryImg
             fs.unlinkSync(element.path);
@@ -97,10 +94,27 @@ exports.addPropertyAndJobs = async (req, res) => {
 
         index++;
       }
+      
+      console.log("newProperty.id ", newProperty.id);
+
+      const newAddedPropertyData = await db.properties.findOne({
+        where: { id: newProperty.id },
+        attributes: ["id", "name", "address", "city", "pincode", "is_approved"],
+        include: [
+          {
+            model: db.jobs,
+            as: "jobs",
+            attributes: ["jobname"],
+            required: false,
+          },
+        ],
+      });
+
+      console.log("newAddedPropertyData :>> ", newAddedPropertyData);
 
       res.status(200).json({
         success: true,
-        message: "Property and jobs added successfully",
+        message: newAddedPropertyData,
       });
     });
   } catch (error) {
@@ -300,18 +314,26 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
                 {
                   model: db.job_photos,
                   attributes: ["id", "is_work", "job_work_id", "photo"],
+                  include: [
+                    {
+                      model: db.users,
+                      attributes: ["id", "fname", "lname", "email"],
+                    },
+                  ],
                 },
               ],
             },
           ],
         },
-        {
-          model: db.users,
-          attributes: ["fname", "lname", "email"],
-          // as: "users",
-        },
+        // {
+        //   model: db.users,
+        //   attributes: ["id", "fname", "lname", "email"],
+        //   // as: "users",
+        // },
       ],
     });
+
+    const user = await db.users.findOne({});
 
     res.status(200).json({
       success: true,
@@ -328,7 +350,6 @@ exports.getreviewWorkProofDataByPropertyId = async (req, res) => {
 
 exports.addReviewWorkComments = async (req, res) => {
   try {
-    console.log("ajksjkdka");
     const { p_id } = req.body;
 
     if (!p_id) {
@@ -338,7 +359,6 @@ exports.addReviewWorkComments = async (req, res) => {
       });
     }
 
-    console.log("req.body", req.body);
 
     await db.sequelize.transaction(async (t) => {
       const addedReviewComments = req.body.reviewComments.map(
@@ -360,7 +380,6 @@ exports.addReviewWorkComments = async (req, res) => {
           //   { transaction: t }
           // );
 
-          console.log("element.comment :>> ", element.comment);
 
           if (element.comment?.trim()) {
             await db.work_proofs.update(
@@ -569,7 +588,7 @@ exports.getPaymentDetails = async (req, res) => {
           include: [
             {
               model: db.users,
-              attributes: ["fname", "lname"],
+              attributes: ["id", "fname", "lname"],
             },
           ],
         },
@@ -617,9 +636,9 @@ exports.createStripeSessions = async (req, res) => {
     //       });
     //   });
 
-    const { p_id, name, price } = req.body;
+    const { p_id, name, price, contracter_id } = req.body;
 
-    if (!p_id || !name || !price) {
+    if (!p_id || !name || !price || !contracter_id) {
       return res.status(400).json({
         success: false,
         message: "all fields are required",
@@ -642,7 +661,7 @@ exports.createStripeSessions = async (req, res) => {
           },
         ],
         mode: "payment",
-        success_url: `${process.env.CLIENT_URL}/property/payment/success/${p_id}?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${process.env.CLIENT_URL}/property/payment/success/${contracter_id}/${p_id}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.CLIENT_URL}/property/payment/failure`,
       });
 

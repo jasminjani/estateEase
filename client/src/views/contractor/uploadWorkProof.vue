@@ -103,6 +103,7 @@
 </template>
 
 <script setup>
+import socket from "../../socket";
 import Sidebar from "../../components/contractor/sideBar.vue";
 // import UploadWorkImageComponent from "../../components/contractor/uploadWorkImageComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
@@ -170,6 +171,11 @@ const addWorkAndimage = async () => {
     console.log("res", res);
 
     if (res.success) {
+      socket.emit("status-changed", {
+        receiver: propertyData.value.user?.id,
+        property: route.params.p_id,
+        newStatus: 2,
+      });
       router.push({ name: "ContarctorHistory" });
     } else {
       alert("something went wrong : can not able to add work proof");

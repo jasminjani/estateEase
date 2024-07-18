@@ -80,13 +80,13 @@
                       <v-btn
                         v-if="item.status == null"
                         class="bg-green ml-2"
-                        @click="approveBid(item.id)"
+                        @click="approveBid(item.id, item.user.id)"
                         ><v-icon>mdi-check</v-icon></v-btn
                       >
                       <v-btn
                         v-if="item.status == null"
                         class="bg-red ml-2"
-                        @click="rejectBid(item.id, index)"
+                        @click="rejectBid(item.id, item.user.id, index)"
                         ><v-icon>mdi-cancel</v-icon></v-btn
                       >
                       <router-link
@@ -136,13 +136,18 @@
 <script setup>
 import Sidebar from "../../components/property/sideBar.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
-import { onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import socket from "../../socket";
+import { useStore } from "vuex";
 
 const estimatePriceData = ref([]);
 
 const route = useRoute();
 const router = useRouter();
+const store = useStore();
+
+const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
   try {
@@ -161,7 +166,15 @@ onBeforeMount(async () => {
   }
 });
 
-const approveBid = async (estimate_id) => {
+socket.on(`send-new-bid-data-${userId.value}`, (message) => {
+  estimatePriceData.value.estimates.push(message);
+});
+
+socket.on(`send-status-changed-${userId.value}`, (message) => {
+  estimatePriceData.value.status = message.newStatus;
+});
+
+const approveBid = async (estimate_id, receiver_id) => {
   try {
     let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
       method: "post",
@@ -173,6 +186,20 @@ const approveBid = async (estimate_id) => {
     res = await res.json();
 
     if (res.success) {
+      socket.emit("status-changed", {
+        receiver: receiver_id,
+        property: route.params.p_id,
+        newStatus: 1,
+      });
+      estimatePriceData.value.estimates.forEach((element) => {
+        if (element.user.id !== receiver_id) {
+          socket.emit("status-changed", {
+            receiver: element.user.id,
+            property: route.params.p_id,
+            newStatus: 0,
+          });
+        }
+      });
       router.push({ name: "PropertyHistory" });
       alert("Bid approved successfully");
     } else {
@@ -183,7 +210,7 @@ const approveBid = async (estimate_id) => {
   }
 };
 
-const rejectBid = async (estimate_id, index) => {
+const rejectBid = async (estimate_id, receiver_id, index) => {
   try {
     let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
       method: "post",
@@ -195,6 +222,11 @@ const rejectBid = async (estimate_id, index) => {
     res = await res.json();
 
     if (res.success) {
+      socket.emit("status-changed", {
+        receiver: receiver_id,
+        property: route.params.p_id,
+        newStatus: 0,
+      });
       estimatePriceData.value.estimates.splice(index - 1, 1);
       alert("Bid rejected successfully");
     } else {

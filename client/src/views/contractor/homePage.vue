@@ -50,6 +50,7 @@ import Sidebar from "../../components/contractor/sideBar.vue";
 import PropertyLayoutComponent from "../../components/contractor/propertyLayoutComponent.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref } from "vue";
+import socket from "../../socket";
 
 const propertyAndJobData = ref([]);
 
@@ -74,5 +75,10 @@ onBeforeMount(async () => {
   } catch (error) {
     console.error(error);
   }
+});
+
+socket.on("send-new-property-added", (message) => {
+  console.log("message ", message);
+  propertyAndJobData.value.push(message);
 });
 </script>

@@ -1,8 +1,12 @@
 <script setup>
 import Sidebar from "../../components/property/sideBar.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
-import { onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
+import socket from "../../socket";
+import { useStore } from "vuex";
 
+const store = useStore();
+const userId = computed(() => store.getters.getUserId);
 const userAllProperty = ref([]);
 
 onBeforeMount(async () => {
@@ -20,6 +24,14 @@ onBeforeMount(async () => {
   } catch (error) {
     console.error(error);
   }
+});
+
+socket.on(`send-status-changed-${userId.value}`, (message) => {
+  userAllProperty.value.forEach((element) => {
+    if (element.id == message.property) {
+      element.status = message.newStatus;
+    }
+  });
 });
 </script>
 

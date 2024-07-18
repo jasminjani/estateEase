@@ -56,6 +56,7 @@
 </template>
 
 <script setup>
+import socket from "../../socket";
 import Sidebar from "../../components/contractor/sideBar.vue";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
@@ -123,6 +124,11 @@ const applyTender = async () => {
       console.log(res);
 
       if (res.success) {
+        console.log("res.message :>> ", res.message);
+        socket.emit("new-bid-data", {
+          data: res.message,
+          receiver: propertyData.value.user?.id,
+        });
         router.push({ name: "ContarctorHistory" });
       } else {
         alert("something went wrong : can not able to apply tender");
