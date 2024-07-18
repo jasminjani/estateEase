@@ -1,9 +1,5 @@
 <template>
-  <v-app>
-    <v-navigation>
-      <Sidebar />
-    </v-navigation>
-    <v-main>
+
       <v-content>
         <v-container fluid fill-height>
           <v-flex xs12 sm8 md4>
@@ -98,13 +94,10 @@
           </v-flex>
         </v-container>
       </v-content>
-    </v-main>
-  </v-app>
 </template>
 
 <script setup>
 import socket from "../../socket";
-import Sidebar from "../../components/contractor/sideBar.vue";
 // import UploadWorkImageComponent from "../../components/contractor/uploadWorkImageComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";

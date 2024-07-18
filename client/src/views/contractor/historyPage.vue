@@ -1,6 +1,5 @@
 <script setup>
 import { computed, onBeforeMount, ref } from "vue";
-import Sidebar from "../../components/contractor/sideBar.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import socket from "../../socket";
 // import socket from "@/socket";
@@ -51,105 +50,90 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
 </script>
 
 <template>
-  <v-app>
-    <v-navigation>
-      <Sidebar />
-    </v-navigation>
-    <v-main>
-      <v-content>
-        <v-container fluid fill-height>
-          <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12" style="width: 100%; margin: 0 auto">
-              <v-table>
-                <thead>
-                  <tr class="bg-primary">
-                    <th class="text-left">Sr no.</th>
-                    <th class="text-left">Property Name</th>
-                    <th class="text-left">city</th>
-                    <th class="text-left">Bidded price</th>
-                    <th class="text-left">Status</th>
-                    <th class="text-left">Other</th>
-                  </tr>
-                </thead>
-                <tbody v-if="userAllPropertyHistory.length">
-                  <tr
-                    v-for="(item, index) in userAllPropertyHistory"
-                    :key="item.id"
+  <v-content>
+    <v-container fluid fill-height>
+      <v-flex xs12 sm8 md4>
+        <v-card class="elevation-12" style="width: 100%; margin: 0 auto">
+          <v-table>
+            <thead>
+              <tr class="bg-primary">
+                <th class="text-left">Sr no.</th>
+                <th class="text-left">Property Name</th>
+                <th class="text-left">city</th>
+                <th class="text-left">Bidded price</th>
+                <th class="text-left">Status</th>
+                <th class="text-left">Other</th>
+              </tr>
+            </thead>
+            <tbody v-if="userAllPropertyHistory.length">
+              <tr
+                v-for="(item, index) in userAllPropertyHistory"
+                :key="item.id"
+              >
+                <td>{{ ++index }}</td>
+                <td>{{ item.property.name }}</td>
+                <td>{{ item.property.city }}</td>
+                <td>{{ item.price }}</td>
+                <td v-if="item.status == null">Submited</td>
+                <td v-else-if="item.status == 0">Rejected</td>
+                <td v-else-if="item.status == 1 && item.property.status == 1">
+                  Approve + In progress
+                </td>
+                <td v-else-if="item.status == 1 && item.property.status == 2">
+                  Payment Pending
+                </td>
+                <td v-else-if="item.status == 1 && item.property.status == 3">
+                  Work not accepted
+                </td>
+                <td v-else-if="item.status == 1 && item.property.status == 4">
+                  Completed
+                </td>
+                <td v-else>Status not found</td>
+                <td>
+                  <router-link
+                    v-if="
+                      (item.status == 1 && item.property.status == 1) ||
+                      (item.status == 1 && item.property.status == 3)
+                    "
+                    :to="{
+                      name: 'ContractorUploadProof',
+                      params: { p_id: item.p_id, estimate_id: item.id },
+                    }"
                   >
-                    <td>{{ ++index }}</td>
-                    <td>{{ item.property.name }}</td>
-                    <td>{{ item.property.city }}</td>
-                    <td>{{ item.price }}</td>
-                    <td v-if="item.status == null">Submited</td>
-                    <td v-else-if="item.status == 0">Rejected</td>
-                    <td
-                      v-else-if="item.status == 1 && item.property.status == 1"
+                    <v-btn class="bg-primary" prepend-icon="mdi-upload"
+                      >Upload work</v-btn
                     >
-                      Approve + In progress
-                    </td>
-                    <td
-                      v-else-if="item.status == 1 && item.property.status == 2"
-                    >
-                      Payment Pending
-                    </td>
-                    <td
-                      v-else-if="item.status == 1 && item.property.status == 3"
-                    >
-                      Work not accepted
-                    </td>
-                    <td
-                      v-else-if="item.status == 1 && item.property.status == 4"
-                    >
-                      Completed
-                    </td>
-                    <td v-else>Status not found</td>
-                    <td>
-                      <router-link
-                        v-if="
-                          (item.status == 1 && item.property.status == 1) ||
-                          (item.status == 1 && item.property.status == 3)
-                        "
-                        :to="{
-                          name: 'ContractorUploadProof',
-                          params: { p_id: item.p_id, estimate_id: item.id },
-                        }"
-                      >
-                        <v-btn class="bg-primary" prepend-icon="mdi-upload"
-                          >Upload work</v-btn
-                        >
-                      </router-link>
+                  </router-link>
 
-                      <router-link
-                        v-if="item.status !== false"
-                        :to="{
-                          name: 'ContractorChat',
-                          params: {
-                            id: item.property.powner_id,
-                            p_id: item.p_id,
-                          },
-                        }"
-                      >
-                        <v-btn class="bg-primary ml-2"
-                          ><v-icon>mdi-message-text</v-icon></v-btn
-                        ></router-link
-                      >
-                    </td>
-                  </tr>
-                </tbody>
-                <tbody v-else>
-                  <tr>
-                    <td colspan="6" class="text-center">
-                      <NoDataFoundComponent />
-                    </td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-card>
-          </v-flex>
-        </v-container>
-      </v-content>
-    </v-main>
-  </v-app>
+                  <router-link
+                    v-if="item.status !== false"
+                    :to="{
+                      name: 'ContractorChat',
+                      params: {
+                        id: item.property.powner_id,
+                        p_id: item.p_id,
+                      },
+                    }"
+                  >
+                    <v-btn class="bg-primary ml-2"
+                      ><v-icon>mdi-message-text</v-icon></v-btn
+                    ></router-link
+                  >
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else>
+              <tr>
+                <td colspan="6" class="text-center">
+                  <NoDataFoundComponent />
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card>
+      </v-flex>
+    </v-container>
+  </v-content>
 </template>
 
 <style scoped>

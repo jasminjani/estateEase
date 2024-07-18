@@ -1,40 +1,24 @@
 <template>
   <v-app>
+    <v-navigation>
+      <PropertySidebar v-if="roleId == 1" />
+      <ContractorSidebar v-else-if="roleId == 2" />
+    </v-navigation>
     <v-main>
-      <!-- <div class="d-flex justify-space-around">
-        <div>
-          <router-link :to="{ name: 'login' }">Login</router-link>
-        </div>
-        <div>
-          <router-link :to="{ name: 'registration' }">registration</router-link>
-        </div>
-        <div>
-          <router-link :to="{ name: 'PropertyAddProperty' }"
-            >add property</router-link
-          >
-        </div>
-        <div>
-          <router-link :to="{ name: 'PropertyHistory' }"
-            >property History</router-link
-          >
-        </div>
-        <div>
-          <router-link :to="{ name: 'contractorDashboard' }"
-            >Contractor dashboard</router-link
-          >
-        </div>
-      </div> -->
       <div>
         <router-view></router-view>
       </div>
-
-      <!-- <LoginPage /> -->
-      <!-- <RegistrationPage /> -->
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-// import LoginPage from "./views/loginPage.vue";
-// import RegistrationPage from "./views/registrationPage.vue";
+import PropertySidebar from "./components/property/sideBar.vue";
+import ContractorSidebar from "./components/contractor/sideBar.vue";
+import { useStore } from "vuex";
+import { computed } from "vue";
+
+const store = useStore();
+
+const roleId = computed(() => store.getters.getRoleId);
 </script>

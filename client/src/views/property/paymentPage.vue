@@ -1,77 +1,67 @@
 <template>
-  <v-app>
-    <v-navigation>
-      <Sidebar />
-    </v-navigation>
-    <v-main>
-      <v-content>
-        <v-container fluid fill-height style="height: 100dvh">
-          <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12" style="width: 60%; margin: 0 auto">
-              <v-toolbar dark color="primary">
-                <v-toolbar-title class="text-center"
-                  >Payment Page</v-toolbar-title
-                >
-              </v-toolbar>
-              <v-card-text class="text-center">
-                <div>
-                  <v-card-item>
-                    <v-card-title class="text-h5">{{
-                      paymentDetails.name
-                    }}</v-card-title>
-                  </v-card-item>
-                  <v-card-text>
-                    <div class="mb-2">
-                      {{ paymentDetails.city }} - {{ paymentDetails.pincode }}
-                    </div>
-                    <div v-if="paymentDetails?.estimates?.length > 0">
-                      <div class="mb-6">
-                        Contractor :
-                        {{ paymentDetails?.estimates[0]?.user?.fname }}
-                        {{ paymentDetails?.estimates[0]?.user?.lname }}
-                      </div>
-                    </div>
-                    <!-- <div>
+  <v-content>
+    <v-container fluid fill-height style="height: 100dvh">
+      <v-flex xs12 sm8 md4>
+        <v-card class="elevation-12" style="width: 60%; margin: 0 auto">
+          <v-toolbar dark color="primary">
+            <v-toolbar-title class="text-center">Payment Page</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text class="text-center">
+            <div>
+              <v-card-item>
+                <v-card-title class="text-h5">{{
+                  paymentDetails.name
+                }}</v-card-title>
+              </v-card-item>
+              <v-card-text>
+                <div class="mb-2">
+                  {{ paymentDetails.city }} - {{ paymentDetails.pincode }}
+                </div>
+                <div v-if="paymentDetails?.estimates?.length > 0">
+                  <div class="mb-6">
+                    Contractor :
+                    {{ paymentDetails?.estimates[0]?.user?.fname }}
+                    {{ paymentDetails?.estimates[0]?.user?.lname }}
+                  </div>
+                </div>
+                <!-- <div>
                   Contractor name : {{ propertyData.user?.fname }}
                   {{ propertyData.user?.lname }}
                 </div> -->
-                    <div v-if="paymentDetails?.estimates?.length > 0">
-                      <div
-                        class="text-h5 bg-indigo-lighten-5 rounded-lg d-inline pa-3 mb-2"
-                      >
-                        Price : ₹ {{ paymentDetails?.estimates[0]?.price }}
-                      </div>
-                    </div>
-                    <div v-else>
-                      <div>Price : -</div>
-                    </div>
-                  </v-card-text>
-                </div>
-                <v-card-actions>
-                  <!-- <v-spacer></v-spacer> -->
-                  <v-btn
-                    :disabled="loading"
-                    :loading="loading"
-                    class="d-flex bg-purple"
-                    style="margin: 0 auto"
-                    @click.prevent="payPayment"
-                    block
-                    >Pay</v-btn
+                <div v-if="paymentDetails?.estimates?.length > 0">
+                  <div
+                    class="text-h5 bg-indigo-lighten-5 rounded-lg d-inline pa-3 mb-2"
                   >
-                </v-card-actions>
+                    Price : ₹ {{ paymentDetails?.estimates[0]?.price }}
+                  </div>
+                </div>
+                <div v-else>
+                  <div>Price : -</div>
+                </div>
               </v-card-text>
-            </v-card>
-          </v-flex>
-        </v-container>
-      </v-content>
-    </v-main>
-  </v-app>
+            </div>
+            <v-card-actions>
+              <!-- <v-spacer></v-spacer> -->
+              <v-btn
+                :disabled="loading"
+                :loading="loading"
+                class="d-flex bg-purple"
+                style="margin: 0 auto"
+                @click.prevent="payPayment"
+                block
+                >Pay</v-btn
+              >
+            </v-card-actions>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-container>
+  </v-content>
 </template>
 
 <script setup>
 import { onBeforeMount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import Sidebar from "../../components/property/sideBar.vue";
 import { loadStripe } from "@stripe/stripe-js";
 const route = useRoute();
 const message = ref("");

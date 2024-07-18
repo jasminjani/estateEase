@@ -1,63 +1,55 @@
 <template>
-  <v-app>
-    <v-navigation>
-      <Sidebar />
-    </v-navigation>
-    <v-main>
-      <v-content>
-        <v-container fluid fill-height>
-          <v-flex xs12 sm8 md4>
-            <v-card
-              class="elevation-12 bg-indigo-lighten-5"
-              style="width: 100%; margin: 0 auto"
-            >
-              <div>
-                <PropertyDetailComponent :propertyData="propertyData" />
-              </div>
-              <v-card class="ma-2">
-                <v-form ref="formRef" :rules="piceValidationRule">
-                  <v-text-field
-                    v-model="formData.price"
-                    :rules="piceValidationRule.price"
-                    class="ma-2"
-                    prepend-inner-icon="mdi-currency-inr"
-                    label="Repairing price"
-                    name="price"
-                    clearable
-                    type="text"
-                  >
-                  </v-text-field>
-                  <v-card-actions class="d-flex">
-                    <v-btn class="bg-primary w-50" @click="applyTender"
-                      >Apply tender</v-btn
-                    >
-                    <v-btn
-                      class="bg-purple w-50"
-                      @click="
-                        router.push({
-                          name: 'ContractorChat',
-                          params: {
-                            id: propertyData.user?.id,
-                            p_id: route.params.id,
-                          },
-                        })
-                      "
-                      >Chat with owner
-                    </v-btn>
-                  </v-card-actions>
-                </v-form>
-              </v-card>
-            </v-card>
-          </v-flex>
-        </v-container>
-      </v-content>
-    </v-main>
-  </v-app>
+  <v-content>
+    <v-container fluid fill-height>
+      <v-flex xs12 sm8 md4>
+        <v-card
+          class="elevation-12 bg-indigo-lighten-5"
+          style="width: 100%; margin: 0 auto"
+        >
+          <div>
+            <PropertyDetailComponent :propertyData="propertyData" />
+          </div>
+          <v-card class="ma-2">
+            <v-form ref="formRef" :rules="piceValidationRule">
+              <v-text-field
+                v-model="formData.price"
+                :rules="piceValidationRule.price"
+                class="ma-2"
+                prepend-inner-icon="mdi-currency-inr"
+                label="Repairing price"
+                name="price"
+                clearable
+                type="text"
+              >
+              </v-text-field>
+              <v-card-actions class="d-flex">
+                <v-btn class="bg-primary w-50" @click="applyTender"
+                  >Apply tender</v-btn
+                >
+                <v-btn
+                  class="bg-purple w-50"
+                  @click="
+                    router.push({
+                      name: 'ContractorChat',
+                      params: {
+                        id: propertyData.user?.id,
+                        p_id: route.params.id,
+                      },
+                    })
+                  "
+                  >Chat with owner
+                </v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card>
+        </v-card>
+      </v-flex>
+    </v-container>
+  </v-content>
 </template>
 
 <script setup>
 import socket from "../../socket";
-import Sidebar from "../../components/contractor/sideBar.vue";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";

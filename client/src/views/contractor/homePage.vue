@@ -1,52 +1,44 @@
 <template>
-  <v-app>
-    <v-navigation>
-      <Sidebar />
-    </v-navigation>
-    <v-main>
-      <v-content>
-        <v-container fluid fill-height>
-          <v-flex xs12 sm8 md4>
-            <v-card
-              class="elevation-12 bg-indigo-lighten-5"
-              style="width: 100%; margin: 0 auto"
+  <v-content>
+    <v-container fluid fill-height>
+      <v-flex xs12 sm8 md4>
+        <v-card
+          class="elevation-12 bg-indigo-lighten-5"
+          style="width: 100%; margin: 0 auto"
+        >
+          <v-toolbar dark color="primary">
+            <v-toolbar-title class="text-center"
+              >Property Details</v-toolbar-title
             >
-              <v-toolbar dark color="primary">
-                <v-toolbar-title class="text-center"
-                  >Property Details</v-toolbar-title
-                >
-              </v-toolbar>
-              <div class="v-row" v-if="propertyAndJobData.length > 0">
-                <div
-                  class="v-col-4"
-                  v-for="property in propertyAndJobData"
-                  :key="property.id"
-                >
-                  <PropertyLayoutComponent
-                    :name="property.name"
-                    :address="property.address"
-                    :city="property.city"
-                    :pincode="property.pincode"
-                    :jobs="property.jobs"
-                    :id="property.id"
-                  />
-                </div>
-              </div>
-              <div v-else>
-                <!-- <div class="v-col-4"> -->
-                <NoDataFoundComponent />
-                <!-- </div> -->
-              </div>
-            </v-card>
-          </v-flex>
-        </v-container>
-      </v-content>
-    </v-main>
-  </v-app>
+          </v-toolbar>
+          <div class="v-row" v-if="propertyAndJobData.length > 0">
+            <div
+              class="v-col-4"
+              v-for="property in propertyAndJobData"
+              :key="property.id"
+            >
+              <PropertyLayoutComponent
+                :name="property.name"
+                :address="property.address"
+                :city="property.city"
+                :pincode="property.pincode"
+                :jobs="property.jobs"
+                :id="property.id"
+              />
+            </div>
+          </div>
+          <div v-else>
+            <!-- <div class="v-col-4"> -->
+            <NoDataFoundComponent />
+            <!-- </div> -->
+          </div>
+        </v-card>
+      </v-flex>
+    </v-container>
+  </v-content>
 </template>
 
 <script setup>
-import Sidebar from "../../components/contractor/sideBar.vue";
 import PropertyLayoutComponent from "../../components/contractor/propertyLayoutComponent.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref } from "vue";
