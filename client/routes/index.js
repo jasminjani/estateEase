@@ -1,4 +1,5 @@
 import { store } from "@/store";
+import { computed } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -114,16 +115,16 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // console.log(from);
 
-  const currentUser = store.state.isAuthModule.currentUser;
-  // console.log(currentUser);
+  const currentUser = computed(() => store.getters.getCurrentUser);
+  // console.log(currentUser.value);
 
-  if (to.meta.requiresAuth && !currentUser) {
+  if (to.meta.requiresAuth && !currentUser.value) {
     // console.log("i am login");
     next({ name: "login" });
-  } else if (to.meta.requiresAuth && currentUser) {
-    if (to.meta.role_id && currentUser.role_id !== to.meta.role_id) {
+  } else if (to.meta.requiresAuth && currentUser.value) {
+    if (to.meta.role_id && currentUser.value.role_id !== to.meta.role_id) {
       // console.log("i am else if");
-      if (currentUser.role_id == 1) {
+      if (currentUser.value.role_id == 1) {
         // console.log("i am second if");
         next({ name: "PropertyDashboard" });
       } else {

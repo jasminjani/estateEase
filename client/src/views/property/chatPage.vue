@@ -56,6 +56,7 @@
                   placeholder="Enter text here"
                   name="msg"
                   clearable
+                  @keydown.enter="sendMsg"
                 >
                   <!-- <v-btn icon="mdi-emoticon-outline"></v-btn> -->
                   <!-- <v-btn icon="mdi-camera-outline"></v-btn> -->

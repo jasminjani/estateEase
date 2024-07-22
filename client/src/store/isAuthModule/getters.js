@@ -6,4 +6,8 @@ export const getters = {
   getUserId: (state) => {
     return state.currentUser?.id;
   },
+
+  getCurrentUser: (state) => {
+    return state.currentUser;
+  },
 };

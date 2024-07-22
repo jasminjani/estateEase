@@ -154,14 +154,28 @@ exports.addEstimatePriceOfProperty = async (req, res) => {
     if (!price || !p_id) {
       return res.status(400).json({
         success: false,
-        message: "estimation price or property id not found",
+        message: "required fields not found",
       });
     }
 
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "contractor id not found",
+        message: "contractor details not found",
+      });
+    }
+
+    const checkAlreadyAppliedTender = await db.estimates.findAll({
+      where: {
+        p_id,
+        contracter_id: id,
+      },
+    });
+
+    if (checkAlreadyAppliedTender?.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already applied Tender for this Property",
       });
     }
 

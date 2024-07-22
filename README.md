@@ -113,13 +113,13 @@ then in server, create all required models and their migration files.
 
 <!-- blob image to string ma convert kari img display karavana chhe. -->
 
-vuex apply karvanu chhe
+<!-- vuex apply karvanu chhe -->
 <!-- route protect karvana chhe. -->
 <!-- property and estimate na status na according contractor or property side status and button manage karavana chhe. -->
 validation baki chhe.
-contractor ne khali j job ma comment avi hoi a j job batavi. and property owner side bi je navu proof upload kare a j batavu.
 <!-- error handeling. -->
-sidebar nu scroll remove kari n fix kaevanu chhe.
+<!-- sidebar nu scroll remove kari n fix kaevanu chhe. -->
+add property real time contracter n batavani chhe. (kareli chhe but socket ma fetch mathi data nai avto atle error ave chhe.)
 
 # CONTRACTOR SIDE :-
 
@@ -127,11 +127,20 @@ sidebar nu scroll remove kari n fix kaevanu chhe.
 
 # PROPERTY SIDE :-
 
-property side tender approve thai jai pachhi contractor jode chat kai rite karavsu?
-Add comment nu post controller baki chhe and onclick fetch marvanu bi baki chhe.
+contracter tender bharya vagar message karse to a chat nathi batavi.
+<!-- property side tender approve thai jai pachhi contractor jode chat kai rite karavsu? -->
+<!-- Add comment nu post controller baki chhe and onclick fetch marvanu bi baki chhe. -->
 
-getAllReviewCommentData getter reviewCommentModule ma kam nai kartu atle comment karelu chhe ano data reviewWork page ma direct comments reactive thi moklelo chhe.
+getAllReviewCommentData getter reviewCommentModule ma kam nai kartu atle comment karelu chhe ano data reviewWork page ma direct comments reactive thi moklelo chhe. (have ni karyu because te store no use nathi karelo).
 
 # EXTRA :-
 
-routes/index.js ma store.state.isAuthModule.currentUser mate ak getters banavi and index.js ma tene computed ma kari sakai.
+<!-- routes/index.js ma store.state.isAuthModule.currentUser mate ak getters banavi and index.js ma tene computed ma kari sakai. -->
+contractor ne khali j job ma comment avi hoi a j job batavi. and property owner side bi je navu proof upload kare a j batavu.
+
+# validation :-
+property :-   add property ma job related dynamic fields. 
+              review and pay page par comments ma
+
+contracter :-  apply property bid
+                upload work proof

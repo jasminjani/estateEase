@@ -114,14 +114,15 @@ const applyTender = async () => {
       );
       res = await res.json();
       console.log(res);
-
-      if (res.success) {
+      if (res && res?.success) {
         console.log("res.message :>> ", res.message);
         socket.emit("new-bid-data", {
           data: res.message,
           receiver: propertyData.value.user?.id,
         });
         router.push({ name: "ContarctorHistory" });
+      } else if (res && !res?.success) {
+        alert(res.message);
       } else {
         alert("something went wrong : can not able to apply tender");
       }

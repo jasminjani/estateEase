@@ -123,23 +123,21 @@
             </div>
 
             <v-card class="ma-2">
-              <v-form ref="formRef" :rules="piceValidationRule">
-                <v-card-actions class="d-flex">
-                  <v-btn
-                    class="bg-primary w-50"
-                    @click="
-                      router.push({
-                        name: 'PropertyPayment',
-                        params: { p_id: route.params.id },
-                      })
-                    "
-                    >Make Payment</v-btn
-                  >
-                  <v-btn class="bg-purple w-50" @click="addComments"
-                    >Add Comments For Work</v-btn
-                  >
-                </v-card-actions>
-              </v-form>
+              <v-card-actions class="d-flex">
+                <v-btn
+                  class="bg-primary w-50"
+                  @click="
+                    router.push({
+                      name: 'PropertyPayment',
+                      params: { p_id: route.params.id },
+                    })
+                  "
+                  >Make Payment</v-btn
+                >
+                <v-btn class="bg-purple w-50" @click="addComments"
+                  >Add Comments For Work</v-btn
+                >
+              </v-card-actions>
             </v-card>
           </v-form>
         </v-card>
