@@ -119,7 +119,7 @@ then in server, create all required models and their migration files.
 validation baki chhe.
 <!-- error handeling. -->
 <!-- sidebar nu scroll remove kari n fix kaevanu chhe. -->
-add property real time contracter n batavani chhe. (kareli chhe but socket ma fetch mathi data nai avto atle error ave chhe.)
+<!-- add property real time contracter n batavani chhe. (kareli chhe but socket ma fetch mathi data nai avto atle error ave chhe.) -->
 
 # CONTRACTOR SIDE :-
 

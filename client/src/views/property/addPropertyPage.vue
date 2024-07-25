@@ -1,122 +1,122 @@
 <template>
-      <v-content>
-        <v-container fluid fill-height>
-          <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12" style="width: 100%; margin: 0 auto">
-              <v-toolbar dark color="primary">
-                <v-toolbar-title class="text-center"
-                  >Add Property Details</v-toolbar-title
+  <v-content>
+    <v-container fluid fill-height>
+      <v-flex xs12 sm8 md4>
+        <v-card class="elevation-12" style="width: 100%; margin: 0 auto">
+          <v-toolbar dark color="primary">
+            <v-toolbar-title class="text-center"
+              >Add Property Details</v-toolbar-title
+            >
+          </v-toolbar>
+          <v-card-text>
+            <v-form>
+              <v-text-field
+                v-model="name.value.value"
+                :error-messages="name.errorMessage.value"
+                prepend-icon="mdi-city"
+                name="name"
+                label="Property Name"
+                type="text"
+                clearable
+              ></v-text-field>
+
+              <v-textarea
+                v-model="address.value.value"
+                :error-messages="address.errorMessage.value"
+                prepend-icon="mdi-home-city"
+                name="address"
+                label="Property address"
+                type="textarea"
+                clearable
+                counter
+              ></v-textarea>
+              <v-text-field
+                v-model="city.value.value"
+                :error-messages="city.errorMessage.value"
+                prepend-icon="mdi-map-marker"
+                name="city"
+                label="City"
+                type="text"
+                clearable
+              ></v-text-field>
+              <v-text-field
+                v-model="pincode.value.value"
+                :error-messages="pincode.errorMessage.value"
+                prepend-icon="mdi-fire-hydrant"
+                name="pincode"
+                label="Pincode"
+                type="text"
+                clearable
+              ></v-text-field>
+              <!-- <JobComponent /> -->
+              <div id="outerDiv">
+                {{ jobsCount.count }}
+                <div
+                  id="innerDiv"
+                  v-for="(count, index) in jobsCount"
+                  :key="index"
                 >
-              </v-toolbar>
-              <v-card-text>
-                <v-form>
                   <v-text-field
-                    v-model="name.value.value"
-                    :error-messages="name.errorMessage.value"
-                    prepend-icon="mdi-city"
-                    name="name"
-                    label="Property Name"
+                    v-model="jobsCount[index].name"
+                    prepend-icon="mdi-text"
+                    name="jobname"
+                    label="Job name"
                     type="text"
                     clearable
                   ></v-text-field>
-
                   <v-textarea
-                    v-model="address.value.value"
-                    :error-messages="address.errorMessage.value"
-                    prepend-icon="mdi-home-city"
-                    name="address"
-                    label="Property address"
+                    v-model="jobsCount[index].description"
+                    prepend-icon="mdi-comment"
+                    name="job_description"
+                    label="Job description"
                     type="textarea"
                     clearable
                     counter
                   ></v-textarea>
-                  <v-text-field
-                    v-model="city.value.value"
-                    :error-messages="city.errorMessage.value"
-                    prepend-icon="mdi-map-marker"
-                    name="city"
-                    label="City"
-                    type="text"
-                    clearable
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="pincode.value.value"
-                    :error-messages="pincode.errorMessage.value"
-                    prepend-icon="mdi-fire-hydrant"
-                    name="pincode"
-                    label="Pincode"
-                    type="text"
-                    clearable
-                  ></v-text-field>
-                  <!-- <JobComponent /> -->
-                  <div id="outerDiv">
-                    {{ jobsCount.count }}
-                    <div
-                      id="innerDiv"
-                      v-for="(count, index) in jobsCount"
-                      :key="index"
-                    >
-                      <v-text-field
-                        v-model="jobsCount[index].name"
-                        prepend-icon="mdi-text"
-                        name="jobname"
-                        label="Job name"
-                        type="text"
-                        clearable
-                      ></v-text-field>
-                      <v-textarea
-                        v-model="jobsCount[index].description"
-                        prepend-icon="mdi-comment"
-                        name="job_description"
-                        label="Job description"
-                        type="textarea"
-                        clearable
-                        counter
-                      ></v-textarea>
 
-                      <v-file-input
-                        v-model="jobsCount[index].photos"
-                        name="jobimage"
-                        label="Upload image"
-                        accept="image/*"
-                        chips
-                        multiple
-                        clearable
-                        counter
-                        show-size
-                      ></v-file-input>
-                    </div>
-                  </div>
-                  <v-card-action class="d-flex justify-space-around">
-                    <v-btn
-                      class="bg-purple"
-                      prepend-icon="mdi-plus"
-                      @click="addMoreJobs"
-                      >Add more jobs</v-btn
-                    >
-                    <v-btn
-                      class="bg-purple"
-                      prepend-icon="mdi-minus"
-                      @click="removeMoreJobs"
-                      >Remove jobs</v-btn
-                    >
-                  </v-card-action>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
+                  <v-file-input
+                    v-model="jobsCount[index].photos"
+                    name="jobimage"
+                    label="Upload image"
+                    accept="image/*"
+                    chips
+                    multiple
+                    clearable
+                    counter
+                    show-size
+                  ></v-file-input>
+                </div>
+              </div>
+              <v-card-action class="d-flex justify-space-around">
                 <v-btn
-                  :disabled="loading"
-                  :loading="loading"
-                  class="d-flex bg-primary"
-                  style="margin: 0 auto"
-                  @click.prevent="addPropertyAndJobs"
-                  >Add property</v-btn
+                  class="bg-purple"
+                  prepend-icon="mdi-plus"
+                  @click="addMoreJobs"
+                  >Add more jobs</v-btn
                 >
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-container>
-      </v-content>
+                <v-btn
+                  class="bg-purple"
+                  prepend-icon="mdi-minus"
+                  @click="removeMoreJobs"
+                  >Remove jobs</v-btn
+                >
+              </v-card-action>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              :disabled="loading"
+              :loading="loading"
+              class="d-flex bg-primary"
+              style="margin: 0 auto"
+              @click.prevent="addPropertyAndJobs"
+              >Add property</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+    </v-container>
+  </v-content>
 </template>
 
 <script setup>

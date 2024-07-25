@@ -32,6 +32,16 @@ exports.addPropertyAndJobs = async (req, res) => {
         { transaction: t }
       );
 
+      let newAddedPropertyData = {
+        id: newProperty.id,
+        name: newProperty.name,
+        address: newProperty.address,
+        city: newProperty.city,
+        pincode: newProperty.pincode,
+        is_approved: newProperty.is_approved,
+        jobs: [],
+      };
+
       let index = 0;
       while (
         req.body[`jobname_${index}`] &&
@@ -90,27 +100,14 @@ exports.addPropertyAndJobs = async (req, res) => {
             );
           });
 
+        newAddedPropertyData.jobs.push({ jobname: newJob.jobname });
+
         await Promise.all(uploadPromises);
 
         index++;
       }
-      
+
       console.log("newProperty.id ", newProperty.id);
-
-      const newAddedPropertyData = await db.properties.findOne({
-        where: { id: newProperty.id },
-        attributes: ["id", "name", "address", "city", "pincode", "is_approved"],
-        include: [
-          {
-            model: db.jobs,
-            as: "jobs",
-            attributes: ["jobname"],
-            required: false,
-          },
-        ],
-      });
-
-      console.log("newAddedPropertyData :>> ", newAddedPropertyData);
 
       res.status(200).json({
         success: true,
@@ -359,7 +356,6 @@ exports.addReviewWorkComments = async (req, res) => {
       });
     }
 
-
     await db.sequelize.transaction(async (t) => {
       const addedReviewComments = req.body.reviewComments.map(
         async (element) => {
@@ -379,7 +375,6 @@ exports.addReviewWorkComments = async (req, res) => {
           //   { where: { job_id: element.job_id } },
           //   { transaction: t }
           // );
-
 
           if (element.comment?.trim()) {
             await db.work_proofs.update(
