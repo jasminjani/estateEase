@@ -37,7 +37,7 @@
             </v-card-text>
           </div>
           <div class="text-h6 ma-2">Work details :</div>
-          <v-form ref="reviewWorkFormData" :rules="commentValidationRule">
+          <v-form ref="formRef" :rules="piceValidationRule">
             <div
               class="ma-2"
               v-for="(job, index) in propertyData.jobs"
@@ -107,7 +107,7 @@
                     <v-card-text>
                       <v-textarea
                         v-model="comments[index].comment"
-                        :rules="commentValidationRule.comment"
+                        :rules="piceValidationRule.comment"
                         prepend-inner-icon="mdi-comment"
                         name="comment"
                         label="Add Comments"
@@ -163,10 +163,10 @@ const router = useRouter();
 const propertyData = ref([]);
 const comments = reactive([]);
 
-const reviewWorkFormData = ref(null);
+const formRef = ref(null);
 // const formData = reactive({ comment: "" });
 // let count = 0;
-const commentValidationRule = {
+const piceValidationRule = {
   comment: [
     () => {
       return commentValidation();
@@ -183,7 +183,10 @@ function commentValidation() {
     }
   });
 
-  return count == comments.length ? "Any one comment is required" : true;
+  if (count == comments.length) {
+    return "Atleast one comment is required.";
+  }
+  return true;
 }
 
 onBeforeMount(async () => {
@@ -242,43 +245,42 @@ const addComments = async () => {
     // );
     console.log("add comments :>> ", comments);
 
-    const result = await reviewWorkFormData.value.validate();
+    const result = await formRef.value.validate();
 
     if (result.valid) {
       console.log("result", result);
-
-      let res = await fetch(
-        `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
-        {
-          method: "post",
-          mode: "cors",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            p_id: route.params.id,
-            reviewComments: comments,
-          }),
-        }
-      );
-      res = await res.json();
-      console.log("res: ", res);
-      if (res) {
-        // if (res.success) {
-
-        socket.emit("status-changed", {
-          receiver:
-            propertyData.value?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user
-              ?.id,
-          property: route.params.id,
-          newStatus: 3,
-        });
-        router.push({ name: "PropertyHistory" });
-        // }
-      } else {
-        console.log("failed");
-      }
     } else {
       console.log("result failed");
+    }
+
+    let res = await fetch(
+      `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
+      {
+        method: "post",
+        mode: "cors",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          p_id: route.params.id,
+          reviewComments: comments,
+        }),
+      }
+    );
+    res = await res.json();
+    console.log("res: ", res);
+    if (res) {
+      // if (res.success) {
+
+      socket.emit("status-changed", {
+        receiver:
+          propertyData.value?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user?.id,
+        property: route.params.id,
+        newStatus: 3,
+      });
+      router.push({ name: "PropertyHistory" });
+      // }
+    } else {
+      console.log("failed");
     }
   } catch (error) {
     console.error(error);

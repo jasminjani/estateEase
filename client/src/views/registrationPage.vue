@@ -8,7 +8,11 @@
             <v-toolbar-title class="text-center">Register Page</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form :rules="validationSchema" ref="formRef" id="form">
+            <v-form
+              :rules="validationSchema"
+              ref="registrationFormRef"
+              id="form"
+            >
               <v-select
                 v-model="formData.select"
                 :items="items"
@@ -132,95 +136,79 @@ const router = useRouter();
 const passVisible = ref(false);
 const confirmPassVisible = ref(false);
 
-const formRef = ref(null);
+const registrationFormRef = ref(null);
 const validationSchema = {
   select: [
     (value) => {
-      if (value) return true;
-
-      return "Select an item.";
+      return value ? true : "Select an item";
     },
   ],
   fname: [
     (value) => {
-      if (value?.length >= 1) return true;
-
-      return "Fill first name";
+      return notNullValidation(value);
     },
   ],
   lname: [
     (value) => {
-      if (value?.length >= 1) return true;
-
-      return "Fill last name";
+      return notNullValidation(value);
     },
   ],
   email: [
     (value) => {
-      if (/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i.test(value)) return true;
-
-      return "Must be a valid email.";
+      return /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i.test(value)
+        ? true
+        : "Required valid email format";
     },
   ],
   phone_no: [
     (value) => {
-      if (value?.length > 9 && /[0-9-]+/.test(value) && value?.length < 11)
-        return true;
-
-      return "Phone number needs to be 10 digits integer.";
+      return value?.trim()?.length == 10 && /[0-9-]+/.test(value)
+        ? true
+        : "Phone number should be 10 digits integer";
     },
   ],
   dob: [
     (value) => {
       console.log("date value", new Date(value) < new Date());
-      if (new Date(value) < new Date()) return true;
-
-      return "dob should be less than current date";
+      return new Date(value) < new Date()
+        ? true
+        : "dob should be less than current date";
     },
   ],
   city: [
     (value) => {
-      if (value?.length >= 1) return true;
-
-      return "Fill city name";
+      return notNullValidation(value);
     },
   ],
   password: [
     (value) => {
-      if (value?.length < 8) {
-        return "password must be 8 character long";
-      }
-      if (
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i.test(
-          value
-        )
-      ) {
-        return true;
-      }
-
-      return "Password should caontain atleast one uppercase, lowercase, digit and special character";
+      return value?.length < 8
+        ? "password must be 8 character long"
+        : /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i.test(
+            value
+          )
+        ? true
+        : "Password should contain atleast one uppercase, lowercase, digit and special character";
     },
   ],
   confirmPassword: [
     (value) => {
-      if (value?.length < 8) {
-        return "password must be 8 character long";
-      }
-      if (
-        !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i.test(
-          value
-        )
-      ) {
-        return "confirm Password should caontain atleast one uppercase, lowercase, digit and special character";
-      }
-
-      if (!(value === formData.value.password)) {
-        return "password and confirm password does not matched";
-      }
-      return true;
+      return value?.length < 8
+        ? "password must be 8 character long"
+        : !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i.test(
+            value
+          )
+        ? "confirm Password should contain atleast one uppercase, lowercase, digit and special character"
+        : value === formData.value.password
+        ? true
+        : "password and confirm password does not matched";
     },
   ],
 };
+
+function notNullValidation(value) {
+  return value?.trim()?.length > 0 ? true : "required";
+}
 
 // const select = useField("select");
 // const fname = useField("fname");
@@ -251,13 +239,16 @@ const items = ref([
 
 const register = async () => {
   try {
-    console.log("formRef.value :>> ", await formRef.value.validate());
-    // const formVerify = formRef.value;
+    console.log(
+      "registrationFormRef.value :>> ",
+      await registrationFormRef.value.validate()
+    );
+    // const formVerify = registrationFormRef.value;
 
-    const result = await formRef.value.validate();
+    const result = await registrationFormRef.value.validate();
     console.log("res ", result.valid);
 
-    if (result.valid == true) {
+    if (result.valid) {
       let formSubmitedData = {
         role_id: formData.value.select,
         fname: formData.value.fname,

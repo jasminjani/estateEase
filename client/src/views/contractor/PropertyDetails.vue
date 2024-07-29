@@ -10,10 +10,10 @@
             <PropertyDetailComponent :propertyData="propertyData" />
           </div>
           <v-card class="ma-2">
-            <v-form ref="formRef" :rules="piceValidationRule">
+            <v-form ref="applyTenderFormRef" :rules="priceValidationRule">
               <v-text-field
-                v-model="formData.price"
-                :rules="piceValidationRule.price"
+                v-model="applyTenderFormData.price"
+                :rules="priceValidationRule.price"
                 class="ma-2"
                 prepend-inner-icon="mdi-currency-inr"
                 label="Repairing price"
@@ -55,14 +55,18 @@ import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 // import * as yup from "yup";
 
-const formRef = ref(null);
-const formData = reactive({ price: "" });
-const piceValidationRule = {
+const applyTenderFormRef = ref(null);
+const applyTenderFormData = reactive({ price: "" });
+const priceValidationRule = {
   price: [
     (value) => {
-      if (value?.length > 0 && /[0-9-]+/.test(value)) return true;
-
-      return "Price should be number.";
+      return value?.trim()?.length > 0
+        ? value > 0
+          ? !value.startsWith("+")
+            ? true
+            : "no need to write + in bid price"
+          : "Price should be positive number"
+        : "required";
     },
   ],
 };
@@ -94,9 +98,9 @@ const applyTender = async () => {
   try {
     console.log("click on apply tender");
 
-    const result = await formRef.value.validate();
+    const result = await applyTenderFormRef.value.validate();
 
-    if (result.valid == true) {
+    if (result.valid) {
       console.log(result);
 
       let res = await fetch(
@@ -108,7 +112,7 @@ const applyTender = async () => {
           credentials: "include",
           body: JSON.stringify({
             p_id: route.params.id,
-            price: formData.price,
+            price: applyTenderFormData.price,
           }),
         }
       );

@@ -1,99 +1,105 @@
 <template>
-
-      <v-content>
-        <v-container fluid fill-height>
-          <v-flex xs12 sm8 md4>
-            <v-card
-              class="elevation-12 bg-indigo-lighten-5"
-              style="width: 100%; margin: 0 auto"
+  <v-content>
+    <v-container fluid fill-height>
+      <v-flex xs12 sm8 md4>
+        <v-card
+          class="elevation-12 bg-indigo-lighten-5"
+          style="width: 100%; margin: 0 auto"
+        >
+          <v-toolbar dark color="primary">
+            <v-toolbar-title class="text-center"
+              >Add work proof</v-toolbar-title
             >
-              <v-toolbar dark color="primary">
-                <v-toolbar-title class="text-center"
-                  >Add work proof</v-toolbar-title
-                >
-              </v-toolbar>
+          </v-toolbar>
+          <div>
+            <v-card-item>
+              <v-card-title class="text-h5">{{
+                propertyData.name
+              }}</v-card-title>
+            </v-card-item>
+            <v-card-text>
+              <div>{{ propertyData.address }}</div>
+              <div>{{ propertyData.city }} - {{ propertyData.pincode }}</div>
               <div>
-                <v-card-item>
-                  <v-card-title class="text-h5">{{
-                    propertyData.name
-                  }}</v-card-title>
-                </v-card-item>
-                <v-card-text>
-                  <div>{{ propertyData.address }}</div>
-                  <div>
-                    {{ propertyData.city }} - {{ propertyData.pincode }}
-                  </div>
-                  <div>
-                    Property owner : {{ propertyData.user?.fname }}
-                    {{ propertyData.user?.lname }}
-                  </div>
-                </v-card-text>
+                Property owner : {{ propertyData.user?.fname }}
+                {{ propertyData.user?.lname }}
               </div>
-              <div class="text-h6 ma-2">Work details :</div>
-              <v-form ref="formRef" :rules="piceValidationRule">
-                <div
-                  class="ma-2"
-                  v-for="(job, index) in propertyData.jobs"
-                  :key="job.id"
-                >
-                  <!-- <UploadWorkImageComponent
+            </v-card-text>
+          </div>
+          <div class="text-h6 ma-2">Work details :</div>
+          <v-form ref="uploadWorkProofFormData" :rules="imageValidationRule">
+            <div
+              class="ma-2"
+              v-for="(job, index) in propertyData.jobs"
+              :key="job.id"
+            >
+              <!-- <UploadWorkImageComponent
                   :jobname="job.jobname"
                   :description="job.job_description"
                 /> -->
 
-                  <v-card-container>
-                    <v-card class="elevation-10 pa-2">
-                      <div class="font-weight-medium text-h6">
-                        work : {{ job.jobname }}
-                      </div>
-                      <div v-if="job.job_description != 'null'">
-                        description : {{ job.job_description }}
-                      </div>
-                      <div v-else>description : -</div>
-                      <div v-if="job.work_proofs.length > 0">
-                        Comments :
-                        {{
-                          job.work_proofs[0].comments == null
-                            ? "This Work is Approved"
-                            : job.work_proofs[0].comments
-                        }}
-                      </div>
-                      <div>photos :</div>
-                      <v-file-input
-                        v-model="image[index].photos"
-                        name="workimage"
-                        label="upload work image"
-                        accept="image/*"
-                        clearable
-                        multiple
-                        counter
-                        show-size
-                        chips
-                      ></v-file-input>
-                    </v-card>
-                  </v-card-container>
-                </div>
-                <v-card class="ma-2">
-                  <v-card-actions class="d-flex">
-                    <v-btn
-                      class="bg-primary w-50"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="addWorkAndimage"
-                      >Mark task as complete</v-btn
-                    >
-                    <v-btn
-                      class="bg-purple w-50"
-                      @click="router.push({ name: 'ContractorChat' })"
-                      >Chat with owner</v-btn
-                    >
-                  </v-card-actions>
+              <v-card-container>
+                <v-card class="elevation-10 pa-2">
+                  <div class="font-weight-medium text-h6">
+                    work : {{ job.jobname }}
+                  </div>
+                  <div v-if="job.job_description != 'null'">
+                    description : {{ job.job_description }}
+                  </div>
+                  <div v-else>description : -</div>
+                  <div v-if="job.work_proofs.length > 0">
+                    Comments :
+                    {{
+                      job.work_proofs[0].comments == null
+                        ? "This Work is Approved"
+                        : job.work_proofs[0].comments
+                    }}
+                  </div>
+                  <div>photos :</div>
+                  <v-file-input
+                    v-model="image[index].photos"
+                    :rules="imageValidationRule.image"
+                    name="workimage"
+                    label="upload work image"
+                    accept="image/*"
+                    clearable
+                    multiple
+                    counter
+                    show-size
+                    chips
+                  ></v-file-input>
                 </v-card>
-              </v-form>
+              </v-card-container>
+            </div>
+            <v-card class="ma-2">
+              <v-card-actions class="d-flex">
+                <v-btn
+                  class="bg-primary w-50"
+                  :disabled="loading"
+                  :loading="loading"
+                  @click="addWorkAndimage"
+                  >Mark task as complete</v-btn
+                >
+                <v-btn
+                  class="bg-purple w-50"
+                  @click="
+                    router.push({
+                      name: 'ContractorChat',
+                      params: {
+                        id: propertyData.user?.id,
+                        p_id: route.params.p_id,
+                      },
+                    })
+                  "
+                  >Chat with owner</v-btn
+                >
+              </v-card-actions>
             </v-card>
-          </v-flex>
-        </v-container>
-      </v-content>
+          </v-form>
+        </v-card>
+      </v-flex>
+    </v-container>
+  </v-content>
 </template>
 
 <script setup>
@@ -108,6 +114,16 @@ const router = useRouter();
 const propertyData = ref([]);
 const image = reactive([]);
 const loading = ref(false);
+
+const uploadWorkProofFormData = ref(null);
+
+const imageValidationRule = {
+  image: [
+    (value) => {
+      return value?.length > 0 ? true : "Atleast one image is required";
+    },
+  ],
+};
 
 onBeforeMount(async () => {
   try {
@@ -132,47 +148,52 @@ onBeforeMount(async () => {
 
 const addWorkAndimage = async () => {
   try {
+    const result = await uploadWorkProofFormData.value.validate();
     console.log("click on add work image");
+    if (result.valid) {
+      console.log("result success : ", result);
+      loading.value = true;
+      let formData = new FormData();
+      console.log("image ", image);
 
-    loading.value = true;
-    let formData = new FormData();
-    console.log("image ", image);
+      formData.append("estimate_id", route.params.estimate_id);
+      formData.append("p_id", route.params.p_id);
 
-    formData.append("estimate_id", route.params.estimate_id);
-    formData.append("p_id", route.params.p_id);
-
-    image.map((element, index) => {
-      console.log("image map", element);
-      formData.append(`job_id_${index}`, element.job_id);
-      element.photos.map((photo) => {
-        formData.append(`photos_${index}`, photo);
+      image.map((element, index) => {
+        console.log("image map", element);
+        formData.append(`job_id_${index}`, element.job_id);
+        element.photos.map((photo) => {
+          formData.append(`photos_${index}`, photo);
+        });
       });
-    });
 
-    console.log("formData ", formData);
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
-      {
-        method: "post",
-        mode: "cors",
-        // headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: formData,
+      console.log("formData ", formData);
+      let res = await fetch(
+        `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
+        {
+          method: "post",
+          mode: "cors",
+          // headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: formData,
+        }
+      );
+      res = await res.json();
+      console.log("res", res);
+
+      if (res.success) {
+        socket.emit("status-changed", {
+          receiver: propertyData.value.user?.id,
+          property: route.params.p_id,
+          newStatus: 2,
+        });
+        router.push({ name: "ContarctorHistory" });
+      } else {
+        alert("something went wrong : can not able to add work proof");
+        loading.value = false;
       }
-    );
-    res = await res.json();
-    console.log("res", res);
-
-    if (res.success) {
-      socket.emit("status-changed", {
-        receiver: propertyData.value.user?.id,
-        property: route.params.p_id,
-        newStatus: 2,
-      });
-      router.push({ name: "ContarctorHistory" });
     } else {
-      alert("something went wrong : can not able to add work proof");
-      loading.value = false;
+      console.log("result failed");
     }
   } catch (error) {
     console.error(error);

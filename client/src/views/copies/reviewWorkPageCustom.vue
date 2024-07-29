@@ -6,38 +6,38 @@
           class="elevation-12 bg-indigo-lighten-5"
           style="width: 100%; margin: 0 auto"
         >
-          <!-- <div>
+          <v-form>
+            <!-- <div>
                   <PropertyDetailComponent :propertyData="propertyData" />
                 </div> -->
-          <v-toolbar dark color="primary">
-            <v-toolbar-title class="text-center"
-              >Property Details</v-toolbar-title
-            >
-          </v-toolbar>
-          <div>
-            <v-card-item>
-              <v-card-title class="text-h5">{{
-                propertyData.name
-              }}</v-card-title>
-            </v-card-item>
-            <v-card-text>
-              <div>{{ propertyData.address }}</div>
-              <div>{{ propertyData.city }} - {{ propertyData.pincode }}</div>
-              <div v-if="propertyData?.jobs?.length > 0">
-                Contracter name :
-                {{
-                  propertyData?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user
-                    ?.fname
-                }}
-                {{
-                  propertyData?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user
-                    ?.lname
-                }}
-              </div>
-            </v-card-text>
-          </div>
-          <div class="text-h6 ma-2">Work details :</div>
-          <v-form ref="reviewWorkFormData" :rules="commentValidationRule">
+            <v-toolbar dark color="primary">
+              <v-toolbar-title class="text-center"
+                >Property Details</v-toolbar-title
+              >
+            </v-toolbar>
+            <div>
+              <v-card-item>
+                <v-card-title class="text-h5">{{
+                  propertyData.name
+                }}</v-card-title>
+              </v-card-item>
+              <v-card-text>
+                <div>{{ propertyData.address }}</div>
+                <div>{{ propertyData.city }} - {{ propertyData.pincode }}</div>
+                <div v-if="propertyData?.jobs?.length > 0">
+                  Contracter name :
+                  {{
+                    propertyData?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user
+                      ?.fname
+                  }}
+                  {{
+                    propertyData?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user
+                      ?.lname
+                  }}
+                </div>
+              </v-card-text>
+            </div>
+            <div class="text-h6 ma-2">Work details :</div>
             <div
               class="ma-2"
               v-for="(job, index) in propertyData.jobs"
@@ -107,14 +107,17 @@
                     <v-card-text>
                       <v-textarea
                         v-model="comments[index].comment"
-                        :rules="commentValidationRule.comment"
                         prepend-inner-icon="mdi-comment"
                         name="comment"
                         label="Add Comments"
                         type="textarea"
+                        @input="errorMsg = false"
                         clearable
                         counter
                       ></v-textarea>
+                      <div v-if="errorMsg" style="color: red">
+                        Atleast one comment is required.
+                      </div>
                     </v-card-text>
                   </v-card>
                 </v-card-container>
@@ -149,7 +152,7 @@
 
 <script setup>
 // import { useStore } from "vuex";
-import socket from "../../socket";
+// import socket from "../../socket";
 // import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 // import WorkLayoutComponent from "../../components/contractor/workLayoutComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
@@ -162,29 +165,7 @@ const router = useRouter();
 
 const propertyData = ref([]);
 const comments = reactive([]);
-
-const reviewWorkFormData = ref(null);
-// const formData = reactive({ comment: "" });
-// let count = 0;
-const commentValidationRule = {
-  comment: [
-    () => {
-      return commentValidation();
-      // return "Atleast one comment is required.";
-    },
-  ],
-};
-
-function commentValidation() {
-  let count = 0;
-  comments.forEach((element) => {
-    if (element.comment == null || element.comment?.trim() == "") {
-      count++;
-    }
-  });
-
-  return count == comments.length ? "Any one comment is required" : true;
-}
+const errorMsg = ref(false);
 
 onBeforeMount(async () => {
   try {
@@ -227,10 +208,22 @@ console.log("comments :>> ", comments);
 //   console.log("hey jash");
 //   await store.dispatch("addCommentOnJobLength", comments);
 // }
-console.log("comments :>> ", comments.length);
 
 const addComments = async () => {
+  console.log("comments :>> ", comments.length);
+  console.log("comments :>> ", comments);
   try {
+    let count = 0;
+    comments.forEach((element) => {
+      if (element.comment == null || element.comment?.trim() == "") {
+        count++;
+      }
+    });
+
+    if (count == comments.length) {
+      return (errorMsg.value = true);
+    }
+
     // const getAllReviewCommentData = computed(
     //   () => store.getters.getAllReviewCommentData
     // );
@@ -242,44 +235,35 @@ const addComments = async () => {
     // );
     console.log("add comments :>> ", comments);
 
-    const result = await reviewWorkFormData.value.validate();
+    // let res = await fetch(
+    //   `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
+    //   {
+    //     method: "post",
+    //     mode: "cors",
+    //     credentials: "include",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //       p_id: route.params.id,
+    //       reviewComments: comments,
+    //     }),
+    //   }
+    // );
+    // res = await res.json();
+    // console.log("res: ", res);
+    // if (res) {
+    //   // if (res.success) {
 
-    if (result.valid) {
-      console.log("result", result);
-
-      let res = await fetch(
-        `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
-        {
-          method: "post",
-          mode: "cors",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            p_id: route.params.id,
-            reviewComments: comments,
-          }),
-        }
-      );
-      res = await res.json();
-      console.log("res: ", res);
-      if (res) {
-        // if (res.success) {
-
-        socket.emit("status-changed", {
-          receiver:
-            propertyData.value?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user
-              ?.id,
-          property: route.params.id,
-          newStatus: 3,
-        });
-        router.push({ name: "PropertyHistory" });
-        // }
-      } else {
-        console.log("failed");
-      }
-    } else {
-      console.log("result failed");
-    }
+    //   socket.emit("status-changed", {
+    //     receiver:
+    //       propertyData.value?.jobs[0]?.work_proofs[0]?.job_photos[0]?.user?.id,
+    //     property: route.params.id,
+    //     newStatus: 3,
+    //   });
+    //   router.push({ name: "PropertyHistory" });
+    //   // }
+    // } else {
+    //   console.log("failed");
+    // }
   } catch (error) {
     console.error(error);
   }
