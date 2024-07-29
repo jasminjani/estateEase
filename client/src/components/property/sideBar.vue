@@ -1,5 +1,4 @@
 <template>
-  <!-- <v-navigation-drawer :width="250"> -->
   <v-navigation-drawer class="bg-primary">
     <v-list>
       <v-list-item

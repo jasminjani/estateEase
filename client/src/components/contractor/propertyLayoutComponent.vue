@@ -12,12 +12,16 @@
         <div>
           <ul class="pl-4" v-for="job in jobs" :key="job.jobname">
             <li>{{ job.jobname }}</li>
-            <!-- <li>flooring</li> -->
           </ul>
         </div>
       </v-card-text>
       <v-card-actions>
-        <router-link class="text-decoration-none w-100" style="color: white;" :to="{name : 'COntractorPropertyDetails', params : {id : id}}"><v-btn block class="bg-purple" :id="id">Apply</v-btn></router-link>
+        <router-link
+          class="text-decoration-none w-100"
+          style="color: white"
+          :to="{ name: 'COntractorPropertyDetails', params: { id: id } }"
+          ><v-btn block class="bg-purple" :id="id">Apply</v-btn></router-link
+        >
       </v-card-actions>
     </v-card>
   </v-card-container>

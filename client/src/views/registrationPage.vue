@@ -1,7 +1,6 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <!-- <v-layout align-center justify-center> -->
       <v-flex xs12 sm8 md4>
         <v-card class="elevation-12" style="width: 50%; margin: 0 auto">
           <v-toolbar dark color="primary">
@@ -105,7 +104,6 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <!-- <v-spacer></v-spacer> -->
             <v-btn
               class="d-flex"
               style="margin: 0 auto"
@@ -128,15 +126,13 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 
-// import * as yup from "yup";
-
-// import { useForm } from "vee-validate";
 const passVisible = ref(false);
 const confirmPassVisible = ref(false);
-
 const registrationFormRef = ref(null);
+
 const validationSchema = {
   select: [
     (value) => {
@@ -169,7 +165,6 @@ const validationSchema = {
   ],
   dob: [
     (value) => {
-      console.log("date value", new Date(value) < new Date());
       return new Date(value) < new Date()
         ? true
         : "dob should be less than current date";
@@ -210,16 +205,6 @@ function notNullValidation(value) {
   return value?.trim()?.length > 0 ? true : "required";
 }
 
-// const select = useField("select");
-// const fname = useField("fname");
-// const lname = useField("lname");
-// const email = useField("email");
-// const phone_no = useField("phone_no");
-// const dob = useField("dob");
-// const city = useField("city");
-// const password = useField("password");
-// const confirmPassword = useField("confirmPassword");
-
 const formData = ref({
   select: "",
   fname: "",
@@ -239,14 +224,7 @@ const items = ref([
 
 const register = async () => {
   try {
-    console.log(
-      "registrationFormRef.value :>> ",
-      await registrationFormRef.value.validate()
-    );
-    // const formVerify = registrationFormRef.value;
-
     const result = await registrationFormRef.value.validate();
-    console.log("res ", result.valid);
 
     if (result.valid) {
       let formSubmitedData = {
@@ -259,7 +237,6 @@ const register = async () => {
         city: formData.value.city,
         password: formData.value.password,
       };
-      console.log(formSubmitedData);
 
       let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-user`, {
         method: "post",
@@ -269,10 +246,9 @@ const register = async () => {
         body: JSON.stringify(formSubmitedData),
       });
       res = await res.json();
-      console.log(res);
+      console.log("res ", res);
 
       if (res.success) {
-        console.log(router);
         router.push({ name: "login" });
       } else {
         let p = document.createElement("p");
@@ -282,7 +258,7 @@ const register = async () => {
         p.innerHTML = `${res.message}`;
       }
     } else {
-      console.log("object");
+      console.error("validation failed");
     }
   } catch (error) {
     console.error(error);

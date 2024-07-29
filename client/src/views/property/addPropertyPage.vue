@@ -51,7 +51,6 @@
                 type="text"
                 clearable
               ></v-text-field>
-              <!-- <JobComponent /> -->
               <div id="outerDiv">
                 {{ jobsCount.count }}
                 <div
@@ -126,12 +125,8 @@
 
 <script setup>
 import socket from "../../socket";
-// import JobComponent from "../../components/property/JobComponent.vue";
-
-// import { useField, useForm } from "vee-validate";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-// import * as yup from "yup";
 
 const router = useRouter();
 
@@ -184,41 +179,6 @@ function notNullValidation(value) {
   return value?.trim()?.length > 0 ? true : "required";
 }
 
-// watch(loading, (val) => {
-//   if (!val) return;
-
-//   setTimeout(() => (loading.value = false), 2000);
-// });
-
-// const myFileObject = ref(null);
-// console.log(myFileObject.value);
-
-// const { handleSubmit } = useForm({
-//   validationSchema: yup.object({
-//     name: yup.string().required().trim(),
-//     address: yup.string().required(),
-//     city: yup.string().required().trim(),
-//     pincode: yup
-//       .string()
-//       .required()
-//       .trim()
-//       .matches(/^[0-9]+$/, "Must be only digits")
-//       .min(6, "Must be exactly 6 digits")
-//       .max(6, "Must be exactly 6 digits"),
-//     //jobname_0: yup.string().required("job name is required").trim(),
-//     //photo_0: yup.mixed().required("Image is requireeed"),
-//     // jobdescription_0: yup.string(),
-//   }),
-// });
-
-// const name = useField("name");
-// const address = useField("address");
-// const city = useField("city");
-// const pincode = useField("pincode");
-// const jobname1 = useField("jobname1");
-// const job_description1 = useField("job_description1");
-// const jobimage = useField("jobimage");
-
 const jobsCount = reactive([{ name: null, description: null, photos: null }]);
 
 const addMoreJobs = async () => {
@@ -234,8 +194,6 @@ const removeMoreJobs = async () => {
 const addPropertyAndJobs = async () => {
   try {
     // console.log(JSON.stringify(values, null, 2));
-    // alert(JSON.stringify(values, null, 2));
-
     const result = await addNewPropertyFormRef.value.validate();
 
     if (result.valid) {
@@ -268,16 +226,14 @@ const addPropertyAndJobs = async () => {
       console.log("res ", res);
 
       if (res.success) {
-        console.log("res.message :>> ", res.message);
         socket.emit("new-property-added", res.message);
-        console.log("res is successfully arrived");
         router.push({ name: "PropertyHistory" });
       } else {
         loading.value = false;
         alert("something went wrong");
       }
     } else {
-      console.log("result validation failed");
+      console.error("result validation failed");
     }
   } catch (error) {
     console.error(error);

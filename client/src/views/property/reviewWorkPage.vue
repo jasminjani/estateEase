@@ -6,9 +6,6 @@
           class="elevation-12 bg-indigo-lighten-5"
           style="width: 100%; margin: 0 auto"
         >
-          <!-- <div>
-                  <PropertyDetailComponent :propertyData="propertyData" />
-                </div> -->
           <v-toolbar dark color="primary">
             <v-toolbar-title class="text-center"
               >Property Details</v-toolbar-title
@@ -43,21 +40,6 @@
               v-for="(job, index) in propertyData.jobs"
               :key="job.id"
             >
-              <!-- {{ job.job_photos[0].photo }}
-                  <WorkLayoutComponent
-                    v-if="job.work_proofs?.length > 0"
-                    :jobname="job.jobname"
-                    :description="job.job_description"
-                    :photos="job.work_proofs[0].job_photos"
-                    :work_proof_id="job.work_proofs[0].id"
-                    :index="index"
-                  /> -->
-              <!-- <WorkLayoutComponent
-                    v-else
-                    :jobname="job.jobname"
-                    :description="job.job_description"
-                  /> -->
-
               <div>
                 <v-card-container>
                   <v-card class="elevation-10 pa-2">
@@ -69,7 +51,6 @@
                     </div>
                     <div v-else>description : -</div>
                     <div>photos :</div>
-                    <!-- <div> -->
                     <v-row>
                       <v-col
                         v-for="(photo, item) in job.work_proofs[0].job_photos"
@@ -77,8 +58,6 @@
                         class="d-flex child-flex"
                         cols="3"
                       >
-                        <!-- <v-col v-for="n in 5" :key="n" class="d-flex child-flex" cols="3"> -->
-                        <!-- {{ photo.photo }} -->
                         <v-img
                           v-if="photo.photo"
                           :lazy-src="`https://picsum.photos/10/6?image=${
@@ -118,8 +97,6 @@
                     </v-card-text>
                   </v-card>
                 </v-card-container>
-
-                <!-- </div> -->
               </div>
             </div>
 
@@ -148,29 +125,22 @@
 </template>
 
 <script setup>
-// import { useStore } from "vuex";
 import socket from "../../socket";
-// import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
-// import WorkLayoutComponent from "../../components/contractor/workLayoutComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import * as yup from "yup";
 
 const route = useRoute();
 const router = useRouter();
-// const store = useStore();
 
 const propertyData = ref([]);
 const comments = reactive([]);
 
 const reviewWorkFormData = ref(null);
-// const formData = reactive({ comment: "" });
-// let count = 0;
+
 const commentValidationRule = {
   comment: [
     () => {
       return commentValidation();
-      // return "Atleast one comment is required.";
     },
   ],
 };
@@ -206,47 +176,16 @@ onBeforeMount(async () => {
         comment: null,
       });
     });
-
-    // console.log("comments :>> ", comments);
-
-    // console.log(propertyData.value.jobs[0].job_photos[0].photo);
   } catch (error) {
     console.error(error);
   }
 });
 
-// function emitFunction(commentValue, index) {
-//   console.log(index, "emitted", commentValue);
-//   comments[0].comment = commentValue;
-//   // alert("emitted", commentValue);
-// }
-
-console.log("comments :>> ", comments);
-
-// if (comments) {
-//   console.log("hey jash");
-//   await store.dispatch("addCommentOnJobLength", comments);
-// }
-console.log("comments :>> ", comments.length);
-
 const addComments = async () => {
   try {
-    // const getAllReviewCommentData = computed(
-    //   () => store.getters.getAllReviewCommentData
-    // );
-
-    // console.log("add comments :>> ", getAllReviewCommentData);
-    // console.log(
-    //   "add comments :>> ",
-    //   store.state.reviewWorkModule.reviewComments
-    // );
-    console.log("add comments :>> ", comments);
-
     const result = await reviewWorkFormData.value.validate();
 
     if (result.valid) {
-      console.log("result", result);
-
       let res = await fetch(
         `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
         {
@@ -275,10 +214,10 @@ const addComments = async () => {
         router.push({ name: "PropertyHistory" });
         // }
       } else {
-        console.log("failed");
+        console.error("failed");
       }
     } else {
-      console.log("result failed");
+      console.error("result failed");
     }
   } catch (error) {
     console.error(error);

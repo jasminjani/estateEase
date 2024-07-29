@@ -48,7 +48,6 @@
 <script setup>
 import socket from "../../socket";
 import { onMounted } from "vue";
-// import { useRouter } from "vue-router";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -56,8 +55,6 @@ const route = useRoute();
 
 onMounted(async () => {
   try {
-    console.log("route.query.session_id :>> ", route.query.session_id);
-
     let res = await fetch(`${process.env.VUE_APP_BASE_URL}/mark-payment-done`, {
       method: "post",
       mode: "cors",

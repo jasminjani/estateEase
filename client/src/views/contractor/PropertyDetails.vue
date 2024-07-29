@@ -53,7 +53,6 @@ import socket from "../../socket";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import * as yup from "yup";
 
 const applyTenderFormRef = ref(null);
 const applyTenderFormData = reactive({ price: "" });
@@ -88,7 +87,6 @@ onBeforeMount(async () => {
     res = await res.json();
     propertyData.value = await res.message;
     console.log(propertyData.value);
-    // console.log(propertyData.value.jobs[0].job_photos[0].photo);
   } catch (error) {
     console.error(error);
   }
@@ -96,13 +94,9 @@ onBeforeMount(async () => {
 
 const applyTender = async () => {
   try {
-    console.log("click on apply tender");
-
     const result = await applyTenderFormRef.value.validate();
 
     if (result.valid) {
-      console.log(result);
-
       let res = await fetch(
         `${process.env.VUE_APP_BASE_URL}/add-estimate-price`,
         {
@@ -119,7 +113,6 @@ const applyTender = async () => {
       res = await res.json();
       console.log(res);
       if (res && res?.success) {
-        console.log("res.message :>> ", res.message);
         socket.emit("new-bid-data", {
           data: res.message,
           receiver: propertyData.value.user?.id,
@@ -131,7 +124,7 @@ const applyTender = async () => {
         alert("something went wrong : can not able to apply tender");
       }
     } else {
-      console.log("something went wrong");
+      console.error("something went wrong");
     }
   } catch (error) {
     console.error(error);

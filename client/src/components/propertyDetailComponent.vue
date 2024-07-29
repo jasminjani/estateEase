@@ -3,8 +3,6 @@
     <v-toolbar-title class="text-center">Property Details</v-toolbar-title>
   </v-toolbar>
   <div>
-    <!-- <v-card-container> -->
-    <!-- <v-card class="elevation-10"> -->
     <v-card-item>
       <v-card-title class="text-h5">{{ propertyData.name }}</v-card-title>
     </v-card-item>
@@ -16,12 +14,9 @@
         {{ propertyData.user?.lname }}
       </div>
     </v-card-text>
-    <!-- </v-card> -->
-    <!-- </v-card-container> -->
   </div>
   <div class="text-h6 ma-2">Work details :</div>
   <div class="ma-2" v-for="(job, index) in propertyData.jobs" :key="job.id">
-    <!-- {{ job.job_photos[0].photo }} -->
     <WorkLayoutComponent
       v-if="job.work_proofs?.length > 0"
       :jobname="job.jobname"

@@ -110,9 +110,3 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
     </v-container>
   </v-content>
 </template>
-
-<style scoped>
-/* .disabled {
-  pointer-events: none;
-} */
-</style>

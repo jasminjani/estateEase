@@ -9,11 +9,6 @@
               {{ estimatePriceData.pincode }}
             </v-toolbar-title>
           </v-toolbar>
-          <!-- <v-card-subtitle>ahmedabad, 380015</v-card-subtitle>
-              <v-card-title>Silver Radiance 2 </v-card-title> -->
-          <!-- <v-card-text> -->
-          <!-- <div>ahmedabad, 380015</div> -->
-          <!-- </v-card-text> -->
           <v-table>
             <thead>
               <tr class="bg-light-blue">
@@ -29,7 +24,6 @@
                 v-for="(item, index) in estimatePriceData.estimates"
                 :key="item.id"
               >
-                <!-- {{ item.user.fname }} -->
                 <td class="text-center">{{ ++index }}</td>
                 <td class="text-center">
                   {{ item.user.fname }} {{ item.user.lname }}
@@ -96,10 +90,6 @@
                     ></router-link
                   >
                 </td>
-                <!-- <td v-if="item.is_approved == 0">Submited</td>
-                    <td v-else-if="item.is_approved == 1">
-                      Submited + in Progress
-                    </td> -->
               </tr>
             </tbody>
             <tbody v-else>

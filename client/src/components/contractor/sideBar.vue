@@ -1,5 +1,4 @@
 <template>
-  <!-- <v-navigation-drawer :width="250"> -->
   <v-navigation-drawer class="bg-primary">
     <v-list>
       <v-list-item
@@ -17,7 +16,6 @@
         link
         @click="router.push({ name: 'contractorDashboard' })"
       ></v-list-item>
-      <!-- <v-list-item prepend-icon="mdi-city" link title="View Bid"></v-list-item> -->
       <v-list-item
         prepend-icon="mdi-history"
         link

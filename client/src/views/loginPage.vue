@@ -1,7 +1,6 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <!-- <v-layout align-center justify-center> -->
       <v-flex xs12 sm8 md4>
         <v-card class="elevation-12" style="width: 50%; margin: 0 auto">
           <v-toolbar dark color="primary">
@@ -32,7 +31,6 @@
               ></v-text-field>
             </v-card-text>
             <v-card-actions>
-              <!-- <v-spacer></v-spacer> -->
               <v-btn
                 class="d-flex"
                 style="margin: 0 auto"
@@ -48,7 +46,6 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <!-- </v-layout> -->
     </v-container>
   </v-content>
 </template>
@@ -77,25 +74,6 @@ const { handleSubmit } = useForm({
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i,
         "Password should contain atleast one uppercase, lowercase, digit and special character"
       ),
-    // password(value) {
-    //   if (value?.length < 8) {
-    //     return "password must be 8 character long";
-    //   }
-    //   if (
-    //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i.test(
-    //       value
-    //     )
-    //   ) {
-    //     return true;
-    //   }
-
-    //   return "Password should contain atleast one uppercase, lowercase, digit and special character";
-    // },
-    // email(value) {
-    //   if (/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i.test(value)) return true;
-
-    //   return "Must be a valid email.";
-    // },
   }),
 });
 const password = useField("password");
@@ -107,17 +85,13 @@ const login = handleSubmit(async (values) => {
 
     const roleId = computed(() => store.getters.getRoleId);
     // const roleId = store.getters.getRoleId;
-    console.log("jash");
 
     if (roleId.value) {
-      console.log("role id ", store.getters.getRoleId);
       if (roleId.value == 1) {
         router.push({ name: "PropertyDashboard" });
-        console.log("object");
       }
       if (roleId.value == 2) {
         router.push({ name: "contractorDashboard" });
-        console.log("object else");
       }
     }
   } catch (error) {

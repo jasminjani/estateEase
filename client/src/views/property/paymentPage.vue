@@ -24,10 +24,6 @@
                     {{ paymentDetails?.estimates[0]?.user?.lname }}
                   </div>
                 </div>
-                <!-- <div>
-                  Contractor name : {{ propertyData.user?.fname }}
-                  {{ propertyData.user?.lname }}
-                </div> -->
                 <div v-if="paymentDetails?.estimates?.length > 0">
                   <div
                     class="text-h5 bg-indigo-lighten-5 rounded-lg d-inline pa-3 mb-2"
@@ -41,7 +37,6 @@
               </v-card-text>
             </div>
             <v-card-actions>
-              <!-- <v-spacer></v-spacer> -->
               <v-btn
                 :disabled="loading"
                 :loading="loading"
@@ -63,7 +58,9 @@
 import { onBeforeMount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { loadStripe } from "@stripe/stripe-js";
+
 const route = useRoute();
+
 const message = ref("");
 const stripe = ref(null);
 const paymentDetails = ref([]);
@@ -118,9 +115,7 @@ const payPayment = async () => {
       }
     );
     const session = await res.json();
-    console.log("session ", session);
-    console.log("session.id :>> ", session.id);
-    console.log("stripe.value :>> ", stripe.value);
+
     const { error } = await stripe.value.redirectToCheckout({
       sessionId: session.id,
     });
@@ -129,16 +124,6 @@ const payPayment = async () => {
       loading.value = false;
       message.value = error.message;
     }
-
-    // if (res.success) {
-    //   console.log(router);
-    //   router.push({ name: "login" });
-    // } else {
-    // console.log("failed");
-    // }
-    // } else {
-    //   console.log("object");
-    // }
   } catch (error) {
     loading.value = false;
     console.error(error);

@@ -33,11 +33,6 @@
               v-for="(job, index) in propertyData.jobs"
               :key="job.id"
             >
-              <!-- <UploadWorkImageComponent
-                  :jobname="job.jobname"
-                  :description="job.job_description"
-                /> -->
-
               <v-card-container>
                 <v-card class="elevation-10 pa-2">
                   <div class="font-weight-medium text-h6">
@@ -104,7 +99,6 @@
 
 <script setup>
 import socket from "../../socket";
-// import UploadWorkImageComponent from "../../components/contractor/uploadWorkImageComponent.vue";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -149,25 +143,20 @@ onBeforeMount(async () => {
 const addWorkAndimage = async () => {
   try {
     const result = await uploadWorkProofFormData.value.validate();
-    console.log("click on add work image");
     if (result.valid) {
-      console.log("result success : ", result);
       loading.value = true;
       let formData = new FormData();
-      console.log("image ", image);
 
       formData.append("estimate_id", route.params.estimate_id);
       formData.append("p_id", route.params.p_id);
 
       image.map((element, index) => {
-        console.log("image map", element);
         formData.append(`job_id_${index}`, element.job_id);
         element.photos.map((photo) => {
           formData.append(`photos_${index}`, photo);
         });
       });
 
-      console.log("formData ", formData);
       let res = await fetch(
         `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
         {
@@ -193,7 +182,7 @@ const addWorkAndimage = async () => {
         loading.value = false;
       }
     } else {
-      console.log("result failed");
+      console.error("result failed");
     }
   } catch (error) {
     console.error(error);

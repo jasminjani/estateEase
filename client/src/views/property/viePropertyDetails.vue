@@ -19,7 +19,6 @@
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
-// import * as yup from "yup";
 
 const route = useRoute();
 
@@ -37,7 +36,6 @@ onBeforeMount(async () => {
     res = await res.json();
     propertyData.value = await res.message;
     console.log(propertyData.value);
-    // console.log(propertyData.value.jobs[0].job_photos[0].photo);
   } catch (error) {
     console.error(error);
   }
