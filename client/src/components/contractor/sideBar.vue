@@ -46,6 +46,15 @@
         @click="logoutAllOther"
       ></v-list-item>
     </v-list>
+    <div class="d-flex justify-center">
+      <v-switch
+        class="position-absolute bottom-0"
+        @change="emit('theme-change-emit')"
+        prepend-icon="mdi-white-balance-sunny"
+        append-icon="mdi-weather-night"
+        hide-details
+      ></v-switch>
+    </div>
   </v-navigation-drawer>
 </template>
 
@@ -54,7 +63,7 @@ import { defineEmits } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-const emit = defineEmits(["snackbar-emit"]);
+const emit = defineEmits(["snackbar-emit", "theme-change-emit"]);
 
 const store = useStore();
 const router = useRouter();

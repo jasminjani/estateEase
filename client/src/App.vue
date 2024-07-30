@@ -1,8 +1,16 @@
 <template>
   <v-app>
     <v-navigation>
-      <PropertySidebar @snackbar-emit="receiveEmit" v-if="roleId == 1" />
-      <ContractorSidebar @snackbar-emit="receiveEmit" v-else-if="roleId == 2" />
+      <PropertySidebar
+        v-if="roleId == 1"
+        @theme-change-emit="themeChangeEmit"
+        @snackbar-emit="receiveEmit"
+      />
+      <ContractorSidebar
+        v-else-if="roleId == 2"
+        @theme-change-emit="themeChangeEmit"
+        @snackbar-emit="receiveEmit"
+      />
     </v-navigation>
     <v-main>
       <div>
@@ -36,6 +44,14 @@ import ContractorSidebar from "./components/contractor/sideBar.vue";
 import { useStore } from "vuex";
 import { computed, reactive } from "vue";
 
+import { useTheme } from "vuetify";
+
+const theme = useTheme();
+
+function themeChangeEmit() {
+  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+}
+
 const store = useStore();
 
 // ===== snackbar references =====
@@ -45,6 +61,7 @@ const snackbar = reactive({
   bgColor: "info",
   icon: "information",
 });
+
 function receiveEmit(payload) {
   if (
     !payload.display ||

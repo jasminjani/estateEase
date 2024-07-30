@@ -3,7 +3,7 @@
     <v-container fluid fill-height>
       <v-flex xs12 sm8 md4>
         <v-card
-          class="elevation-12 bg-indigo-lighten-5"
+          class="elevation-12"
           style="width: 100%; margin: 0 auto"
         >
           <div>

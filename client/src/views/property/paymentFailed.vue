@@ -1,8 +1,5 @@
 <template>
-  <v-main
-    class="bg-indigo-lighten-5 d-flex align-center"
-    style="height: 100dvh"
-  >
+  <v-main class="d-flex align-center" style="height: 100dvh">
     <v-sheet
       class="pa-4 text-center mx-auto"
       elevation="12"
