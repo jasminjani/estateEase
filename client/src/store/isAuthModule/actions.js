@@ -16,6 +16,7 @@ export const actions = {
         commit("setUser", res.user);
       } else {
         alert(res.message);
+        commit("setUser", null);
       }
     } catch (error) {
       console.error(error);

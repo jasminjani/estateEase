@@ -79,6 +79,9 @@
                       >review & pay</v-btn
                     ></router-link
                   >
+                  <v-btn class="bg-orange ml-2" @click="snackbar.display = true"
+                    ><v-icon>mdi-home</v-icon></v-btn
+                  >
                   <router-link
                     :to="{
                       name: 'PropertyChat',
@@ -102,23 +105,51 @@
           </v-table>
         </v-card>
       </v-flex>
+      <v-snackbar
+        v-model="snackbar.display"
+        :timeout="2000"
+        :color="snackbar.bgColor"
+        elevation="12"
+      >
+        <v-icon class="mr-2">mdi-{{ snackbar.icon }}</v-icon>
+        <span class="text-subtitle-1">
+          {{ snackbar.innerText }}
+        </span>
+
+        <!-- <p>This is a longer paragraph explaining something</p> -->
+        <template v-slot:actions>
+          <v-btn color="red" variant="text" @click="snackbar.display = false">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-container>
   </v-content>
 </template>
 
 <script setup>
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
-import { computed, onBeforeMount, ref, defineEmits } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, onBeforeMount, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
 import socket from "../../socket";
 import { useStore } from "vuex";
 
-const emit = defineEmits(["snackbar-emit"]);
-
 const estimatePriceData = ref([]);
 
+// ===== snackbar references =====
+const snackbar = reactive({
+  display: false,
+  innerText: "Hey",
+  bgColor: "info",
+  icon: "information",
+});
+// const snackbar = ref(false);
+// const snackbarInnerText = ref("jash");
+// const snackbarBgColor = ref("success");
+// const snackbarIcon = ref("information");
+
 const route = useRoute();
-const router = useRouter();
+// const router = useRouter();
 const store = useStore();
 
 const userId = computed(() => store.getters.getUserId);
@@ -148,84 +179,81 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
   estimatePriceData.value.status = message.newStatus;
 });
 
-const approveBid = async (estimate_id, receiver_id) => {
+const approveBid = async () => {
   try {
-    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: estimate_id, p_id: route.params.p_id }),
-    });
-    res = await res.json();
+    // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
+    //   method: "post",
+    //   mode: "cors",
+    //   credentials: "include",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ id: estimate_id, p_id: route.params.p_id }),
+    // });
+    // res = await res.json();
 
-    if (res.success) {
-      socket.emit("status-changed", {
-        receiver: receiver_id,
-        property: route.params.p_id,
-        newStatus: 1,
-      });
-      estimatePriceData.value.estimates.forEach((element) => {
-        if (element.user.id !== receiver_id) {
-          socket.emit("status-changed", {
-            receiver: element.user.id,
-            property: route.params.p_id,
-            newStatus: 0,
-          });
-        }
-      });
-      router.push({ name: "PropertyHistory" });
-      emit("snackbar-emit", {
-        display: true,
-        innerText: `Bid approved successfully for ${estimatePriceData.value.name}`,
-        bgColor: "success",
-        icon: "check-circle",
-      });
-    } else {
-      emit("snackbar-emit", {
-        display: true,
-        innerText: `Problem occured on approving bid for ${estimatePriceData.value.name}`,
-        bgColor: "error",
-        icon: "close-circle",
-      });
-    }
+    // if (res.success) {
+    //   socket.emit("status-changed", {
+    //     receiver: receiver_id,
+    //     property: route.params.p_id,
+    //     newStatus: 1,
+    //   });
+    // estimatePriceData.value.estimates.forEach((element) => {
+    //   if (element.user.id !== receiver_id) {
+    //     socket.emit("status-changed", {
+    //       receiver: element.user.id,
+    //       property: route.params.p_id,
+    //       newStatus: 0,
+    //     });
+    //   }
+    // });
+    // alert("Bid approved successfully");
+    // (snackbar.display = true),
+    //   (snackbar.innerText = "Bid approved successfully"),
+    //   (snackbar.bgColor = "success"),
+    //   (snackbar.icon = "check-circle");
+
+    // router.push({ name: "PropertyHistory" });
+    // } else {
+    // alert("Problem occured on approving bid");
+    (snackbar.display = true),
+      (snackbar.innerText = "Problem occured on approving bid"),
+      (snackbar.bgColor = "error"),
+      (snackbar.icon = "close-circle");
+    // }
   } catch (error) {
     console.error(error);
   }
 };
 
-const rejectBid = async (estimate_id, receiver_id, index) => {
+const rejectBid = async () => {
   try {
-    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: estimate_id }),
-    });
-    res = await res.json();
+    // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
+    //   method: "post",
+    //   mode: "cors",
+    //   credentials: "include",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ id: estimate_id }),
+    // });
+    // res = await res.json();
 
-    if (res.success) {
-      socket.emit("status-changed", {
-        receiver: receiver_id,
-        property: route.params.p_id,
-        newStatus: 0,
-      });
-      estimatePriceData.value.estimates.splice(index - 1, 1);
-      emit("snackbar-emit", {
-        display: true,
-        innerText: "Bid rejected successfully",
-        bgColor: "success",
-        icon: "check-circle",
-      });
-    } else {
-      emit("snackbar-emit", {
-        display: true,
-        innerText: "Problem occured on rejecting bid",
-        bgColor: "error",
-        icon: "close-circle",
-      });
-    }
+    // if (res.success) {
+    //   socket.emit("status-changed", {
+    //     receiver: receiver_id,
+    //     property: route.params.p_id,
+    //     newStatus: 0,
+    //   });
+    //   estimatePriceData.value.estimates.splice(index - 1, 1);
+    // alert("Bid rejected successfully");
+    (snackbar.display = true),
+      (snackbar.innerText = "Bid rejecteds successfully"),
+      (snackbar.bgColor = "success"),
+      (snackbar.icon = "check-circle");
+    // } else {
+    //   alert("Problem occured on rejecting bid");
+    // (snackbar.display = true),
+    //   (snackbar.innerText = "Problem occured on rejecting bid"),
+    //   (snackbar.bgColor = "error"),
+    //   (snackbar.icon = "close-circle");
+    // }
   } catch (error) {
     console.error(error);
   }

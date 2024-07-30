@@ -56,8 +56,11 @@
 </template>
 
 <script setup>
+import { defineEmits } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+
+const emit = defineEmits(["snackbar-emit"]);
 
 const store = useStore();
 const router = useRouter();
@@ -67,8 +70,19 @@ async function logout() {
     await store.dispatch("userLogout");
     if (!store.state.isAuthModule.currentUser) {
       router.push({ name: "login" });
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Logout successfully`,
+        bgColor: "success",
+        icon: "check-circle",
+      });
     } else {
-      alert("logout failed");
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Logout failed`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
     }
   } catch (error) {
     console.error(error);
@@ -77,8 +91,12 @@ async function logout() {
 
 async function logoutAll() {
   try {
-    alert("This is upcoming functionality");
-
+    emit("snackbar-emit", {
+      display: true,
+      innerText: "Logout from all is upcoming functionality",
+      bgColor: "info",
+      icon: "information",
+    });
     // localStorage.removeItem("userinfo");
 
     // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all`, {
@@ -92,6 +110,20 @@ async function logoutAll() {
 
     // if (res.success) {
     //   router.push({ name: "login" });
+    // emit("snackbar-emit", {
+    //   display: true,
+    //   innerText: `Logout successfully from all devices`,
+    //   bgColor: "success",
+    //   icon: "check-circle",
+    // });
+    // }
+    // else{
+    // emit("snackbar-emit", {
+    //   display: true,
+    //   innerText: `Logout failed from all devices`,
+    //   bgColor: "error",
+    //   icon: "close-circle",
+    // });
     // }
   } catch (error) {
     console.error(error);
@@ -100,8 +132,12 @@ async function logoutAll() {
 
 async function logoutAllOther() {
   try {
-    alert("This is upcoming functionality");
-
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Logout from all other is upcoming functionality`,
+      bgColor: "info",
+      icon: "information",
+    });
     // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all-other`, {
     //   method: "post",
     //   mode: "cors",
@@ -112,9 +148,19 @@ async function logoutAllOther() {
     // console.log(res);
 
     // if (res.success) {
-    //   alert("successfuly logout from all other devices");
+    // emit("snackbar-emit", {
+    //   display: true,
+    //   innerText: `Logout successfully from all other devices`,
+    //   bgColor: "success",
+    //   icon: "check-circle",
+    // });
     // } else {
-    //   alert("error occured while logout from all other devices");
+    // emit("snackbar-emit", {
+    //   display: true,
+    //   innerText: `error occured while logout from all other devices`,
+    //   bgColor: "error",
+    //   icon: "close-circle",
+    // });
     // }
   } catch (error) {
     console.error(error);

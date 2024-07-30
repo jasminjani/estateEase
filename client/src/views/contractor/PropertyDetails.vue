@@ -51,8 +51,10 @@
 <script setup>
 import socket from "../../socket";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
-import { onBeforeMount, reactive, ref } from "vue";
+import { onBeforeMount, reactive, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
+
+const emit = defineEmits(["snackbar-emit"]);
 
 const applyTenderFormRef = ref(null);
 const applyTenderFormData = reactive({ price: "" });
@@ -121,7 +123,12 @@ const applyTender = async () => {
       } else if (res && !res?.success) {
         alert(res.message);
       } else {
-        alert("something went wrong : can not able to apply tender");
+        emit("snackbar-emit", {
+          display: true,
+          innerText: `something went wrong : can not able to apply tender`,
+          bgColor: "error",
+          icon: "close-circle",
+        });
       }
     } else {
       console.error("something went wrong");

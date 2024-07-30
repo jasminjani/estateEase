@@ -125,9 +125,10 @@
 
 <script setup>
 import socket from "../../socket";
-import { reactive, ref } from "vue";
+import { reactive, ref, defineEmits } from "vue";
 import { useRouter } from "vue-router";
 
+const emit = defineEmits(["snackbar-emit"]);
 const router = useRouter();
 
 const loading = ref(false);
@@ -230,7 +231,12 @@ const addPropertyAndJobs = async () => {
         router.push({ name: "PropertyHistory" });
       } else {
         loading.value = false;
-        alert("something went wrong");
+        emit("snackbar-emit", {
+          display: true,
+          innerText: `Something went wrong while adding property`,
+          bgColor: "error",
+          icon: "close-circle",
+        });
       }
     } else {
       console.error("result validation failed");
