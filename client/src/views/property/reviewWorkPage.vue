@@ -32,70 +32,72 @@
           </div>
           <div class="text-h6 ma-2">Work details :</div>
           <v-form ref="reviewWorkFormData" :rules="commentValidationRule">
-            <div
-              class="ma-2"
-              v-for="(job, index) in propertyData.jobs"
-              :key="job.id"
-            >
-              <div>
-                <v-card-container>
-                  <v-card class="elevation-10 pa-2">
-                    <div class="font-weight-medium text-h6">
-                      work : {{ job.jobname }}
-                    </div>
-                    <div v-if="job.job_description != 'null'">
-                      description : {{ job.job_description }}
-                    </div>
-                    <div v-else>description : -</div>
-                    <div>photos :</div>
-                    <v-row>
-                      <v-col
-                        v-for="(photo, item) in job.work_proofs[0].job_photos"
-                        :key="photo.id"
-                        class="d-flex child-flex"
-                        cols="3"
-                      >
-                        <v-img
-                          v-if="photo.photo"
-                          :lazy-src="`https://picsum.photos/10/6?image=${
-                            item * 5 + 10
-                          }`"
-                          :src="photo.photo"
-                          aspect-ratio="16/9"
-                          class="bg-grey-lighten-2"
-                          cover
+            <span v-if="propertyData.jobs?.length">
+              <div
+                class="ma-2"
+                v-for="(job, index) in propertyData.jobs"
+                :key="job.id"
+              >
+                <div>
+                  <v-card-container>
+                    <v-card class="elevation-10 pa-2">
+                      <div class="font-weight-medium text-h6">
+                        work : {{ job.jobname }}
+                      </div>
+                      <div v-if="job.job_description != 'null'">
+                        description : {{ job.job_description }}
+                      </div>
+                      <div v-else>description : -</div>
+                      <div>photos :</div>
+                      <v-row>
+                        <v-col
+                          v-for="(photo, item) in job.work_proofs[0].job_photos"
+                          :key="photo.id"
+                          class="d-flex child-flex"
+                          cols="3"
                         >
-                          <template v-slot:placeholder>
-                            <v-row
-                              align="center"
-                              class="fill-height ma-0"
-                              justify="center"
-                            >
-                              <v-progress-circular
-                                color="grey-lighten-5"
-                                indeterminate
-                              ></v-progress-circular>
-                            </v-row>
-                          </template>
-                        </v-img>
-                      </v-col>
-                    </v-row>
-                    <v-card-text>
-                      <v-textarea
-                        v-model="comments[index].comment"
-                        :rules="commentValidationRule.comment"
-                        prepend-inner-icon="mdi-comment"
-                        name="comment"
-                        label="Add Comments"
-                        type="textarea"
-                        clearable
-                        counter
-                      ></v-textarea>
-                    </v-card-text>
-                  </v-card>
-                </v-card-container>
+                          <v-img
+                            v-if="photo.photo"
+                            :lazy-src="`https://picsum.photos/10/6?image=${
+                              item * 5 + 10
+                            }`"
+                            :src="photo.photo"
+                            aspect-ratio="16/9"
+                            class="bg-grey-lighten-2"
+                            cover
+                          >
+                            <template v-slot:placeholder>
+                              <v-row
+                                align="center"
+                                class="fill-height ma-0"
+                                justify="center"
+                              >
+                                <v-progress-circular
+                                  color="grey-lighten-5"
+                                  indeterminate
+                                ></v-progress-circular>
+                              </v-row>
+                            </template>
+                          </v-img>
+                        </v-col>
+                      </v-row>
+                      <v-card-text>
+                        <v-textarea
+                          v-model="comments[index].comment"
+                          :rules="commentValidationRule.comment"
+                          prepend-inner-icon="mdi-comment"
+                          name="comment"
+                          label="Add Comments"
+                          type="textarea"
+                          clearable
+                          counter
+                        ></v-textarea>
+                      </v-card-text>
+                    </v-card>
+                  </v-card-container>
+                </div>
               </div>
-            </div>
+            </span>
 
             <v-card class="ma-2">
               <v-card-actions class="d-flex">
@@ -123,11 +125,13 @@
 
 <script setup>
 import socket from "../../socket";
-import { onBeforeMount, reactive, ref } from "vue";
+import { onBeforeMount, reactive, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
+
+const emit = defineEmits(["snackbar-emit"]);
 
 const propertyData = ref([]);
 const comments = reactive([]);
@@ -150,7 +154,7 @@ function commentValidation() {
     }
   });
 
-  return count == comments.length ? "Any one comment is required" : true;
+  return count !== comments?.length ? true : "Any one comment is required";
 }
 
 onBeforeMount(async () => {
@@ -175,6 +179,12 @@ onBeforeMount(async () => {
     });
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load data`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
@@ -212,12 +222,24 @@ const addComments = async () => {
         // }
       } else {
         console.error("failed");
+        emit("snackbar-emit", {
+          display: true,
+          innerText: `Something went wrong while add work review`,
+          bgColor: "error",
+          icon: "close-circle",
+        });
       }
     } else {
-      console.error("result failed");
+      console.error("result validation failed");
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Something went wrong while add work review`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 </script>

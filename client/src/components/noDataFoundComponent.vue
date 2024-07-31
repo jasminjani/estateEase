@@ -1,5 +1,6 @@
 <template>
   <v-card-item>
+    <!-- happy emoji image -->
     <!-- <v-img
       style="width: 50px; height: 50px; margin: 0 auto"
       :lazy-src="`https://picsum.photos/10/6?image=${1 * 5 + 10}`"

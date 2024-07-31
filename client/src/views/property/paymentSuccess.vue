@@ -44,11 +44,13 @@
 
 <script setup>
 import socket from "../../socket";
-import { onMounted } from "vue";
+import { onMounted, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
+
+const emit = defineEmits(["snackbar-emit"]);
 
 onMounted(async () => {
   try {
@@ -74,6 +76,12 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Something went wrong`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 </script>

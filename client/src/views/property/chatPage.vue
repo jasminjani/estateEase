@@ -50,17 +50,28 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from "vue";
+import {
+  computed,
+  onBeforeMount,
+  onBeforeUnmount,
+  reactive,
+  ref,
+  defineEmits,
+} from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import socket from "../../socket";
 
 const route = useRoute();
 const store = useStore();
+
+const emit = defineEmits(["snackbar-emit"]);
+
 const receiverData = ref([]);
 let previousChatMsg = reactive([]);
 const messages = ref([]);
 const userWrittenMsg = ref("");
+
 const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
@@ -88,6 +99,12 @@ onBeforeMount(async () => {
     });
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load data`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
@@ -131,10 +148,22 @@ const sendMsg = async () => {
         userWrittenMsg.value = "";
       } else {
         console.error("failed");
+        emit("snackbar-emit", {
+          display: true,
+          innerText: `Can not able to send message`,
+          bgColor: "error",
+          icon: "close-circle",
+        });
       }
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to send message`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 </script>

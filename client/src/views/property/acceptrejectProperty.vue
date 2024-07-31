@@ -19,7 +19,7 @@
                 <th colspan="3" class="text-center">Other</th>
               </tr>
             </thead>
-            <tbody v-if="estimatePriceData.estimates?.length">
+            <tbody v-if="estimatePriceData?.estimates?.length">
               <tr
                 v-for="(item, index) in estimatePriceData.estimates"
                 :key="item.id"
@@ -115,11 +115,11 @@ import { useStore } from "vuex";
 
 const emit = defineEmits(["snackbar-emit"]);
 
-const estimatePriceData = ref([]);
-
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
+
+const estimatePriceData = ref([]);
 
 const userId = computed(() => store.getters.getUserId);
 
@@ -137,13 +137,21 @@ onBeforeMount(async () => {
     console.log(estimatePriceData.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load data`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
+// ===== real time display contracter bid =====
 socket.on(`send-new-bid-data-${userId.value}`, (message) => {
   estimatePriceData.value.estimates.push(message);
 });
 
+// ===== real time display status change =====
 socket.on(`send-status-changed-${userId.value}`, (message) => {
   estimatePriceData.value.status = message.newStatus;
 });
@@ -191,6 +199,12 @@ const approveBid = async (estimate_id, receiver_id) => {
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Problem occured on approving bid for ${estimatePriceData.value.name}`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 
@@ -228,6 +242,12 @@ const rejectBid = async (estimate_id, receiver_id, index) => {
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Problem occured on rejecting bid`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 </script>

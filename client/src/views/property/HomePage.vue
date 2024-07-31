@@ -19,5 +19,7 @@
 </template>
 
 <script setup>
-const userinfo = JSON.parse(localStorage.getItem("userinfo"));
+import { ref } from "vue";
+
+const userinfo = ref(JSON.parse(localStorage.getItem("userinfo")));
 </script>

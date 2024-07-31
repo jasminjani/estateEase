@@ -1,11 +1,13 @@
 <script setup>
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref, defineEmits } from "vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import socket from "../../socket";
 // import socket from "@/socket";
 import { useStore } from "vuex";
 
 const store = useStore();
+
+const emit = defineEmits(["snackbar-emit"]);
 
 const userId = computed(() => store.getters.getUserId);
 
@@ -25,18 +27,28 @@ onBeforeMount(async () => {
     console.log(userAllPropertyHistory.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load page`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
+// real time status change for history data
 socket.on(`send-status-changed-${userId.value}`, (message) => {
   userAllPropertyHistory.value.forEach((element) => {
     if (element.p_id == message.property) {
       if (element.status == null && message.newStatus == 0) {
+        // when bid for property is rejected
         element.status = message.newStatus;
       } else if (element.status == null && message.newStatus == 1) {
+        // when bid for property is approved
         element.status = message.newStatus;
         element.property.status = message.newStatus;
       } else {
+        // for all other status change
         element.property.status = message.newStatus;
       }
     }
@@ -60,7 +72,7 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
                 <th class="text-left">Other</th>
               </tr>
             </thead>
-            <tbody v-if="userAllPropertyHistory.length">
+            <tbody v-if="userAllPropertyHistory?.length">
               <tr
                 v-for="(item, index) in userAllPropertyHistory"
                 :key="item.id"
@@ -130,9 +142,3 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
     </v-container>
   </v-content>
 </template>
-
-<style scoped>
-.disabled {
-  pointer-events: none;
-}
-</style>

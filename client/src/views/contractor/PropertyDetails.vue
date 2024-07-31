@@ -2,12 +2,12 @@
   <v-content>
     <v-container fluid fill-height>
       <v-flex xs12 sm8 md4>
-        <v-card
-          class="elevation-12"
-          style="width: 100%; margin: 0 auto"
-        >
+        <v-card class="elevation-12" style="width: 100%; margin: 0 auto">
           <div>
-            <PropertyDetailComponent :propertyData="propertyData" />
+            <PropertyDetailComponent
+              v-if="propertyData"
+              :propertyData="propertyData"
+            />
           </div>
           <v-card class="ma-2">
             <v-form ref="applyTenderFormRef" :rules="priceValidationRule">
@@ -54,8 +54,14 @@ import PropertyDetailComponent from "../../components/propertyDetailComponent.vu
 import { onBeforeMount, reactive, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
+
 const emit = defineEmits(["snackbar-emit"]);
 
+const propertyData = ref([]);
+
+// ===== FOR VALIDATION AND FORM DATA =====
 const applyTenderFormRef = ref(null);
 const applyTenderFormData = reactive({ price: "" });
 const priceValidationRule = {
@@ -72,11 +78,6 @@ const priceValidationRule = {
   ],
 };
 
-const route = useRoute();
-const router = useRouter();
-
-const propertyData = ref([]);
-
 onBeforeMount(async () => {
   try {
     let res = await fetch(
@@ -91,6 +92,12 @@ onBeforeMount(async () => {
     console.log(propertyData.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load page`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
@@ -131,10 +138,16 @@ const applyTender = async () => {
         });
       }
     } else {
-      console.error("something went wrong");
+      console.error("Result validation failed");
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Something went wrong while apply tender`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 </script>

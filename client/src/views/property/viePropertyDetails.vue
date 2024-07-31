@@ -14,12 +14,14 @@
 
 <script setup>
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, defineEmits } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
 
 const propertyData = ref([]);
+
+const emit = defineEmits(["snackbar-emit"]);
 
 onBeforeMount(async () => {
   try {
@@ -35,6 +37,12 @@ onBeforeMount(async () => {
     console.log(propertyData.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load data`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 </script>

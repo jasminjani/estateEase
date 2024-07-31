@@ -52,7 +52,7 @@
 
 <script setup>
 import { useField, useForm } from "vee-validate";
-import { computed, ref } from "vue";
+import { computed, ref, defineEmits } from "vue";
 import * as yup from "yup";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -61,6 +61,8 @@ const router = useRouter();
 const store = useStore();
 
 const passVisible = ref(false);
+
+const emit = defineEmits(["snackbar-emit"]);
 
 const { handleSubmit } = useForm({
   validationSchema: yup.object({
@@ -96,6 +98,12 @@ const login = handleSubmit(async (values) => {
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Login failed, Please try again`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 </script>

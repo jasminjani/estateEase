@@ -43,16 +43,12 @@ import PropertySidebar from "./components/property/sideBar.vue";
 import ContractorSidebar from "./components/contractor/sideBar.vue";
 import { useStore } from "vuex";
 import { computed, reactive } from "vue";
-
 import { useTheme } from "vuetify";
 
 const theme = useTheme();
-
-function themeChangeEmit() {
-  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
-}
-
 const store = useStore();
+
+const roleId = computed(() => store.getters.getRoleId);
 
 // ===== snackbar references =====
 const snackbar = reactive({
@@ -81,5 +77,7 @@ function receiveEmit(payload) {
   }
 }
 
-const roleId = computed(() => store.getters.getRoleId);
+function themeChangeEmit() {
+  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+}
 </script>

@@ -2,16 +2,13 @@
   <v-content>
     <v-container fluid fill-height>
       <v-flex xs12 sm8 md4>
-        <v-card
-          class="elevation-12"
-          style="width: 100%; margin: 0 auto"
-        >
+        <v-card class="elevation-12" style="width: 100%; margin: 0 auto">
           <v-toolbar dark color="primary">
             <v-toolbar-title class="text-center"
               >Property Details</v-toolbar-title
             >
           </v-toolbar>
-          <div class="v-row" v-if="propertyAndJobData.length > 0">
+          <div class="v-row" v-if="propertyAndJobData?.length > 0">
             <div
               class="v-col-4"
               v-for="property in propertyAndJobData"
@@ -39,8 +36,10 @@
 <script setup>
 import PropertyLayoutComponent from "../../components/contractor/propertyLayoutComponent.vue";
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, defineEmits } from "vue";
 import socket from "../../socket";
+
+const emit = defineEmits(["snackbar-emit"]);
 
 const propertyAndJobData = ref([]);
 
@@ -58,9 +57,16 @@ onBeforeMount(async () => {
     console.log(propertyAndJobData.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load page`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
+// for real time display new added property  by property owner
 socket.on("send-new-property-added", (message) => {
   propertyAndJobData.value.push(message);
 });

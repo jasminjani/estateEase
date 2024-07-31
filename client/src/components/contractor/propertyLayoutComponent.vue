@@ -9,7 +9,7 @@
         <div>{{ city }}</div>
         <div>{{ pincode }}</div>
         <div class="text-h6 mt-2 mb-2">work to do :</div>
-        <div>
+        <div v-if="jobs?.length > 0">
           <ul class="pl-4" v-for="job in jobs" :key="job.jobname">
             <li>{{ job.jobname }}</li>
           </ul>

@@ -113,30 +113,28 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // console.log(from);
-
+  // get value of current user
   const currentUser = computed(() => store.getters.getCurrentUser);
-  // console.log(currentUser.value);
 
+  // Authenticate routes based on current user and their role
   if (to.meta.requiresAuth && !currentUser.value) {
-    // console.log("i am login");
+    // user requires auth but not sign in or token expires or localstorage data removed
     next({ name: "login" });
   } else if (to.meta.requiresAuth && currentUser.value) {
+    // user requires auth and valid user log in
     if (to.meta.role_id && currentUser.value.role_id !== to.meta.role_id) {
-      // console.log("i am else if");
+      // if user try for going to unauthorized page
       if (currentUser.value.role_id == 1) {
-        // console.log("i am second if");
+        // if role is property owner than redirect to property dashboard
         next({ name: "PropertyDashboard" });
-      } else {
-        // console.log("i am second else");
+      } else if (currentUser.value.role_id == 2) {
+        // if role is contracter than redirect to contracter dashboard
         next({ name: "contractorDashboard" });
       }
     } else {
-      // console.log("in else part");
       next();
     }
   } else {
-    // console.log("in outer else part");
     next();
   }
 });

@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, ref } from "vue";
+import { onBeforeMount, onMounted, ref, defineEmits } from "vue";
 import { useRoute } from "vue-router";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -65,6 +65,8 @@ const message = ref("");
 const stripe = ref(null);
 const paymentDetails = ref([]);
 const loading = ref(false);
+
+const emit = defineEmits(["snackbar-emit"]);
 
 onBeforeMount(async () => {
   try {
@@ -83,6 +85,12 @@ onBeforeMount(async () => {
     console.log("paymentDetails.value :>> ", paymentDetails.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load data`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
@@ -127,6 +135,12 @@ const payPayment = async () => {
   } catch (error) {
     loading.value = false;
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `SOmething went wrong while doing Payment`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 </script>

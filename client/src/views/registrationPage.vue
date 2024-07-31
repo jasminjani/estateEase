@@ -102,6 +102,9 @@
                 clearable
               ></v-text-field>
             </v-form>
+            <p v-if="errorMsg" class="text-center" style="color: red">
+              {{ errorMsg }}
+            </p>
           </v-card-text>
           <v-card-actions>
             <v-btn
@@ -124,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -132,6 +135,7 @@ const router = useRouter();
 const passVisible = ref(false);
 const confirmPassVisible = ref(false);
 const registrationFormRef = ref(null);
+const errorMsg = ref(null);
 
 const validationSchema = {
   select: [
@@ -194,7 +198,7 @@ const validationSchema = {
             value
           )
         ? "confirm Password should contain atleast one uppercase, lowercase, digit and special character"
-        : value === formData.value.password
+        : value === formData.password
         ? true
         : "password and confirm password does not matched";
     },
@@ -205,7 +209,7 @@ function notNullValidation(value) {
   return value?.trim()?.length > 0 ? true : "required";
 }
 
-const formData = ref({
+const formData = reactive({
   select: "",
   fname: "",
   lname: "",
@@ -225,17 +229,17 @@ const items = ref([
 const register = async () => {
   try {
     const result = await registrationFormRef.value.validate();
-
+    errorMsg.value = null;
     if (result.valid) {
       let formSubmitedData = {
-        role_id: formData.value.select,
-        fname: formData.value.fname,
-        lname: formData.value.lname,
-        email: formData.value.email,
-        phone_no: formData.value.phone_no,
-        dob: formData.value.dob,
-        city: formData.value.city,
-        password: formData.value.password,
+        role_id: formData.select,
+        fname: formData.fname,
+        lname: formData.lname,
+        email: formData.email,
+        phone_no: formData.phone_no,
+        dob: formData.dob,
+        city: formData.city,
+        password: formData.password,
       };
 
       let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-user`, {
@@ -251,17 +255,14 @@ const register = async () => {
       if (res.success) {
         router.push({ name: "login" });
       } else {
-        let p = document.createElement("p");
-        document.getElementById("form").insertAdjacentElement("afterend", p);
-        p.style.color = "red";
-        p.style.textAlign = "center";
-        p.innerHTML = `${res.message}`;
+        errorMsg.value = res.message;
       }
     } else {
       console.error("validation failed");
     }
   } catch (error) {
     console.error(error);
+    errorMsg.value = "Can not able to Register, please try again";
   }
 };
 </script>

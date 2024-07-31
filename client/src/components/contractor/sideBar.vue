@@ -59,10 +59,11 @@
 </template>
 
 <script setup>
-import { defineEmits } from "vue";
+import { computed, defineEmits } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+// Emiting change in data from child to parent
 const emit = defineEmits(["snackbar-emit", "theme-change-emit"]);
 
 const store = useStore();
@@ -71,7 +72,10 @@ const router = useRouter();
 async function logout() {
   try {
     await store.dispatch("userLogout");
-    if (!store.state.isAuthModule.currentUser) {
+    const currentUser = computed(() => store.getters.getCurrentUser);
+
+    if (!currentUser.value) {
+      // if currentUser removed successfully
       router.push({ name: "login" });
       emit("snackbar-emit", {
         display: true,
@@ -89,6 +93,12 @@ async function logout() {
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Logout failed`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 }
 
@@ -129,6 +139,12 @@ async function logoutAll() {
     // }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Logout failed from all devices`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 }
 
@@ -166,6 +182,12 @@ async function logoutAllOther() {
     //   }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Logout failed from all other devices`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 }
 </script>

@@ -6,7 +6,7 @@
         <div v-if="description != 'null'">description : {{ description }}</div>
         <div v-else>description : -</div>
         <div>photos :</div>
-        <v-row>
+        <v-row v-if="photos?.length > 0">
           <v-col
             v-for="(photo, item) in photos"
             :key="photo.id"
@@ -56,6 +56,7 @@ defineProps(["jobname", "description", "photos", "index", "work_proof_id"]);
 
 const route = useRoute();
 
+// Checking that page is review-work or other
 const routhFullPath = ref(route.fullPath.split("/"));
 routhFullPath.value.pop();
 const isReviewWorkPath = routhFullPath.value.pop().toLowerCase();

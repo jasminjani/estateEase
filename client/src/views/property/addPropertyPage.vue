@@ -51,8 +51,7 @@
                 type="text"
                 clearable
               ></v-text-field>
-              <div id="outerDiv">
-                {{ jobsCount.count }}
+              <div id="outerDiv" v-if="jobsCount?.length > 0">
                 <div
                   id="innerDiv"
                   v-for="(count, index) in jobsCount"
@@ -99,6 +98,7 @@
                   >Add more jobs</v-btn
                 >
                 <v-btn
+                  :disabled="jobsCount.length === 1"
                   class="bg-purple"
                   prepend-icon="mdi-minus"
                   @click="removeMoreJobs"
@@ -129,12 +129,17 @@ import { reactive, ref, defineEmits } from "vue";
 import { useRouter } from "vue-router";
 
 const emit = defineEmits(["snackbar-emit"]);
+
 const router = useRouter();
 
+// ===== add property button loading =====
 const loading = ref(false);
 
 const addNewPropertyFormRef = ref(null);
-const propertyData = ref({
+
+const jobsCount = reactive([{ name: null, description: null, photos: null }]);
+
+const propertyData = reactive({
   name: "",
   address: "",
   city: "",
@@ -180,13 +185,12 @@ function notNullValidation(value) {
   return value?.trim()?.length > 0 ? true : "required";
 }
 
-const jobsCount = reactive([{ name: null, description: null, photos: null }]);
-
 const addMoreJobs = async () => {
   jobsCount.push({ name: null, description: null, photos: null });
 };
 
 const removeMoreJobs = async () => {
+  // atleast one job data is required, user can not delete all jobs
   if (jobsCount.length > 1) {
     jobsCount.pop();
   }
@@ -200,10 +204,10 @@ const addPropertyAndJobs = async () => {
     if (result.valid) {
       loading.value = true;
       const formData = new FormData();
-      formData.append("name", propertyData.value.name);
-      formData.append("address", propertyData.value.address);
-      formData.append("city", propertyData.value.city);
-      formData.append("pincode", propertyData.value.pincode);
+      formData.append("name", propertyData.name);
+      formData.append("address", propertyData.address);
+      formData.append("city", propertyData.city);
+      formData.append("pincode", propertyData.pincode);
 
       jobsCount.map((element, index) => {
         formData.append(`jobname_${index}`, element.name);
@@ -243,6 +247,12 @@ const addPropertyAndJobs = async () => {
     }
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Something went wrong while adding property`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 };
 </script>

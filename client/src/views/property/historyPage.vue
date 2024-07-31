@@ -1,12 +1,16 @@
 <script setup>
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref, defineEmits } from "vue";
 import socket from "../../socket";
 import { useStore } from "vuex";
 
 const store = useStore();
-const userId = computed(() => store.getters.getUserId);
+
+const emit = defineEmits(["snackbar-emit"]);
+
 const userAllProperty = ref([]);
+
+const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
   try {
@@ -22,6 +26,12 @@ onBeforeMount(async () => {
     console.log(userAllProperty.value);
   } catch (error) {
     console.error(error);
+    emit("snackbar-emit", {
+      display: true,
+      innerText: `Can not able to load data`,
+      bgColor: "error",
+      icon: "close-circle",
+    });
   }
 });
 
@@ -50,7 +60,7 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
                 <th class="text-left">view tender</th>
               </tr>
             </thead>
-            <tbody v-if="userAllProperty.length">
+            <tbody v-if="userAllProperty?.length">
               <tr v-for="(item, index) in userAllProperty" :key="item.id">
                 <td>{{ ++index }}</td>
                 <td>{{ item.name }}</td>
