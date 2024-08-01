@@ -20,10 +20,8 @@ exports.isContractor = async (req, res, next) => {
 
     // check if role is property than call next or call next with null data
     if (result && result["role.role"]?.toLowerCase() == "constructor") {
-      console.log("hey result :>> ", result);
       next();
     } else {
-      console.log("result :>> ", result);
       return res.status(401).json({
         success: false,
         message: "No permission for this URL",

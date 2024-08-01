@@ -21,9 +21,7 @@ exports.isProperty = async (req, res, next) => {
     // check if role is property than call next or call next with null data
     if (result && result["role.role"]?.toLowerCase() == "property") {
       next();
-      console.log("jash", result);
     } else {
-      console.log("hey jash", result);
       return res.status(401).json({
         success: false,
         message: "No permission for this URL",
