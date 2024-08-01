@@ -9,19 +9,20 @@ const {
   getreviewWorkProofDataByPropertyId,
   addReviewWorkComments,
   getPropertyAllDetails,
-  addChatMessages,
-  getPreviousChatMsgAndReceiverData,
   createStripeSessions,
   getPaymentDetails,
   markPaymentAsDone,
-} = require("../controllers/propertyController");
-const { imgStorage } = require("../utils/multer");
+} = require("../controllers/property.controller");
+const { imgStorage } = require("../middlewares/multer.middleware");
 const multer = require("multer");
+const { isProperty } = require("../middlewares/property.middleware");
 const imgUpload = multer({ storage: imgStorage });
 
+// This will apply to all below routes
+// This will check for jwt authentication and user route permission based on role
 router.use(
-  passport.authenticate("jwt", { session: false, failureRedirect: "/login" })
-  // isProperty
+  passport.authenticate("jwt", { session: false, failureRedirect: "/login" }),
+  isProperty
 );
 
 router.route("/add-property").post(imgUpload.any(), addPropertyAndJobs);
@@ -39,12 +40,6 @@ router.route("/review-work-proof/:id").get(getreviewWorkProofDataByPropertyId);
 router.route("/add-review-comment").post(addReviewWorkComments);
 
 router.route("/get-property-all-details/:id").get(getPropertyAllDetails);
-
-router
-  .route("/get-chat-msg-and-receiver-data")
-  .post(getPreviousChatMsgAndReceiverData);
-
-router.route("/add-chat-msg").post(addChatMessages);
 
 router.route("/create-stripe-session").post(createStripeSessions);
 

@@ -6,7 +6,7 @@ const {
   getCurrentUser,
   logoutAllDevices,
   logoutAllOtherDevices,
-} = require("../controllers/authController");
+} = require("../controllers/auth.controller");
 const passport = require("passport");
 const router = require("express").Router();
 
@@ -24,7 +24,7 @@ router.route("/add-password/:activation").post(addPassword);
 router
   .route("/logout")
   .post(
-    passport.authenticate("jwt", { session: false, failureRedirect: "/login" }),
+    passport.authenticate("jwt", { session: false, failWithError: "/login" }),
     logout
   );
 

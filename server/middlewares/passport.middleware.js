@@ -27,11 +27,13 @@ exports.passportConfig = (passport) => {
       let id = payload.id;
 
       req.token = getToken(req);
+      // check given token is exist on database
       const session = await db.user_sessions.findOne({
         where: { jwt_token: req.token },
         raw: true,
       });
 
+      // if token not exits then call next with null data
       if (!session) {
         return next(null, false);
       }
@@ -52,66 +54,4 @@ exports.passportConfig = (passport) => {
       }
     })
   );
-};
-
-exports.isProperty = async (req, res, next) => {
-  try {
-    let id = req.user.id;
-    let result;
-    try {
-      result = await db.users.findAll({
-        include: [{ model: db.roles, where: { id: id } }],
-        raw: true,
-      });
-    } catch (error) {
-      logger.error(error);
-      return res.status(500).json({
-        success: false,
-        error: error.message,
-      });
-    }
-
-    if (result[0].role !== "property") {
-      return res.send("page not found");
-    }
-
-    next();
-  } catch (error) {
-    logger.error(error);
-    return res.status(401).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-exports.isContractor = async (req, res, next) => {
-  try {
-    let id = req.user.id;
-    let result;
-    try {
-      result = await db.users.findAll({
-        include: [{ model: db.roles, where: { id: id } }],
-        raw: true,
-      });
-    } catch (error) {
-      logger.error(error);
-      return res.status(500).json({
-        success: false,
-        error: error.message,
-      });
-    }
-
-    if (result[0].role !== "constructor") {
-      return res.send("page not found");
-    }
-
-    next();
-  } catch (error) {
-    logger.error(error);
-    return res.status(401).json({
-      success: false,
-      error: error.message,
-    });
-  }
 };

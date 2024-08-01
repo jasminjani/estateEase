@@ -27,11 +27,13 @@ exports.addPropertyAndJobs = async (req, res) => {
         });
       }
 
+      //  create new property
       const newProperty = await db.properties.create(
         { powner_id: id, name, address, city, pincode },
         { transaction: t }
       );
 
+      // track data for newly added property for real time data update on contracter side by socket
       let newAddedPropertyData = {
         id: newProperty.id,
         name: newProperty.name,
@@ -43,6 +45,7 @@ exports.addPropertyAndJobs = async (req, res) => {
       };
 
       let index = 0;
+      // upload all job details one by one
       while (
         req.body[`jobname_${index}`] &&
         req.body[`jobdescription_${index}`]
@@ -54,6 +57,7 @@ exports.addPropertyAndJobs = async (req, res) => {
           });
         }
 
+        //  create new job
         const newJob = await db.jobs.create(
           {
             p_id: newProperty.id,
@@ -62,9 +66,8 @@ exports.addPropertyAndJobs = async (req, res) => {
           },
           { transaction: t }
         );
-        // console.log("newJob :>> ", newJob);
-        // const createdJob = await db.jobs.findByPk(newJob.id);
-        // console.log("createdJob :>> ", createdJob);
+
+        // upload created job images one by one to cloudinary and save cloudinary link into database
         const uploadPromises = req.files
           .filter((file) => file.fieldname.startsWith(`photo_${index}`))
           .map(async (element) => {
@@ -83,11 +86,7 @@ exports.addPropertyAndJobs = async (req, res) => {
             // after uploading image to cloudinary deleting it from server/uploads/cloudinaryImg
             fs.unlinkSync(element.path);
 
-            // const imageRes = await createdJob.createJob_photos({
-            //   user_id: id,
-            //   photo: element.filename,
-            // });
-            // console.log("imageRes :>> ", imageRes);
+            // insert job photos one by one for this job
             await db.job_photos.create(
               {
                 user_id: id,
@@ -100,14 +99,13 @@ exports.addPropertyAndJobs = async (req, res) => {
             );
           });
 
+        // add job name to newAddedPropertyData for real time data update for socket
         newAddedPropertyData.jobs.push({ jobname: newJob.jobname });
 
         await Promise.all(uploadPromises);
 
         index++;
       }
-
-      console.log("newProperty.id ", newProperty.id);
 
       res.status(200).json({
         success: true,
@@ -134,6 +132,7 @@ exports.getProperty = async (req, res) => {
       });
     }
 
+    // find all property details created by this user
     const userAllProperty = await db.properties.findAll({
       where: { powner_id: id },
       raw: true,
@@ -163,6 +162,7 @@ exports.getEstimatePriceOfProperty = async (req, res) => {
       });
     }
 
+    // find all bid for this property id
     const propertyEstimatePriceData = await db.properties.findOne({
       where: { id: p_id },
       attributes: ["name", "city", "pincode", "is_approved", "status"],
@@ -221,29 +221,36 @@ exports.approveBidForProperty = async (req, res) => {
         message: "data missing in approve bidding",
       });
     }
+    await db.sequelize.transaction(async (t) => {
+      // update all bid status to rejected for this property id
+      await db.estimates.update(
+        { status: 0 },
+        {
+          where: { p_id: p_id },
+        },
+        { transaction: t }
+      );
 
-    await db.estimates.update(
-      { status: 0 },
-      {
-        where: { p_id: p_id },
-      }
-    );
+      // and then only update status to approved for this estimate or bid
+      await db.estimates.update(
+        { status: 1 },
+        {
+          where: { id: id },
+        },
+        { transaction: t }
+      );
 
-    await db.estimates.update(
-      { status: 1 },
-      {
-        where: { id: id },
-      }
-    );
+      //  update property status submitted to approved or work in progress
+      await db.properties.update(
+        { is_approved: 1, status: 1 },
+        { where: { id: p_id } },
+        { transaction: t }
+      );
 
-    await db.properties.update(
-      { is_approved: 1, status: 1 },
-      { where: { id: p_id } }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Bid Approved Successfully",
+      res.status(200).json({
+        success: true,
+        message: "Bid Approved Successfully",
+      });
     });
   } catch (error) {
     console.error(error);
@@ -265,6 +272,7 @@ exports.rejectBidForProperty = async (req, res) => {
       });
     }
 
+    // update status to rejected for only this(one) bid by user
     await db.estimates.update({ status: 0 }, { where: { id: id } });
 
     res.status(200).json({
@@ -357,6 +365,7 @@ exports.addReviewWorkComments = async (req, res) => {
     }
 
     await db.sequelize.transaction(async (t) => {
+      // add review work for all jobs
       const addedReviewComments = req.body.reviewComments.map(
         async (element) => {
           if (!element.work_proof_id || !element.job_id) {
@@ -366,16 +375,7 @@ exports.addReviewWorkComments = async (req, res) => {
             });
           }
 
-          // if (element.comment?.trim()) {
-          // console.log("element.comment.trim() :>> ", element.work_proof_id);
-          // console.log("element.comment.trim() :>> ", element.comment?.trim());
-
-          // await db.work_proofs.update(
-          //   { status: 1 },
-          //   { where: { job_id: element.job_id } },
-          //   { transaction: t }
-          // );
-
+          //  if value of comment is not null then update comment and status into table
           if (element.comment?.trim()) {
             await db.work_proofs.update(
               { comments: element.comment, status: 0 },
@@ -383,6 +383,7 @@ exports.addReviewWorkComments = async (req, res) => {
               { transaction: t }
             );
           } else {
+            //  otherwise just update status
             await db.work_proofs.update(
               { status: 0 },
               { where: { id: element.work_proof_id } },
@@ -395,6 +396,7 @@ exports.addReviewWorkComments = async (req, res) => {
 
       await Promise.all(addedReviewComments);
 
+      //  update property status to work not accepted
       await db.properties.update(
         { status: 3 },
         { where: { id: p_id } },
@@ -426,6 +428,7 @@ exports.getPropertyAllDetails = async (req, res) => {
       });
     }
 
+    //  find property details
     const propertyAllDetails = await db.properties.findOne({
       where: { id: id },
       // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property
@@ -475,6 +478,7 @@ exports.getPreviousChatMsgAndReceiverData = async (req, res) => {
       });
     }
 
+    // find receiver name from user table
     const receiverData = await db.users.findOne({
       where: { id: receiver_id },
       attributes: ["id", "fname", "lname"],
@@ -507,6 +511,7 @@ exports.getPreviousChatMsgAndReceiverData = async (req, res) => {
       // ],
     });
 
+    // find all chat messages between this two users
     const previousChatMsg = await db.user_room_chats.findAll({
       attributes: ["id", "p_id", "sender_id", "receiver_id", "message"],
       where: {
@@ -541,6 +546,7 @@ exports.addChatMessages = async (req, res) => {
       });
     }
 
+    // add new message
     await db.user_room_chats.create({
       p_id,
       sender_id: id,
@@ -572,6 +578,7 @@ exports.getPaymentDetails = async (req, res) => {
       });
     }
 
+    // find payment data for given property id
     let paymentDetails = await db.properties.findOne({
       where: { id: p_id },
       attributes: ["id", "name", "city", "pincode"],
@@ -605,32 +612,6 @@ exports.getPaymentDetails = async (req, res) => {
 
 exports.createStripeSessions = async (req, res) => {
   try {
-    // stripe.products
-    //   .create({
-    //     name: "Starter Subscription",
-    //     description: "$12/Month subscription",
-    //   })
-    //   .then((product) => {
-    //     stripe.prices
-    //       .create({
-    //         unit_amount: 1200,
-    //         currency: "usd",
-    //         recurring: {
-    //           interval: "month",
-    //         },
-    //         product: product.id,
-    //       })
-    //       .then((price) => {
-    //         console.log(
-    //           "Success! Here is your starter subscription product id: " +
-    //             product.id
-    //         );
-    //         console.log(
-    //           "Success! Here is your starter subscription price id: " + price.id
-    //         );
-    //       });
-    //   });
-
     const { p_id, name, price, contracter_id } = req.body;
 
     if (!p_id || !name || !price || !contracter_id) {
@@ -641,6 +622,7 @@ exports.createStripeSessions = async (req, res) => {
     }
 
     await db.sequelize.transaction(async (t) => {
+      // create stripe session and give neccesary details
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [
@@ -656,10 +638,12 @@ exports.createStripeSessions = async (req, res) => {
           },
         ],
         mode: "payment",
+        // will redirect to given front-end URL after success or failure of stripe payment
         success_url: `${process.env.CLIENT_URL}/property/payment/success/${contracter_id}/${p_id}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.CLIENT_URL}/property/payment/failure`,
       });
 
+      // add payment data in table as failed transaction at a time of stripe portal redirect
       const newPayment = await db.payments.create(
         {
           p_id,
@@ -692,6 +676,7 @@ exports.markPaymentAsDone = async (req, res) => {
       });
     }
 
+    // mark payment as successfully on redirect to success page
     await db.sequelize.transaction(async (t) => {
       await db.properties.update(
         { status: 4 },

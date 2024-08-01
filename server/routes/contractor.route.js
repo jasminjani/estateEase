@@ -6,15 +6,16 @@ const {
   addEstimatePriceOfProperty,
   getPropertyEstimatesHistory,
   addWorkProofAndImage,
-} = require("../controllers/contractorController");
-const { imgStorage } = require("../utils/multer");
+} = require("../controllers/contractor.controller");
+const { imgStorage } = require("../middlewares/multer.middleware");
 const multer = require("multer");
+const { isContractor } = require("../middlewares/contractor.middleware");
 const imgUpload = multer({ storage: imgStorage });
 
-// router.use(
-// passport.authenticate("jwt", { session: false, failureMessage: true })
-// isContractor
-// );
+router.use(
+  passport.authenticate("jwt", { session: false, failureRedirect: "/login" }),
+  isContractor
+);
 
 router
   .route("/get-submitted-notApproved-property")

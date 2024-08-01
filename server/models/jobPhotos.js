@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // console.log("models :>> ", models);
       // define association here
       JobPhotos.belongsTo(models.users, { foreignKey: "user_id" });
       JobPhotos.belongsTo(models.jobs, {

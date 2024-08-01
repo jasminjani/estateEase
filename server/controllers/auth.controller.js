@@ -1,4 +1,4 @@
-// const { sentEmail } = require("../helpers/email");
+// const { sentEmail } = require("../helpers/email.helper");
 const db = require("../models");
 const cookieParser = require("cookie-parser");
 // require('dotenv').config();
@@ -33,7 +33,6 @@ exports.addUser = async (req, res) => {
         { where: { email: email } },
         { transaction: t }
       );
-      console.log("check same user : ", checkSameUser);
 
       // if user already exists
       if (checkSameUser.length > 0) {
@@ -53,13 +52,13 @@ exports.addUser = async (req, res) => {
         let bcryptsalt = await bcrypt.genSaltSync(10);
         hashPassword = await bcrypt.hash(password, bcryptsalt);
       } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
         res.status(500).json({
           success: false,
           message: error.message,
         });
       }
-      console.log(hashPassword);
+
       const newUser = await db.users.create(
         {
           fname,
@@ -77,12 +76,9 @@ exports.addUser = async (req, res) => {
         { transaction: t }
       );
 
-      console.log("new added user : ", newUser);
-
       // const emailHtml = `<h2>congratulations, you have succesefully registered on remindMe platform.</h2><p> click belowe link for creating password and activate your account</p>. <h3><a href='http://localhost:${process.env.PORT}/password/${activation_code}'>http://localhost:${process.env.PORT}/password/${activation_code}</a></h3> <p>HAVE A GOOD DAY :)</p>`;
 
       // await sentEmail(email, "sending link for creating password", emailHtml);
-      console.log("user added successfully!!");
 
       res
         .status(200)
@@ -114,7 +110,7 @@ exports.addPassword = async (req, res) => {
       let bcryptsalt = await bcrypt.genSaltSync(10);
       hashPassword = await bcrypt.hash(password, bcryptsalt);
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
       res.status(500).json({
         success: false,
         message: error.message,
@@ -265,6 +261,17 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
+    if (!req.token) {
+      return res.status(400).json({
+        success: false,
+        message: "token not found",
+      });
+    }
+
+    await db.user_sessions.destroy({
+      where: { jwt_token: req.token },
+    });
+
     return res.clearCookie("token").json({
       success: true,
       message: "user Logged out successfully",

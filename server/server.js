@@ -7,7 +7,7 @@ const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
 const port = process.env.PORT || 3000;
-const router = require("./routes/route");
+const router = require("./routes/index.route");
 
 const server = http.createServer(app);
 
@@ -18,7 +18,7 @@ const io = new Server(server, {
 });
 
 const passport = require("passport");
-const { passportConfig } = require("./middlewares/authMiddleware");
+const { passportConfig } = require("./middlewares/passport.middleware");
 const { cloudinaryConnect } = require("./utils/cloudinary");
 passportConfig(passport);
 
@@ -26,11 +26,9 @@ server.listen(port, (err) => {
   if (!err) {
     console.log(`server is running on http://localhost:${port}`);
   } else {
-    console.log(`server connection failed`);
+    console.error(`server connection failed`);
   }
 });
-
-// const io = new Server(server);
 
 io.on("connection", (socket) => {
   console.log(
@@ -39,55 +37,28 @@ io.on("connection", (socket) => {
   );
 
   socket.on("sender-message", (message) => {
-    console.log("received sender messaege ", message);
-    // socket.join(message.receiver);
-    // socket.join(message.sender);
-    // io.sockets.in(message.receiver).emit("receive-message", message);
-    // io.emit("receiver-message", message);
     io.emit(`receive-message-${message.property}-${message.receiver}`, message);
   });
 
-  // socket.on("leave-room", (receiver) => {
-  //   socket.leave(receiver);
-  // });
-
-  // Join a room
-  // socket.on("joinRoom", (room) => {
-  //   socket.join(room);
-  //   console.log(`User joined room: ${room}`);
-  // });
-
-  // // Send message to a room
-  // socket.on("sendMessage", ({ room, message }) => {
-  //   io.to(room).emit("receiveMessage", message);
-  // });
-
   socket.on("message", (message) => {
-    console.log("user sended message received : ", message);
-
     io.emit("server-message", "response from server");
   });
 
   // ===== STATUS CHANGED =====
-
   socket.on("status-changed", (message) => {
-    console.log("status-changed-message", message);
     io.emit(`send-status-changed-${message.receiver}`, message);
   });
 
   socket.on("new-bid-data", (message) => {
-    console.log("new-bid-data", message);
     io.emit(`send-new-bid-data-${message.receiver}`, message.data);
   });
 
   socket.on("new-property-added", (message) => {
-    console.log("new-property-added", message);
     io.emit("send-new-property-added", message);
   });
 
   socket.on("manually-disconnecting", () => {
     socket.disconnect();
-    console.log("Client disconnected manually");
   });
 
   socket.on("disconnect", () => {

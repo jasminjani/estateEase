@@ -56,14 +56,14 @@ exports.getSubmitedNotApprovedProperty = async (req, res) => {
       { raw: true }
     );
 
-    console.log("estimateData :>> ", estimateData);
-
     const propertyIdArray = [];
 
+    // ===== propertyIdArray will contain details of bidded property id =====
     estimateData.forEach((element) => {
       propertyIdArray.push(element.p_id);
     });
 
+    // find only those property in which this contracter not applied bid.
     const notApprovedAllProperties = await db.properties.findAll({
       where: { id: { [Op.notIn]: propertyIdArray } },
       attributes: ["id", "name", "address", "city", "pincode", "is_approved"],
@@ -100,6 +100,7 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
       });
     }
 
+    // find particular property all details
     const propertyAllDetails = await db.properties.findOne({
       where: { id: id },
       // where: { [Op.and]: [{ id: id }, { is_approved: 0 }] },   // this is changed because this is also used for property side display entered property
@@ -121,7 +122,7 @@ exports.getPropertyAllDetailsByPropertyId = async (req, res) => {
                 status: 0,
               },
               attributes: ["comments"],
-              required: false,
+              required: false, // means this model is not necessary (LEFT JOIN)
             },
           ],
         },
@@ -172,6 +173,7 @@ exports.addEstimatePriceOfProperty = async (req, res) => {
       },
     });
 
+    // check if user has already applied for property
     if (checkAlreadyAppliedTender?.length > 0) {
       return res.status(400).json({
         success: false,
@@ -179,14 +181,14 @@ exports.addEstimatePriceOfProperty = async (req, res) => {
       });
     }
 
+    // if already not apply then add their estimate price.
     const insertedEstimate = await db.estimates.create({
       p_id: p_id,
       contracter_id: id,
       price: price,
     });
 
-    console.log("insertedEstimate.id :>> ", insertedEstimate.id);
-
+    // give current added estimate data for real time data sent on socket to property side.
     const newEstimateData = await db.estimates.findOne({
       where: { id: insertedEstimate.id },
       attributes: ["id", "p_id", "price", "status"],
@@ -223,6 +225,7 @@ exports.getPropertyEstimatesHistory = async (req, res) => {
       });
     }
 
+    // get applied property estimate history for current contracter
     const userPropertyEstimateHistory = await db.estimates.findAll({
       where: { contracter_id: id },
       attributes: ["id", "p_id", "price", "status"],
@@ -270,6 +273,7 @@ exports.addWorkProofAndImage = async (req, res) => {
 
     await db.sequelize.transaction(async (t) => {
       let index = 0;
+      // for all job insert data into work proof and photos
       while (req.body[`job_id_${index}`]) {
         if (!req.body[`job_id_${index}`]) {
           return res.status(400).json({
@@ -278,20 +282,24 @@ exports.addWorkProofAndImage = async (req, res) => {
           });
         }
 
+        // update work proof status to 1 for all before entered work proof for this job id.
         await db.work_proofs.update(
           { status: 1 },
           { where: { job_id: req.body[`job_id_${index}`] } },
           { transaction: t }
         );
 
+        // then add newly added work proof for this job id
         const newWorkProof = await db.work_proofs.create(
           {
             job_id: req.body[`job_id_${index}`],
             estimate_id: estimate_id,
             status: 0,
-          }
-          // { transaction: t }
+          },
+          { transaction: t }
         );
+
+        // get one image from array for this job id and upload image to cloudinary and then save cloudinary link to database table one by one
         const uploadPromises = req.files
           .filter((file) => file.fieldname.startsWith(`photos_${index}`))
           .map(async (element) => {
@@ -306,20 +314,19 @@ exports.addWorkProofAndImage = async (req, res) => {
             const result = await cloudinary.uploader.upload(element.path, {
               resource_type: "auto",
             });
-            console.log("result.url :>> ", result);
 
             // after uploading image to cloudinary deleting it from server/uploads/cloudinaryImg
             fs.unlinkSync(element.path);
 
+            // insert clodinary saved photo link into table
             await db.job_photos.create(
               {
                 user_id: id,
                 is_work: true,
                 job_work_id: newWorkProof.id,
-                // photo: element.filename,
                 photo: result.url,
-              }
-              // { transaction: t }
+              },
+              { transaction: t }
             );
           });
 
@@ -328,10 +335,11 @@ exports.addWorkProofAndImage = async (req, res) => {
         index++;
       }
 
+      //  update property status as payment pending because work proof is uploaded
       await db.properties.update(
         { status: 2 },
-        { where: { id: p_id } }
-        // { transaction: t }
+        { where: { id: p_id } },
+        { transaction: t }
       );
 
       res.status(200).json({
