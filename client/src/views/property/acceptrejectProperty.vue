@@ -112,6 +112,7 @@ import { computed, onBeforeMount, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import socket from "../../socket";
 import { useStore } from "vuex";
+import { fetchGetAPI, fetchPostAPI } from "@/services/fetch.api";
 
 const emit = defineEmits(["snackbar-emit"]);
 
@@ -125,15 +126,21 @@ const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-estimate-price/${route.params.p_id}`,
-      {
-        mode: "cors",
-        credentials: "include",
-      }
+    const res = await fetchGetAPI(
+      `/property/get-estimate-price/${route.params.p_id}`
     );
-    res = await res.json();
-    estimatePriceData.value = res.message;
+    if (res?.success) {
+      estimatePriceData.value = res.message;
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
+
     console.log(estimatePriceData.value);
   } catch (error) {
     console.error(error);
@@ -158,16 +165,12 @@ socket.on(`send-status-changed-${userId.value}`, (message) => {
 
 const approveBid = async (estimate_id, receiver_id) => {
   try {
-    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/approve-bid`, {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: estimate_id, p_id: route.params.p_id }),
+    const res = await fetchPostAPI(`/property/approve-bid`, {
+      id: estimate_id,
+      p_id: route.params.p_id,
     });
-    res = await res.json();
 
-    if (res.success) {
+    if (res?.success) {
       socket.emit("status-changed", {
         receiver: receiver_id,
         property: route.params.p_id,
@@ -210,16 +213,9 @@ const approveBid = async (estimate_id, receiver_id) => {
 
 const rejectBid = async (estimate_id, receiver_id, index) => {
   try {
-    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/reject-bid`, {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: estimate_id }),
-    });
-    res = await res.json();
+    const res = await fetchPostAPI(`/property/reject-bid`, { id: estimate_id });
 
-    if (res.success) {
+    if (res?.success) {
       socket.emit("status-changed", {
         receiver: receiver_id,
         property: route.params.p_id,

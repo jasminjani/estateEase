@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+import { fetchPostAPI } from "@/services/fetch.api";
 import socket from "../../socket";
 import { onMounted, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -54,24 +55,29 @@ const emit = defineEmits(["snackbar-emit"]);
 
 onMounted(async () => {
   try {
-    let res = await fetch(`${process.env.VUE_APP_BASE_URL}/mark-payment-done`, {
-      method: "post",
-      mode: "cors",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const res = await fetchPostAPI(
+      `/property/mark-payment-done`,
+      {
         p_id: route.params.p_id,
         session_id: route.query.session_id,
-      }),
-    });
-    res = await res.json();
+      }
+    );
+
     console.log("res : ", res);
 
-    if (res.success) {
+    if (res?.success) {
       socket.emit("status-changed", {
         receiver: route.params.contracter_id,
         property: route.params.p_id,
         newStatus: 4,
+      });
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Something went wrong`,
+        bgColor: "error",
+        icon: "close-circle",
       });
     }
   } catch (error) {

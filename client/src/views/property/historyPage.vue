@@ -3,6 +3,7 @@ import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { computed, onBeforeMount, ref, defineEmits } from "vue";
 import socket from "../../socket";
 import { useStore } from "vuex";
+import { fetchGetAPI } from "@/services/fetch.api";
 
 const store = useStore();
 
@@ -14,15 +15,21 @@ const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
   try {
-    let userAllPropertys = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-property`,
-      {
-        credentials: "include",
-        mode: "cors",
-      }
+    const res = await fetchGetAPI(
+      `/property/get-property`
     );
-    userAllPropertys = await userAllPropertys.json();
-    userAllProperty.value = await userAllPropertys.message;
+    if (res?.success) {
+      userAllProperty.value = await res.message;
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
+
     console.log(userAllProperty.value);
   } catch (error) {
     console.error(error);

@@ -97,6 +97,7 @@
 </template>
 
 <script setup>
+import { fetchGetAPI, fetchPostWithFormDataAPI } from "@/services/fetch.api";
 import socket from "../../socket";
 import { onBeforeMount, reactive, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -121,20 +122,25 @@ const imageValidationRule = {
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.p_id}`,
-      {
-        mode: "cors",
-        credentials: "include",
-      }
+    const res = await fetchGetAPI(
+      `/contractor/get-property-all-details-by-id/${route.params.p_id}`
     );
-    res = await res.json();
-    propertyData.value = await res.message;
-    console.log("on before mount", propertyData.value);
+    if (res?.success) {
+      propertyData.value = await res.message;
+      propertyData.value.jobs.map((element) => {
+        image.push({ job_id: element.id, photos: null });
+      });
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
 
-    propertyData.value.jobs.map((element) => {
-      image.push({ job_id: element.id, photos: null });
-    });
+    console.log("on before mount", propertyData.value);
   } catch (error) {
     console.error(error);
     emit("snackbar-emit", {
@@ -163,20 +169,14 @@ const addWorkAndimage = async () => {
         });
       });
 
-      let res = await fetch(
-        `${process.env.VUE_APP_BASE_URL}/add-work-proof-and-image`,
-        {
-          method: "post",
-          mode: "cors",
-          // headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: formData,
-        }
+      const res = await fetchPostWithFormDataAPI(
+        `/contractor/add-work-proof-and-image`,
+        formData
       );
-      res = await res.json();
+
       console.log("res", res);
 
-      if (res.success) {
+      if (res?.success) {
         socket.emit("status-changed", {
           receiver: propertyData.value.user?.id,
           property: route.params.p_id,

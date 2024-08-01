@@ -53,6 +53,7 @@ import socket from "../../socket";
 import PropertyDetailComponent from "../../components/propertyDetailComponent.vue";
 import { onBeforeMount, reactive, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { fetchGetAPI, fetchPostAPI } from "@/services/fetch.api";
 
 const route = useRoute();
 const router = useRouter();
@@ -80,15 +81,20 @@ const priceValidationRule = {
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-property-all-details-by-id/${route.params.id}`,
-      {
-        mode: "cors",
-        credentials: "include",
-      }
+    const res = await fetchGetAPI(
+      `/contractor/get-property-all-details-by-id/${route.params.id}`
     );
-    res = await res.json();
-    propertyData.value = await res.message;
+    if (res?.success) {
+      propertyData.value = await res.message;
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
     console.log(propertyData.value);
   } catch (error) {
     console.error(error);
@@ -106,20 +112,13 @@ const applyTender = async () => {
     const result = await applyTenderFormRef.value.validate();
 
     if (result.valid) {
-      let res = await fetch(
-        `${process.env.VUE_APP_BASE_URL}/add-estimate-price`,
+      let res = await fetchPostAPI(
+        `/contractor/add-estimate-price`,
         {
-          method: "post",
-          mode: "cors",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            p_id: route.params.id,
-            price: applyTenderFormData.price,
-          }),
+          p_id: route.params.id,
+          price: applyTenderFormData.price,
         }
       );
-      res = await res.json();
       console.log(res);
       if (res && res?.success) {
         socket.emit("new-bid-data", {

@@ -124,6 +124,7 @@
 </template>
 
 <script setup>
+import { fetchPostWithFormDataAPI } from "@/services/fetch.api";
 import socket from "../../socket";
 import { reactive, ref, defineEmits } from "vue";
 import { useRouter } from "vue-router";
@@ -221,16 +222,14 @@ const addPropertyAndJobs = async () => {
       //   console.log(key, value);
       // }
 
-      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-property`, {
-        method: "post",
-        credentials: "include",
-        mode: "cors",
-        body: formData,
-      });
-      res = await res.json();
+      const res = await fetchPostWithFormDataAPI(
+        `/property/add-property`,
+        formData
+      );
+
       console.log("res ", res);
 
-      if (res.success) {
+      if (res?.success) {
         socket.emit("new-property-added", res.message);
         router.push({ name: "PropertyHistory" });
       } else {

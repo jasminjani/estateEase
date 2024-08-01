@@ -117,7 +117,7 @@ async function logoutAll() {
     });
     // localStorage.removeItem("userinfo");
 
-    // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all`, {
+    // let res = await fetch(`/logout-all`, {
     //   method: "post",
     //   mode: "cors",
     //   credentials: "include",
@@ -162,7 +162,7 @@ async function logoutAllOther() {
       bgColor: "info",
       icon: "information",
     });
-    // let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout-all-other`, {
+    // let res = await fetch(`/logout-all-other`, {
     //   method: "post",
     //   mode: "cors",
     //   credentials: "include",

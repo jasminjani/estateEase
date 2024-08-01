@@ -124,6 +124,7 @@
 </template>
 
 <script setup>
+import { fetchGetAPI, fetchPostAPI } from "@/services/fetch.api";
 import socket from "../../socket";
 import { onBeforeMount, reactive, ref, defineEmits } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -159,24 +160,29 @@ function commentValidation() {
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/review-work-proof/${route.params.id}`,
-      {
-        mode: "cors",
-        credentials: "include",
-      }
+    const res = await fetchGetAPI(
+      `/property/review-work-proof/${route.params.id}`
     );
-    res = await res.json();
-    propertyData.value = await res.message;
-    console.log(propertyData.value);
-
-    await propertyData.value.jobs.map((element) => {
-      comments.push({
-        work_proof_id: element.work_proofs[0].id,
-        job_id: element.id,
-        comment: null,
+    if (res?.success) {
+      propertyData.value = await res.message;
+      await propertyData.value.jobs.map((element) => {
+        comments.push({
+          work_proof_id: element.work_proofs[0].id,
+          job_id: element.id,
+          comment: null,
+        });
       });
-    });
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
+
+    console.log(propertyData.value);
   } catch (error) {
     console.error(error);
     emit("snackbar-emit", {
@@ -193,23 +199,17 @@ const addComments = async () => {
     const result = await reviewWorkFormData.value.validate();
 
     if (result.valid) {
-      let res = await fetch(
-        `${process.env.VUE_APP_BASE_URL}/add-review-comment`,
+      const res = await fetchPostAPI(
+        `/property/add-review-comment`,
         {
-          method: "post",
-          mode: "cors",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            p_id: route.params.id,
-            reviewComments: comments,
-          }),
+          p_id: route.params.id,
+          reviewComments: comments,
         }
       );
-      res = await res.json();
+
       console.log("res: ", res);
       if (res) {
-        // if (res.success) {
+        // if (res?.success) {
 
         socket.emit("status-changed", {
           receiver:

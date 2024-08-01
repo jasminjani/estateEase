@@ -38,6 +38,7 @@ import PropertyLayoutComponent from "../../components/contractor/propertyLayoutC
 import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import { onBeforeMount, ref, defineEmits } from "vue";
 import socket from "../../socket";
+import { fetchGetAPI } from "@/services/fetch.api";
 
 const emit = defineEmits(["snackbar-emit"]);
 
@@ -45,15 +46,20 @@ const propertyAndJobData = ref([]);
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-submitted-notApproved-property`,
-      {
-        mode: "cors",
-        credentials: "include",
-      }
+    const res = await fetchGetAPI(
+      `/contractor/get-submitted-notApproved-property`
     );
-    res = await res.json();
-    propertyAndJobData.value = await res.message;
+    if (res?.success) {
+      propertyAndJobData.value = await res.message;
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
     console.log(propertyAndJobData.value);
   } catch (error) {
     console.error(error);

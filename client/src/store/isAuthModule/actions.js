@@ -1,17 +1,13 @@
+import { fetchPostAPI } from "@/services/fetch.api";
+
 export const actions = {
   userLogin: async ({ commit }, values) => {
     try {
-      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/login`, {
-        method: "post",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(values, null, 2),
-      });
-      res = await res.json();
+      const res = await fetchPostAPI(`/login`, values);
+
       console.log("res ", res);
 
-      if (res.success) {
+      if (res?.success) {
         localStorage.setItem("userinfo", JSON.stringify(res.user));
         commit("setUser", res.user);
       } else {
@@ -25,16 +21,11 @@ export const actions = {
 
   userLogout: async ({ commit }) => {
     try {
-      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/logout`, {
-        method: "post",
-        mode: "cors",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
-      res = await res.json();
+      const res = await fetchPostAPI(`/logout`, {});
+
       console.log("res ", res);
 
-      if (res.success) {
+      if (res?.success) {
         localStorage.removeItem("userinfo");
         console.log("localstorage remove");
         commit("setUser", null);

@@ -61,6 +61,7 @@ import {
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import socket from "../../socket";
+import { fetchPostAPI } from "@/services/fetch.api";
 
 const route = useRoute();
 const store = useStore();
@@ -76,27 +77,35 @@ const userId = computed(() => store.getters.getUserId);
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-chat-msg-and-receiver-data`,
+    const res = await fetchPostAPI(
+      `/common/get-chat-msg-and-receiver-data`,
       {
-        method: "post",
-        mode: "cors",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          receiver_id: route.params.id,
-          p_id: route.params.p_id,
-        }),
+        receiver_id: route.params.id,
+        p_id: route.params.p_id,
       }
     );
-    res = await res.json();
-    console.log("res :>> ", res);
-    receiverData.value = await res.message.receiverData;
-    previousChatMsg = await res.message.previousChatMsg;
 
-    previousChatMsg.forEach((chat) => {
-      messages.value.push({ sender_id: chat.sender_id, message: chat.message });
-    });
+    if (res?.success) {
+      receiverData.value = await res.message.receiverData;
+      previousChatMsg = await res.message.previousChatMsg;
+
+      previousChatMsg.forEach((chat) => {
+        messages.value.push({
+          sender_id: chat.sender_id,
+          message: chat.message,
+        });
+      });
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
+
+    console.log("res :>> ", res);
   } catch (error) {
     console.error(error);
     emit("snackbar-emit", {
@@ -119,21 +128,18 @@ onBeforeUnmount(() => {
 const sendMsg = async () => {
   try {
     if (userWrittenMsg.value.trim() !== "") {
-      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-chat-msg`, {
-        method: "post",
-        mode: "cors",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const res = await fetchPostAPI(
+        `/common/add-chat-msg`,
+        {
           receiver_id: route.params.id,
           message: userWrittenMsg.value,
           p_id: route.params.p_id,
-        }),
-      });
-      res = await res.json();
+        }
+      );
+
       console.log("res :>> ", res);
 
-      if (res.success) {
+      if (res?.success) {
         socket.emit("sender-message", {
           sender: userId.value,
           property: route.params.p_id,

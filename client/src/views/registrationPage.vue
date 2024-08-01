@@ -127,6 +127,7 @@
 </template>
 
 <script setup>
+import { fetchPostAPI } from "@/services/fetch.api";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -242,17 +243,14 @@ const register = async () => {
         password: formData.password,
       };
 
-      let res = await fetch(`${process.env.VUE_APP_BASE_URL}/add-user`, {
-        method: "post",
-        mode: "cors",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formSubmitedData),
-      });
-      res = await res.json();
+      const res = await fetchPostAPI(
+        `/add-user`,
+        formSubmitedData
+      );
+
       console.log("res ", res);
 
-      if (res.success) {
+      if (res?.success) {
         router.push({ name: "login" });
       } else {
         errorMsg.value = res.message;

@@ -4,6 +4,7 @@ import NoDataFoundComponent from "../../components/noDataFoundComponent.vue";
 import socket from "../../socket";
 // import socket from "@/socket";
 import { useStore } from "vuex";
+import { fetchGetAPI } from "@/services/fetch.api";
 
 const store = useStore();
 
@@ -15,15 +16,20 @@ const userAllPropertyHistory = ref([]);
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-estimate-history`,
-      {
-        credentials: "include",
-        mode: "cors",
-      }
+    const res = await fetchGetAPI(
+      `/contractor/get-estimate-history`
     );
-    res = await res.json();
-    userAllPropertyHistory.value = await res.message;
+    if (res?.success) {
+      userAllPropertyHistory.value = await res.message;
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
     console.log(userAllPropertyHistory.value);
   } catch (error) {
     console.error(error);

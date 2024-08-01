@@ -58,6 +58,7 @@
 import { onBeforeMount, onMounted, ref, defineEmits } from "vue";
 import { useRoute } from "vue-router";
 import { loadStripe } from "@stripe/stripe-js";
+import { fetchPostAPI } from "@/services/fetch.api";
 
 const route = useRoute();
 
@@ -70,18 +71,21 @@ const emit = defineEmits(["snackbar-emit"]);
 
 onBeforeMount(async () => {
   try {
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/get-payment-details`,
-      {
-        method: "post",
-        mode: "cors",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ p_id: route.params.p_id }),
-      }
+    const res = await fetchPostAPI(
+      `/property/get-payment-details`,
+      { p_id: route.params.p_id }
     );
-    res = await res.json();
-    paymentDetails.value = res.message;
+    if (res?.success) {
+      paymentDetails.value = await res.message;
+    } else {
+      console.error(res);
+      emit("snackbar-emit", {
+        display: true,
+        innerText: `Can not able to load page`,
+        bgColor: "error",
+        icon: "close-circle",
+      });
+    }
     console.log("paymentDetails.value :>> ", paymentDetails.value);
   } catch (error) {
     console.error(error);
@@ -107,22 +111,18 @@ onMounted(async () => {
 const payPayment = async () => {
   try {
     loading.value = true;
-    let res = await fetch(
-      `${process.env.VUE_APP_BASE_URL}/create-stripe-session`,
+
+    const res = await fetchPostAPI(
+      `/property/create-stripe-session`,
       {
-        method: "post",
-        mode: "cors",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          p_id: route.params.p_id,
-          name: paymentDetails.value?.name,
-          price: paymentDetails.value?.estimates[0]?.price,
-          contracter_id: paymentDetails.value?.estimates[0]?.user?.id,
-        }),
+        p_id: route.params.p_id,
+        name: paymentDetails.value?.name,
+        price: paymentDetails.value?.estimates[0]?.price,
+        contracter_id: paymentDetails.value?.estimates[0]?.user?.id,
       }
     );
-    const session = await res.json();
+
+    const session = await res;
 
     const { error } = await stripe.value.redirectToCheckout({
       sessionId: session.id,
